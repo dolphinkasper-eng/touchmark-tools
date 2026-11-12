@@ -272,7 +272,24 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
   );
 }
 
-// --- PROMPTS & SCHEMAS ---
+// --- PROMPTS, STARTERS & SCHEMAS ---
+const SIGNAL_STARTER_PROMPTS = [
+  "Examine the timing, media curation & power dynamics behind Russell Brand's 2026 conviction",
+  "Look beneath the mainstream framing of digital IDs and central bank programmable currency",
+  "Dissect the narrative curation and competing probabilities around the latest geopolitical escalation"
+];
+
+const PULSE_STARTER_PROMPTS = [
+  "I'm avoiding a hard conversation with someone important because I don't want to fracture the peace",
+  "I have an opportunity that looks great on paper, but something in my gut feels off about the incentives"
+];
+
+function expandSignalQuery(rawQuery) {
+  const wordCount = rawQuery.trim().split(/\s+/).length;
+  if (wordCount >= 18) return rawQuery;
+  return `Examine "${rawQuery}" deeply beneath the mainstream narrative: audit how corporate and state media curate or distort the framing, evaluate the conspicuous rarity of the timing and surrounding details, model what political, economic, or judicial power operating behind the scenes would look like with historical precedents, and weigh the competing probabilities.`;
+}
+
 const PULSE_SYSTEM_PROMPT = `You are Touchmark Pulse, a candid, deeply perceptive strategic, psychological, and relational intelligence copilot.
 Look beneath the surface of the user's situation—naming unspoken power dynamics, hidden incentives, self-deceptions, and downstream consequences.
 Provide a rich 5–6 sentence spoken synthesis ("spokenReflection") and populate all fields in the schema, including 5–6 high-integrity thinkers, books, essays, or YouTube talks across analytical, psychological, and philosophical/spiritual traditions.`;
@@ -508,25 +525,6 @@ function buildSmartResearchUrl(item) {
   return `https://www.google.com/search?q=${q}`;
 }
 
-const SIGNAL_STARTER_PROMPTS = [
-  "Examine the timing, media curation & power dynamics behind Russell Brand's 2026 conviction",
-  "Look beneath the mainstream framing of digital IDs and central bank programmable currency",
-  "Dissect the narrative curation and competing probabilities around the latest geopolitical escalation"
-];
-
-const PULSE_STARTER_PROMPTS = [
-  "I'm avoiding a hard conversation with someone important because I don't want to fracture the peace",
-  "I have an opportunity that looks great on paper, but something in my gut feels off about the incentives"
-];
-
-function expandSignalQuery(rawQuery) {
-  const wordCount = rawQuery.trim().split(/\s+/).length;
-  // If the user already wrote a detailed multi-clause prompt, pass it straight through
-  if (wordCount >= 18) return rawQuery;
-  // Otherwise, silently wrap their short topic in Touchmark's full counter-narrative & power-dynamics frame
-  return `Examine "${rawQuery}" deeply beneath the mainstream narrative: audit how corporate and state media curate or distort the framing, evaluate the conspicuous rarity of the timing and surrounding details, model what political, economic, or judicial power operating behind the scenes would look like with historical precedents, and weigh the competing probabilities.`;
-}
-
 export default function TouchmarkToolsApp() {
   const [mode, setMode] = useState('signal');
   const [status, setStatus] = useState('idle');
@@ -545,6 +543,7 @@ export default function TouchmarkToolsApp() {
   const [drawerTab, setDrawerTab] = useState('analysis'); // 'analysis' | 'power' | 'spectrum'
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [savedDossiers, setSavedDossiers] = useState([]);
+  const [liveSignalPrompts, setLiveSignalPrompts] = useState(SIGNAL_STARTER_PROMPTS);
 
   const [hasArtifact, setHasArtifact] = useState(false);
   const [pulseLedger, setPulseLedger] = useState(null);
@@ -561,6 +560,21 @@ export default function TouchmarkToolsApp() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setSavedDossiers(JSON.parse(raw));
     } catch {}
+
+    // Fetch live trending counter-narrative starter inquiries
+    fetch('/api/discern', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'trending' })
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d.prompts) && d.prompts.length >= 2) {
+          setLiveSignalPrompts(d.prompts);
+        }
+      })
+      .catch(() => {});
+
     return () => {
       soundscapeRef.current?.stopThinkingDrone(false);
     };
@@ -813,9 +827,8 @@ export default function TouchmarkToolsApp() {
         return;
       }
 
-      const expandedQuery = expandSignalQuery(query);
-
       // 3. Signal Two-Stage Grounded Counter-Narrative & Power Intelligence Audit
+      const expandedQuery = expandSignalQuery(query);
       const res = await fetch('/api/discern', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -826,7 +839,6 @@ export default function TouchmarkToolsApp() {
           useSearch: true
         })
       });
-      
       const data = await res.json();
       soundscapeRef.current?.stopThinkingDrone(voiceEnabled);
       if (!res.ok) throw new Error(data.error || 'Signal audit failed.');
@@ -1178,7 +1190,7 @@ export default function TouchmarkToolsApp() {
       </html>`);
     printWindow.document.close();
   };
-  
+
   const currentThinkingLabel =
     mode === 'signal'
       ? SIGNAL_THINKING_PHASES[thinkingPhaseIndex]
@@ -1188,77 +1200,65 @@ export default function TouchmarkToolsApp() {
     <div className="min-h-screen bg-[#090807] text-stone-100 flex flex-col justify-between selection:bg-amber-400/30">
       {/* Ultra-minimal Top Bar */}
       <header className="px-5 sm:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2.5 text-stone-300">
+        <div className="flex items-center gap-2.5 text-stone-300 w-28">
           <TouchmarkLogo className="w-6 h-6 text-amber-300/90" />
           <span className="text-sm font-medium tracking-wide">Touchmark</span>
         </div>
 
-        {/* Mode Pill */}
+        {/* Centered Mode Pill */}
         <div className="flex items-center bg-white/[0.04] p-1 rounded-full border border-white/10">
-
-        <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    onClick={exportFullPdfDossier}
-                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs tracking-wide whitespace-nowrap hover:bg-amber-200 flex items-center justify-center gap-2 transition-colors"
-                  >
-                    <Printer className="w-4 h-4 shrink-0" />
-                    <span>Export PDF Dossier</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={copyReceipt}
-                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-stone-200 font-medium text-xs tracking-wide whitespace-nowrap flex items-center justify-center gap-2 transition-colors"
-                  >
-                    {copiedReceipt ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
-                        <span>Markdown Copied</span>
-                      </>
-                    ) : (
-                      <>
-                        <Share2 className="w-4 h-4 shrink-0" />
-                        <span>Copy Markdown</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-          
-        </div>
-
-        {/* Voice, Archive & Dossier Controls */}
-        <div className="flex items-center gap-2">
-          <select
-            aria-label="Voice"
-            value={selectedVoice}
-            onChange={(e) => setSelectedVoice(e.target.value)}
-            className="hidden md:block bg-transparent border border-white/10 rounded-full px-2.5 py-1 text-xs text-stone-400 focus:outline-none"
-          >
-            {VOICE_OPTIONS.map((v) => (
-              <option key={v.id} value={v.id} className="bg-stone-900 text-stone-200">
-                {v.label}
-              </option>
-            ))}
-          </select>
-
           <button
             type="button"
-            onClick={() => {
-              if (voiceEnabled) {
-                stopSpeaking();
-                soundscapeRef.current?.stopThinkingDrone(false);
-              }
-              setVoiceEnabled(!voiceEnabled);
-            }}
-            aria-label="Toggle voice and ambient sound"
-            className="p-2 rounded-full border border-white/10 text-stone-400 hover:text-stone-200"
+            onClick={() => setMode('pulse')}
+            className={`px-3.5 py-1 rounded-full text-xs transition-all ${
+              mode === 'pulse' ? 'bg-emerald-400/20 text-emerald-200' : 'text-stone-400 hover:text-stone-200'
+            }`}
           >
-            {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-stone-600" />}
+            Pulse
           </button>
+          <button
+            type="button"
+            onClick={() => setMode('signal')}
+            className={`px-3.5 py-1 rounded-full text-xs transition-all ${
+              mode === 'signal' ? 'bg-amber-400/20 text-amber-200' : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            Signal
+          </button>
+        </div>
 
+        {/* Voice, Archive & Dossier Controls — hidden until first output */}
+        <div className="flex items-center justify-end gap-2 w-28 sm:w-auto">
           {hasArtifact && (
             <>
+              <select
+                aria-label="Voice"
+                value={selectedVoice}
+                onChange={(e) => setSelectedVoice(e.target.value)}
+                className="hidden md:block bg-transparent border border-white/10 rounded-full px-2.5 py-1 text-xs text-stone-400 focus:outline-none"
+              >
+                {VOICE_OPTIONS.map((v) => (
+                  <option key={v.id} value={v.id} className="bg-stone-900 text-stone-200">
+                    {v.label}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (voiceEnabled) {
+                    stopSpeaking();
+                    soundscapeRef.current?.stopThinkingDrone(false);
+                  }
+                  setVoiceEnabled(!voiceEnabled);
+                }}
+                aria-label="Toggle voice and ambient sound"
+                className="p-2 rounded-full border border-white/10 text-stone-400 hover:text-stone-200"
+              >
+                {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-stone-600" />}
+              </button>
+
               {savedDossiers.length > 0 && (
                 <button
                   type="button"
@@ -1281,7 +1281,6 @@ export default function TouchmarkToolsApp() {
               </button>
             </>
           )}
-
         </div>
       </header>
 
@@ -1345,7 +1344,7 @@ export default function TouchmarkToolsApp() {
         )}
       </main>
 
-      {/* Bottom Input Bar */}
+      {/* Bottom Input Bar & Live Currents */}
       <footer className="px-4 sm:px-8 pb-6 pt-2 max-w-xl mx-auto w-full">
         <form
           onSubmit={(e) => {
@@ -1360,8 +1359,8 @@ export default function TouchmarkToolsApp() {
             onChange={(e) => setInputText(e.target.value)}
             placeholder={
               mode === 'pulse'
-                ? 'Speak to the orb, or unpack a personal/strategic tension…'
-                : 'Speak to the orb, or dissect a narrative and its hidden power dynamics…'
+                ? 'Speak to the orb, or unpack a tension…'
+                : 'Speak to the orb, or test any narrative…'
             }
             className="flex-1 bg-transparent text-sm text-stone-200 placeholder:text-stone-600 focus:outline-none"
           />
@@ -1374,20 +1373,28 @@ export default function TouchmarkToolsApp() {
             <Send className="w-4 h-4" />
           </button>
         </form>
+
         {!hasArtifact && status === 'idle' && (
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
-            {(mode === 'signal' ? SIGNAL_STARTER_PROMPTS : PULSE_STARTER_PROMPTS).map(
-              (sample, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => handleSubmission(sample)}
-                  className="px-3 py-1 rounded-full bg-white/[0.02] hover:bg-white/[0.07] border border-white/[0.07] text-[11px] text-stone-400 hover:text-stone-200 transition-all truncate max-w-full"
-                >
-                  {sample}
-                </button>
-              )
-            )}
+          <div className="mt-4 space-y-2 text-center">
+            <span className="block text-[10px] uppercase tracking-[0.22em] text-stone-500">
+              {mode === 'signal'
+                ? 'Live currents to probe — or ask your own above'
+                : 'Starting tensions — or speak your own above'}
+            </span>
+            <div className="flex flex-wrap items-center justify-center gap-1.5">
+              {(mode === 'signal' ? liveSignalPrompts : PULSE_STARTER_PROMPTS).map(
+                (sample, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => handleSubmission(sample)}
+                    className="px-3.5 py-1.5 rounded-full bg-white/[0.025] hover:bg-white/[0.08] border border-white/[0.08] text-[11px] text-stone-400 hover:text-stone-200 transition-all truncate max-w-full"
+                  >
+                    {sample}
+                  </button>
+                )
+              )}
+            </div>
           </div>
         )}
       </footer>
@@ -1527,6 +1534,18 @@ export default function TouchmarkToolsApp() {
                     ))}
                   </div>
                 )}
+
+                {/* Centered PDF & Markdown Export Buttons */}
+                <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={exportFullPdfDossier}
+                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs tracking-wide whitespace-nowrap hover:bg-amber-200 flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <Printer className="w-4 h-4 shrink-0" />
+                    <span>Export PDF Dossier</span>
+                  </button>
+                </div>
               </div>
             ) : mode === 'signal' && signalReport ? (
               <div className="space-y-6">
@@ -1848,23 +1867,35 @@ export default function TouchmarkToolsApp() {
                   </div>
                 )}
 
-                <button
-                  type="button"
-                  onClick={copyReceipt}
-                  className="w-full py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs uppercase tracking-wider hover:bg-amber-200 flex items-center justify-center gap-2"
-                >
-                  {copiedReceipt ? (
-                    <>
-                      <CheckCircle2 className="w-4 h-4" />
-                      Formatted Markdown Dossier Copied
-                    </>
-                  ) : (
-                    <>
-                      <Share2 className="w-4 h-4" />
-                      Copy Formatted Markdown Dossier
-                    </>
-                  )}
-                </button>
+                {/* Centered PDF & Markdown Export Buttons inside Dossier Drawer */}
+                <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={exportFullPdfDossier}
+                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs tracking-wide whitespace-nowrap hover:bg-amber-200 flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <Printer className="w-4 h-4 shrink-0" />
+                    <span>Export PDF Dossier</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={copyReceipt}
+                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-stone-200 font-medium text-xs tracking-wide whitespace-nowrap flex items-center justify-center gap-2 transition-colors"
+                  >
+                    {copiedReceipt ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                        <span>Markdown Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-4 h-4 shrink-0" />
+                        <span>Copy Markdown</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             ) : null}
           </div>
