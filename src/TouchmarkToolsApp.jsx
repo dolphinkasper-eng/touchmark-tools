@@ -507,6 +507,25 @@ function buildSmartResearchUrl(item) {
   return `https://www.google.com/search?q=${q}`;
 }
 
+const SIGNAL_STARTER_PROMPTS = [
+  "Examine the timing, media curation & power dynamics behind Russell Brand's 2026 conviction",
+  "Look beneath the mainstream framing of digital IDs and central bank programmable currency",
+  "Dissect the narrative curation and competing probabilities around the latest geopolitical escalation"
+];
+
+const PULSE_STARTER_PROMPTS = [
+  "I'm avoiding a hard conversation with someone important because I don't want to fracture the peace",
+  "I have an opportunity that looks great on paper, but something in my gut feels off about the incentives"
+];
+
+function expandSignalQuery(rawQuery) {
+  const wordCount = rawQuery.trim().split(/\s+/).length;
+  // If the user already wrote a detailed multi-clause prompt, pass it straight through
+  if (wordCount >= 18) return rawQuery;
+  // Otherwise, silently wrap their short topic in Touchmark's full counter-narrative & power-dynamics frame
+  return `Examine "${rawQuery}" deeply beneath the mainstream narrative: audit how corporate and state media curate or distort the framing, evaluate the conspicuous rarity of the timing and surrounding details, model what political, economic, or judicial power operating behind the scenes would look like with historical precedents, and weigh the competing probabilities.`;
+}
+
 export default function TouchmarkToolsApp() {
   const [mode, setMode] = useState('signal');
   const [status, setStatus] = useState('idle');
@@ -793,17 +812,20 @@ export default function TouchmarkToolsApp() {
         return;
       }
 
+      const expandedQuery = expandSignalQuery(query);
+
       // 3. Signal Two-Stage Grounded Counter-Narrative & Power Intelligence Audit
       const res = await fetch('/api/discern', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'analyze',
-          prompt: `Conduct a thorough, grounded intelligence briefing on this subject. Anchor on exact verified dates, counts, verdicts, and chronologies first; dissect how mainstream framing curates and manipulates public perception; evaluate the conspicuous rarity of the constellation of details; explore concretely how political/economic/judicial power operates behind the scenes with historical precedents; provide falsifiable primary-source diagnostic tests; and curate a full-spectrum research library: "${query}"`,
+          prompt: `Conduct a thorough, grounded intelligence briefing on this subject. Anchor on exact verified dates, counts, verdicts, and chronologies first; dissect how mainstream framing curates and manipulates public perception; evaluate the conspicuous rarity of the constellation of details; explore concretely how political/economic/judicial power operates behind the scenes with historical precedents; provide falsifiable primary-source diagnostic tests; and curate a full-spectrum research library: "${expandedQuery}"`,
           systemInstruction: SIGNAL_SYSTEM_PROMPT,
           useSearch: true
         })
       });
+      
       const data = await res.json();
       soundscapeRef.current?.stopThinkingDrone(voiceEnabled);
       if (!res.ok) throw new Error(data.error || 'Signal audit failed.');
@@ -1057,6 +1079,22 @@ export default function TouchmarkToolsApp() {
             <Send className="w-4 h-4" />
           </button>
         </form>
+        {!hasArtifact && status === 'idle' && (
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
+            {(mode === 'signal' ? SIGNAL_STARTER_PROMPTS : PULSE_STARTER_PROMPTS).map(
+              (sample, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleSubmission(sample)}
+                  className="px-3 py-1 rounded-full bg-white/[0.02] hover:bg-white/[0.07] border border-white/[0.07] text-[11px] text-stone-400 hover:text-stone-200 transition-all truncate max-w-full"
+                >
+                  {sample}
+                </button>
+              )
+            )}
+          </div>
+        )}
       </footer>
 
       {/* Saved Dossiers Archive Modal */}
