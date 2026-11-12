@@ -1,362 +1,3 @@
-Here is the complete upgrade to address every single one of those points—making **Touchmark** feel faster, cleaner, and far more intentional.
-
-### What Was Upgraded
-
-1. **Progressive Two-Stage Delivery (Instant Perceived Speed):**
-* Instead of making the user stare at a spinner for 15–20 seconds while the entire 10-section dossier generates in one giant block, **Signal now streams its intelligence in two live phases**:
-* **Phase 1 (~4–6 seconds):** Immediately delivers the **Executive Spoken Synthesis**, starts speaking aloud right away, and populates **Tab 1 (`Record, Rarity & Framing`)** so the user can listen and start reading immediately.
-* **Phase 2 (Silent Background Hydration):** While the user is listening to the synthesis or reading Tab 1, Touchmark quietly finishes generating **Tab 2 (`Power Blueprint & Tests`)** and **Tab 3 (`Spectrum & Sources`)** in the background—lighting up a subtle indicator as each tab locks in.
-
-
-
-
-2. **Eliminated Duplicate Thinking Text + 8-Step Non-Repeating Telemetry:**
-* Removed the duplicate `currentThinkingLabel` underneath the orb so the status appears **only once** in clean, refined typography.
-* Expanded the thinking sequence to **8 distinct, sequential analytical steps** spaced every **2.8 seconds** (spanning ~22 seconds before it ever loops, and stopping cleanly on the final synthesis step rather than cycling noticeably).
-
-
-3. **Bespoke Precision-Crafted Logo Mark:**
-* Replaced the three plain circles with a custom geometric **Touchmark Astrolabe / Resonance Lens** SVG—featuring fine crosshair calibration ticks, an asymmetric golden-ratio orbital ring, a subtle amber gradient core, and a crisp focal point.
-
-
-4. **Single "Open Dossier" Pill Underneath the Summary:**
-* Replaced the three cluttered pills below the spoken text with **one centered, high-contrast `"Open Dossier →"` pill** (which also subtly pulses while Phase 2 deep modules finish loading in the background). Inside the slide-over Dossier drawer, the 3-tab switcher and centered **Export PDF Dossier** / **Copy Markdown** buttons handle all navigation and exports.
-
-
-
----
-
-### Step 1: Update `api/discern.js` (Full File)
-
-Open **`api/discern.js`** in GitHub, click **Edit (pencil icon)**, select all (`Cmd+A` / `Ctrl+A`), replace everything with the code below, and click **Commit changes**:
-
-```javascript
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY is not configured on Vercel.' });
-  }
-
-  try {
-    const {
-      action = 'analyze',
-      prompt,
-      factSheet = '',
-      systemInstruction,
-      responseSchema,
-      useSearch = false,
-      text,
-      voiceName = 'Aoede',
-      history = []
-    } = req.body || {};
-
-    // 1. STUDIO-GRADE HUMAN VOICE (Gemini 3.8 Flash-Lite TTS)
-    if (action === 'speak') {
-      if (!text || !text.trim()) {
-        return res.status(400).json({ error: 'Text is required for speech.' });
-      }
-
-      const ttsUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash-lite-tts:generateContent?key=${apiKey}`;
-      const ttsResponse = await fetch(ttsUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: text.slice(0, 3200) }] }],
-          generationConfig: {
-            responseModalities: ['AUDIO'],
-            speechConfig: {
-              voiceConfig: {
-                prebuiltVoiceConfig: { voiceName }
-              }
-            }
-          }
-        })
-      });
-
-      const ttsData = await ttsResponse.json();
-      if (!ttsResponse.ok) {
-        return res.status(ttsResponse.status).json({
-          error: ttsData?.error?.message || 'TTS generation failed.'
-        });
-      }
-
-      const inlineAudio = ttsData?.candidates?.[0]?.content?.parts?.find(
-        (p) => p.inlineData?.data
-      )?.inlineData;
-
-      if (!inlineAudio?.data) {
-        return res.status(502).json({ error: 'No audio returned from Gemini TTS.' });
-      }
-
-      return res.status(200).json({
-        audioBase64: inlineAudio.data,
-        mimeType: inlineAudio.mimeType || 'audio/pcm;rate=24000'
-      });
-    }
-
-    // 2. WARM COPILOT CHAT MODE
-    if (action === 'chat') {
-      if (!prompt || !prompt.trim()) {
-        return res.status(400).json({ error: 'Prompt is required.' });
-      }
-
-      const chatInstruction = `You are Touchmark, a sharp, grounded, perceptive relational and geopolitical/epistemic intelligence copilot.
-The user is greeting you, checking their mic, or warming up before exploring a decision (Pulse) or dissecting a public event/narrative (Signal).
-- Speak like a thoughtful, unhurried human peer—warm, candid, and genuinely present.
-- Keep your reply to 2–3 natural spoken sentences (no markdown, no bullet points).
-- Confirm you hear them clearly if they asked, and invite them to bring whatever situation, power dynamic, or public narrative they want to examine beneath the surface.`;
-
-      const contents = [
-        ...history.slice(-6).map((turn) => ({
-          role: turn.role === 'user' ? 'user' : 'model',
-          parts: [{ text: turn.text }]
-        })),
-        { role: 'user', parts: [{ text: prompt }] }
-      ];
-
-      const replyText = await callGeminiRobust(
-        apiKey,
-        {
-          contents,
-          systemInstruction: { parts: [{ text: chatInstruction }] },
-          generationConfig: {
-            temperature: 0.72,
-            maxOutputTokens: 280
-          }
-        },
-        ['gemini-3.5-flash-lite', 'gemini-3.8-flash']
-      );
-
-      return res.status(200).json({ reply: replyText });
-    }
-
-    // 2B. LIVE TRENDING INQUIRIES (Cached at CDN edge for 1 hour)
-    if (action === 'trending') {
-      const trendingPrompt = `Identify 3 major current public controversies, legal/political developments, or institutional narratives people are actively debating right now. Frame each as a concise, single-sentence Touchmark Signal inquiry (under 14 words each) that invites looking beneath the mainstream framing. Return valid JSON ONLY as an array of 3 strings: ["...", "...", "..."]`;
-
-      const rawTrending = await callGeminiRobust(
-        apiKey,
-        {
-          contents: [{ role: 'user', parts: [{ text: trendingPrompt }] }],
-          tools: [{ google_search: {} }],
-          generationConfig: {
-            temperature: 0.5,
-            maxOutputTokens: 300
-          }
-        },
-        ['gemini-3.5-flash-lite', 'gemini-3.8-flash']
-      );
-
-      const cleaned = rawTrending.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
-      const firstBracket = cleaned.indexOf('[');
-      const lastBracket = cleaned.lastIndexOf(']');
-      const prompts =
-        firstBracket !== -1 && lastBracket !== -1
-          ? JSON.parse(cleaned.slice(firstBracket, lastBracket + 1))
-          : [];
-
-      res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
-      return res.status(200).json({ prompts: Array.isArray(prompts) ? prompts.slice(0, 3) : [] });
-    }
-
-    // 3A. PROGRESSIVE SIGNAL STAGE 1 (Fast Grounded Briefing + Tab 1: Record, Rarity & Framing)
-    if (action === 'signal_core') {
-      if (!prompt || !prompt.trim()) {
-        return res.status(400).json({ error: 'Prompt is required.' });
-      }
-
-      const searchResult = await runLiveFactRetrieval(apiKey, prompt);
-      const enrichedPrompt = searchResult.factSheet
-        ? `${prompt}\n\n=== VERIFIED LIVE SEARCH FACT SHEET & PRIMARY RECORD ===\n${searchResult.factSheet}\n\nAnchor all dates, counts, verdicts, and chronologies accurately using this verified fact sheet.`
-        : prompt;
-
-      const rawText = await callGeminiRobust(
-        apiKey,
-        {
-          contents: [{ role: 'user', parts: [{ text: enrichedPrompt }] }],
-          systemInstruction: systemInstruction
-            ? { parts: [{ text: systemInstruction }] }
-            : undefined,
-          generationConfig: {
-            temperature: 0.45,
-            maxOutputTokens: 3200
-          }
-        },
-        ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
-      );
-
-      return res.status(200).json({
-        text: rawText,
-        factSheet: searchResult.factSheet,
-        groundingSources: searchResult.sources
-      });
-    }
-
-    // 3B. PROGRESSIVE SIGNAL STAGE 2 (Deep Power Blueprint, Diagnostic Tests & Full-Spectrum Library)
-    if (action === 'signal_deep') {
-      if (!prompt || !prompt.trim()) {
-        return res.status(400).json({ error: 'Prompt is required.' });
-      }
-
-      const enrichedPrompt = factSheet
-        ? `${prompt}\n\n=== VERIFIED LIVE SEARCH FACT SHEET & PRIMARY RECORD ===\n${factSheet}`
-        : prompt;
-
-      const rawText = await callGeminiRobust(
-        apiKey,
-        {
-          contents: [{ role: 'user', parts: [{ text: enrichedPrompt }] }],
-          systemInstruction: systemInstruction
-            ? { parts: [{ text: systemInstruction }] }
-            : undefined,
-          generationConfig: {
-            temperature: 0.45,
-            maxOutputTokens: 4800
-          }
-        },
-        ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
-      );
-
-      return res.status(200).json({ text: rawText });
-    }
-
-    // 4. STANDARD PULSE / SINGLE-PASS ANALYSIS
-    if (!prompt || !prompt.trim()) {
-      return res.status(400).json({ error: 'Prompt is required.' });
-    }
-
-    let enrichedPrompt = prompt;
-    let groundingSources = [];
-
-    if (useSearch) {
-      const searchResult = await runLiveFactRetrieval(apiKey, prompt);
-      if (searchResult.factSheet) {
-        enrichedPrompt = `${prompt}\n\n=== VERIFIED LIVE SEARCH FACT SHEET & PRIMARY RECORD ===\n${searchResult.factSheet}`;
-        groundingSources = searchResult.sources;
-      }
-    }
-
-    const generationConfig = {
-      temperature: 0.45,
-      maxOutputTokens: 6144
-    };
-
-    if (responseSchema) {
-      generationConfig.responseMimeType = 'application/json';
-      generationConfig.responseSchema = responseSchema;
-    }
-
-    const payload = {
-      contents: [{ role: 'user', parts: [{ text: enrichedPrompt }] }],
-      generationConfig
-    };
-
-    if (systemInstruction) {
-      payload.systemInstruction = { parts: [{ text: systemInstruction }] };
-    }
-
-    const rawText = await callGeminiRobust(apiKey, payload, [
-      'gemini-3.8-flash',
-      'gemini-3.5-flash-lite'
-    ]);
-
-    return res.status(200).json({ text: rawText, groundingSources });
-  } catch (err) {
-    console.error('Touchmark /api/discern error:', err);
-    return res.status(500).json({
-      error: err.message || 'Unexpected server error in /api/discern.'
-    });
-  }
-}
-
-async function runLiveFactRetrieval(apiKey, query) {
-  try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [
-          {
-            role: 'user',
-            parts: [
-              {
-                text: `Gather a concise, factual, chronological intelligence brief on this query using Google Search. Include exact dates, counts, verdicts, investigative timelines, official findings, and primary public documents: "${query}"`
-              }
-            ]
-          }
-        ],
-        tools: [{ google_search: {} }],
-        generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 1400
-        }
-      })
-    });
-
-    const data = await response.json();
-    if (!response.ok) return { factSheet: '', sources: [] };
-
-    const candidate = data?.candidates?.[0];
-    const factSheet =
-      candidate?.content?.parts
-        ?.map((p) => p.text || '')
-        .join('')
-        .trim() || '';
-
-    const chunks = candidate?.groundingMetadata?.groundingChunks || [];
-    const sources = chunks
-      .filter((c) => c.web?.uri && c.web?.title)
-      .map((c) => ({ title: c.web.title, url: c.web.uri }))
-      .slice(0, 6);
-
-    return { factSheet, sources };
-  } catch {
-    return { factSheet: '', sources: [] };
-  }
-}
-
-async function callGeminiRobust(apiKey, payload, models) {
-  let lastError = 'Gemini request failed.';
-
-  for (const model of models) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-    if (response.ok) {
-      const text = data?.candidates?.[0]?.content?.parts
-        ?.map((p) => p.text || '')
-        .join('')
-        .trim();
-      if (text) return text;
-      lastError = `Empty response from ${model}.`;
-      continue;
-    }
-
-    lastError = data?.error?.message || `HTTP ${response.status} from ${model}`;
-  }
-
-  throw new Error(lastError);
-}
-
-```
-
----
-
-### Step 2: Update `src/TouchmarkToolsApp.jsx` (Full File)
-
-Open **`src/TouchmarkToolsApp.jsx`** in GitHub, click **Edit (pencil icon)**, select all (`Cmd+A` / `Ctrl+A`), replace everything with the code below, and click **Commit changes**:
-
-```jsx
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Mic,
@@ -403,14 +44,11 @@ function TouchmarkLogo({ className = 'w-7 h-7' }) {
           <stop offset="100%" stopColor="#FBBF24" stopOpacity="0.75" />
         </linearGradient>
       </defs>
-      {/* Outer Precision Horizon */}
       <circle cx="20" cy="20" r="17.5" stroke="url(#tmRingGrad)" strokeWidth="1.2" />
-      {/* Cardinal Calibration Ticks */}
       <line x1="20" y1="1.5" x2="20" y2="5" stroke="#FCD34D" strokeOpacity="0.7" strokeWidth="1.2" strokeLinecap="round" />
       <line x1="20" y1="35" x2="20" y2="38.5" stroke="#FCD34D" strokeOpacity="0.7" strokeWidth="1.2" strokeLinecap="round" />
       <line x1="1.5" y1="20" x2="5" y2="20" stroke="#FCD34D" strokeOpacity="0.7" strokeWidth="1.2" strokeLinecap="round" />
       <line x1="35" y1="20" x2="38.5" y2="20" stroke="#FCD34D" strokeOpacity="0.7" strokeWidth="1.2" strokeLinecap="round" />
-      {/* Asymmetric Tilted Orbital Ellipse */}
       <ellipse
         cx="20"
         cy="20"
@@ -421,9 +59,7 @@ function TouchmarkLogo({ className = 'w-7 h-7' }) {
         strokeOpacity="0.55"
         strokeWidth="1.15"
       />
-      {/* Inner Resonance Aperture */}
       <circle cx="20" cy="20" r="8.2" stroke="#FDE68A" strokeOpacity="0.28" strokeWidth="1" strokeDasharray="2 2.5" />
-      {/* Luminous Touchmark Focal Core */}
       <circle cx="20" cy="20" r="3.4" fill="url(#tmCoreGlow)" />
     </svg>
   );
@@ -522,8 +158,8 @@ function createContemplationSoundscape() {
   return { startThinkingDrone, stopThinkingDrone };
 }
 
-// --- 3D MORPHING SPHERICAL RESONANCE ORB ---
-function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
+// --- 3D MORPHING SPHERICAL RESONANCE ORB (Pure Visual Sphere — Zero Internal Text) ---
+function MorphingSphereOrb({ status, mode, onClick }) {
   const isListening = status === 'listening';
   const isThinking = status === 'thinking';
   const isSpeaking = status === 'speaking';
@@ -649,17 +285,6 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
           </div>
         </div>
       </button>
-
-      {/* Single, clean status telemetry line (no duplicate block below) */}
-      <span className="mt-2 text-[11px] uppercase tracking-[0.24em] text-amber-200/80 transition-all duration-500 min-h-[18px]">
-        {isListening
-          ? 'Listening…'
-          : isThinking
-          ? thinkingPhase
-          : isSpeaking
-          ? 'Speaking'
-          : 'Tap sphere to speak'}
-      </span>
     </div>
   );
 }
@@ -733,7 +358,6 @@ const PULSE_RESPONSE_SCHEMA = {
   ]
 };
 
-// Stage 1 Prompt: Fast Grounded Briefing + Tab 1 (Record, Rarity & Framing)
 const SIGNAL_CORE_PROMPT = `You are Touchmark Signal, an independent, anti-propaganda intelligence and power-dynamics analyst.
 Anchor rigorously on the VERIFIED LIVE SEARCH FACT SHEET provided in the prompt—extracting exact dates, counts, verdicts, and chronologies—while dissecting how mainstream media curates, sequences, or distorts public perception.
 
@@ -753,7 +377,6 @@ Produce Stage 1 of the intelligence dossier in valid JSON ONLY with these exact 
   "centerOfGravityLikelihood": 55
 }`;
 
-// Stage 2 Prompt: Background Hydration of Tab 2 (Power Blueprint & Tests) & Tab 3 (Spectrum & Sources)
 const SIGNAL_DEEP_PROMPT = `You are Touchmark Signal, an independent, anti-propaganda intelligence and power-dynamics analyst.
 Using the verified record and subject provided, produce Stage 2 (Power Blueprint, Diagnostic Tests, Historical Precedents, 6-Lens Spectrum, and Research Library) in valid JSON ONLY with these exact keys:
 {
@@ -1027,7 +650,6 @@ export default function TouchmarkToolsApp() {
     setDrawerOpen(true);
   };
 
-  // Smooth, unhurried 6-step progression (2.8s per step, holds on final synthesis step without awkward looping)
   useEffect(() => {
     if (status !== 'thinking') {
       setThinkingPhaseIndex(0);
@@ -1247,7 +869,6 @@ export default function TouchmarkToolsApp() {
       const expandedQuery = expandSignalQuery(query);
       const dossierId = Date.now().toString();
 
-      // Stage 1: Fast Grounded Briefing + Tab 1 (Record, Rarity & Framing)
       const coreRes = await fetch('/api/discern', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1282,7 +903,6 @@ export default function TouchmarkToolsApp() {
         groundingSources: Array.isArray(coreData.groundingSources) ? coreData.groundingSources : []
       };
 
-      // Immediately surface Stage 1 & begin speaking while Stage 2 hydrates in the background
       setSignalReport(initialReport);
       setHasArtifact(true);
       setDrawerTab('analysis');
@@ -1290,7 +910,6 @@ export default function TouchmarkToolsApp() {
       setHistory((prev) => [...prev, { role: 'assistant', text: initialReport.spokenSynthesis }]);
       speakResponse(initialReport.spokenSynthesis);
 
-      // Stage 2: Background Hydration of Power Blueprint, Diagnostic Tests, 6-Lens Spectrum & YouTube Library
       setIsHydratingDeep(true);
       fetch('/api/discern', {
         method: 'POST',
@@ -1742,7 +1361,7 @@ export default function TouchmarkToolsApp() {
         </div>
       </header>
 
-      {/* Center Sanctuary: Morphing 3D Orb + Substantive Spoken Briefing + Single Dossier Pill */}
+      {/* Center Sanctuary: Pure Sphere + Single Unified Status/Caption Area + Single Dossier Pill */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-3xl mx-auto w-full py-3">
         {errorBanner && (
           <div className="mb-4 flex items-center gap-2 px-4 py-2 rounded-full bg-red-950/60 border border-red-400/30 text-xs text-red-200">
@@ -1754,13 +1373,20 @@ export default function TouchmarkToolsApp() {
         <MorphingSphereOrb
           status={status}
           mode={mode}
-          thinkingPhase={currentThinkingLabel}
           onClick={toggleListening}
         />
 
-        {/* Only renders once thinking completes so status text is never duplicated */}
-        {status !== 'thinking' && (
-          <div className="mt-5 max-h-48 sm:max-h-56 overflow-y-auto px-2 max-w-2xl">
+        {/* Single Unified Readout — switches cleanly between Listening, Thinking telemetry, and Spoken Synthesis */}
+        {status === 'listening' ? (
+          <span className="mt-3 text-[11px] uppercase tracking-[0.26em] text-amber-300 animate-pulse">
+            Listening…
+          </span>
+        ) : status === 'thinking' ? (
+          <span className="mt-3 text-[11px] uppercase tracking-[0.24em] text-amber-200/85 transition-all duration-500">
+            {currentThinkingLabel}
+          </span>
+        ) : (
+          <div className="mt-4 max-h-48 sm:max-h-56 overflow-y-auto px-2 max-w-2xl">
             <p className="text-sm sm:text-[15px] font-light text-stone-200/95 leading-relaxed">
               {activeCaption}
             </p>
@@ -2053,7 +1679,6 @@ export default function TouchmarkToolsApp() {
                       </h2>
                     </div>
 
-                    {/* 1. VERIFIED RECORD & CHRONOLOGY */}
                     {signalReport.verifiedTimeline?.length > 0 && (
                       <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
                         <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-stone-200 font-medium">
@@ -2073,7 +1698,6 @@ export default function TouchmarkToolsApp() {
                       </div>
                     )}
 
-                    {/* 2. NARRATIVE MANIPULATION & CURATION AUDIT */}
                     {signalReport.narrativeManipulationAudit && (
                       <div className="p-5 rounded-2xl bg-amber-400/[0.06] border border-amber-400/25 space-y-2.5">
                         <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
@@ -2086,7 +1710,6 @@ export default function TouchmarkToolsApp() {
                       </div>
                     )}
 
-                    {/* 3. CONSTELLATION RARITY & CONSPICUOUS ANOMALY */}
                     {signalReport.constellationRarityAnalysis && (
                       <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
                         <div className="flex items-center justify-between gap-2">
@@ -2104,7 +1727,6 @@ export default function TouchmarkToolsApp() {
                       </div>
                     )}
 
-                    {/* 4. CENTER OF GRAVITY */}
                     {signalReport.centerOfGravity && (
                       <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
                         <div className="flex items-center justify-between gap-2">
@@ -2134,7 +1756,6 @@ export default function TouchmarkToolsApp() {
                     </div>
                   ) : (
                     <>
-                      {/* TAB 2: POWER BLUEPRINT + SCENARIOS + DIAGNOSTIC TESTS + HISTORY */}
                       {signalReport.powerOperationBlueprint && (
                         <div className="p-5 rounded-2xl bg-amber-400/[0.06] border border-amber-300/25 space-y-2.5">
                           <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
@@ -2178,7 +1799,6 @@ export default function TouchmarkToolsApp() {
                         </div>
                       )}
 
-                      {/* DIAGNOSTIC PRIMARY DOCUMENTS & FALSIFIABLE TESTS */}
                       {signalReport.diagnosticChecklist?.length > 0 && (
                         <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
                           <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-emerald-300 font-medium">
@@ -2226,7 +1846,6 @@ export default function TouchmarkToolsApp() {
                     </p>
                   </div>
                 ) : (
-                  /* TAB 3: FULL-SPECTRUM PERSPECTIVES & MULTI-FORMAT RESEARCH LIBRARY */
                   <div className="space-y-6">
                     {signalReport.spectrumPerspectives?.length > 0 && (
                       <div className="space-y-3">
@@ -2391,5 +2010,3 @@ export default function TouchmarkToolsApp() {
     </div>
   );
 }
-
-```
