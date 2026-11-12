@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       history = []
     } = req.body || {};
 
-    // 1. STUDIO-GRADE HUMAN VOICE (Gemini 3.8 Flash-Lite TTS)
+    // 1. STUDIO-GRADE HUMAN VOICE (Supports full 45-60s intelligence briefings)
     if (action === 'speak') {
       if (!text || !text.trim()) {
         return res.status(400).json({ error: 'Text is required for speech.' });
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: text.slice(0, 1800) }] }],
+          contents: [{ parts: [{ text: text.slice(0, 3200) }] }],
           generationConfig: {
             responseModalities: ['AUDIO'],
             speechConfig: {
@@ -91,7 +91,7 @@ The user is greeting you, checking their mic, or warming up before exploring a d
           systemInstruction: { parts: [{ text: chatInstruction }] },
           generationConfig: {
             temperature: 0.72,
-            maxOutputTokens: 240
+            maxOutputTokens: 280
           }
         },
         ['gemini-3.5-flash-lite', 'gemini-3.8-flash']
@@ -106,8 +106,8 @@ The user is greeting you, checking their mic, or warming up before exploring a d
     }
 
     const generationConfig = {
-      temperature: 0.45,
-      maxOutputTokens: 6144,
+      temperature: 0.5,
+      maxOutputTokens: 8192,
       thinkingConfig: { thinkingLevel: 'LOW' }
     };
 
@@ -185,7 +185,7 @@ async function callGeminiRobust(apiKey, payload, models) {
       }
     }
 
-    lastError = data?.error?.message || `HTTP ${response.status} from${model}`;
+    lastError = data?.error?.message || `HTTP ${response.status} from ${model}`;
   }
 
   throw new Error(lastError);
