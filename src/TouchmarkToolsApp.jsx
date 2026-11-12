@@ -26,8 +26,106 @@ function TouchmarkLogo({ className = 'w-6 h-6' }) {
   );
 }
 
-// --- 3D MORPHING SPHERICAL RESONANCE ORB ---
-function MorphingSphereOrb({ status, mode, onClick }) {
+// --- WEB AUDIO HARMONIC CONTEMPLATION ENGINE (Zero external files) ---
+function createContemplationSoundscape() {
+  if (typeof window === 'undefined') return null;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return null;
+
+  let ctx = null;
+  let masterGain = null;
+  let activeNodes = [];
+
+  const startThinkingDrone = (mode = 'pulse') => {
+    try {
+      stopThinkingDrone(false);
+      if (!ctx) ctx = new AudioCtx();
+      if (ctx.state === 'suspended') ctx.resume();
+
+      const now = ctx.currentTime;
+      masterGain = ctx.createGain();
+      masterGain.gain.setValueAtTime(0.0001, now);
+      masterGain.gain.exponentialRampToValueAtTime(0.045, now + 0.9); // Whisper-soft harmonic bed
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(340, now);
+
+      // Gentle breathing LFO on filter
+      const lfo = ctx.createOscillator();
+      const lfoGain = ctx.createGain();
+      lfo.frequency.setValueAtTime(0.28, now);
+      lfoGain.gain.setValueAtTime(110, now);
+      lfo.connect(lfoGain);
+      lfoGain.connect(filter.frequency);
+
+      // Warm open-fifth harmonic chord (A2 + E3 + B3)
+      const root = mode === 'signal' ? 110 : 98; // A2 for Signal, G2 for Pulse
+      const freqs = [root, root * 1.498, root * 2.247];
+      const oscs = freqs.map((f, idx) => {
+        const osc = ctx.createOscillator();
+        const oscGain = ctx.createGain();
+        osc.type = idx === 0 ? 'sine' : 'triangle';
+        osc.frequency.setValueAtTime(f, now);
+        oscGain.gain.setValueAtTime(idx === 0 ? 0.55 : 0.22, now);
+        osc.connect(oscGain);
+        oscGain.connect(filter);
+        osc.start(now);
+        return osc;
+      });
+
+      lfo.start(now);
+      filter.connect(masterGain);
+      masterGain.connect(ctx.destination);
+
+      activeNodes = [...oscs, lfo];
+    } catch {
+      // Ignore autoplay restrictions silently
+    }
+  };
+
+  const stopThinkingDrone = (playChime = true) => {
+    try {
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      if (masterGain) {
+        masterGain.gain.cancelScheduledValues(now);
+        masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value, 0.0001), now);
+        masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+      }
+      const nodesToStop = [...activeNodes];
+      activeNodes = [];
+      setTimeout(() => {
+        nodesToStop.forEach((n) => {
+          try {
+            n.stop();
+          } catch {}
+        });
+      }, 400);
+
+      // Soft crystal resolution harmonic when insight arrives
+      if (playChime) {
+        const chimeOsc = ctx.createOscillator();
+        const chimeGain = ctx.createGain();
+        chimeOsc.type = 'sine';
+        chimeOsc.frequency.setValueAtTime(587.33, now); // D5
+        chimeOsc.frequency.exponentialRampToValueAtTime(880, now + 0.45); // A5
+        chimeGain.gain.setValueAtTime(0.0001, now);
+        chimeGain.gain.exponentialRampToValueAtTime(0.032, now + 0.06);
+        chimeGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.85);
+        chimeOsc.connect(chimeGain);
+        chimeGain.connect(ctx.destination);
+        chimeOsc.start(now);
+        chimeOsc.stop(now + 0.9);
+      }
+    } catch {}
+  };
+
+  return { startThinkingDrone, stopThinkingDrone };
+}
+
+// --- 3D MORPHING SPHERICAL RESONANCE ORB WITH ORBITAL TELEMETRY ---
+function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
   const isListening = status === 'listening';
   const isThinking = status === 'thinking';
   const isSpeaking = status === 'speaking';
@@ -35,16 +133,18 @@ function MorphingSphereOrb({ status, mode, onClick }) {
   const palette =
     mode === 'signal'
       ? {
-          aura: 'radial-gradient(circle at 35% 30%, rgba(251,191,36,0.42), rgba(217,119,6,0.18) 55%, transparent 75%)',
+          aura: 'radial-gradient(circle at 35% 30%, rgba(251,191,36,0.45), rgba(217,119,6,0.18) 55%, transparent 75%)',
           sphere:
-            'radial-gradient(circle at 32% 28%, rgba(254,243,199,0.55) 0%, rgba(245,158,11,0.38) 32%, rgba(120,53,15,0.65) 72%, rgba(12,10,9,0.96) 100%)',
-          rim: 'rgba(251,191,36,0.45)'
+            'radial-gradient(circle at 32% 28%, rgba(254,243,199,0.58) 0%, rgba(245,158,11,0.4) 32%, rgba(120,53,15,0.68) 72%, rgba(12,10,9,0.96) 100%)',
+          rim: 'rgba(251,191,36,0.5)',
+          dot: 'bg-amber-300'
         }
       : {
-          aura: 'radial-gradient(circle at 35% 30%, rgba(52,211,153,0.38), rgba(20,184,166,0.16) 55%, transparent 75%)',
+          aura: 'radial-gradient(circle at 35% 30%, rgba(52,211,153,0.42), rgba(20,184,166,0.16) 55%, transparent 75%)',
           sphere:
-            'radial-gradient(circle at 32% 28%, rgba(209,250,229,0.55) 0%, rgba(16,185,129,0.36) 32%, rgba(6,78,59,0.68) 72%, rgba(12,10,9,0.96) 100%)',
-          rim: 'rgba(52,211,153,0.45)'
+            'radial-gradient(circle at 32% 28%, rgba(209,250,229,0.58) 0%, rgba(16,185,129,0.38) 32%, rgba(6,78,59,0.7) 72%, rgba(12,10,9,0.96) 100%)',
+          rim: 'rgba(52,211,153,0.5)',
+          dot: 'bg-emerald-300'
         };
 
   return (
@@ -57,13 +157,27 @@ function MorphingSphereOrb({ status, mode, onClick }) {
         }
         @keyframes touchmarkPulseFast {
           0%, 100% { border-radius: 60% 40% 55% 45% / 45% 58% 42% 55%; transform: scale(1.04); }
-          50% { border-radius: 42% 58% 45% 55% / 56% 42% 58% 44%; transform: scale(1.11); }
+          50% { border-radius: 42% 58% 45% 55% / 56% 42% 58% 44%; transform: scale(1.12); }
+        }
+        @keyframes orbitSpin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes orbitSpinReverse {
+          0% { transform: rotate(360deg); }
+          100% { transform: rotate(0deg); }
         }
         .orb-organic {
           animation: touchmarkMorph 11s ease-in-out infinite;
         }
         .orb-active {
-          animation: touchmarkPulseFast 2.4s ease-in-out infinite;
+          animation: touchmarkPulseFast 2.1s ease-in-out infinite;
+        }
+        .orbit-cw {
+          animation: orbitSpin 3.6s linear infinite;
+        }
+        .orbit-ccw {
+          animation: orbitSpinReverse 5.2s linear infinite;
         }
       `}</style>
 
@@ -81,6 +195,24 @@ function MorphingSphereOrb({ status, mode, onClick }) {
           }`}
         />
 
+        {/* Luminous Orbital Filaments during Thinking / Discerning */}
+        {isThinking && (
+          <>
+            <div
+              style={{ borderColor: palette.rim }}
+              className="absolute w-60 h-60 sm:w-64 sm:h-64 rounded-full border border-dashed opacity-60 orbit-cw pointer-events-none"
+            >
+              <span className={`absolute -top-1 left-1/2 w-2 h-2 rounded-full ${palette.dot} shadow-lg`} />
+            </div>
+            <div
+              style={{ borderColor: palette.rim }}
+              className="absolute w-54 h-54 sm:w-58 sm:h-58 rounded-full border border-dotted opacity-45 orbit-ccw pointer-events-none"
+            >
+              <span className={`absolute -bottom-1 left-1/2 w-1.5 h-1.5 rounded-full ${palette.dot}`} />
+            </div>
+          </>
+        )}
+
         {/* Secondary morphing liquid membrane */}
         <div
           style={{
@@ -88,7 +220,7 @@ function MorphingSphereOrb({ status, mode, onClick }) {
             boxShadow: `inset 0 0 40px ${palette.rim}`
           }}
           className={`absolute w-52 h-52 sm:w-56 sm:h-56 opacity-45 transition-all duration-500 ${
-            isListening || isSpeaking ? 'orb-active' : 'orb-organic'
+            isListening || isSpeaking || isThinking ? 'orb-active' : 'orb-organic'
           }`}
         />
 
@@ -109,18 +241,28 @@ function MorphingSphereOrb({ status, mode, onClick }) {
           <div className="relative z-10 flex flex-col items-center text-stone-100/85">
             {isListening && <Mic className="w-6 h-6 text-amber-200 animate-pulse" />}
             {isThinking && (
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-200 animate-ping" />
+              <div className="flex items-center gap-1.5">
+                <span className={`w-2 h-2 rounded-full ${palette.dot} animate-bounce`} />
+                <span
+                  className={`w-2 h-2 rounded-full ${palette.dot} animate-bounce`}
+                  style={{ animationDelay: '150ms' }}
+                />
+                <span
+                  className={`w-2 h-2 rounded-full ${palette.dot} animate-bounce`}
+                  style={{ animationDelay: '300ms' }}
+                />
+              </div>
             )}
             {isSpeaking && <Volume2 className="w-6 h-6 text-amber-100 animate-pulse" />}
           </div>
         </div>
       </button>
 
-      <span className="mt-2 text-[11px] uppercase tracking-[0.26em] text-stone-500">
+      <span className="mt-2 text-[11px] uppercase tracking-[0.26em] text-stone-400 transition-all duration-300">
         {isListening
           ? 'Listening…'
           : isThinking
-          ? 'Discerning…'
+          ? thinkingPhase
           : isSpeaking
           ? 'Speaking'
           : 'Tap sphere to speak'}
@@ -159,7 +301,7 @@ const PULSE_RESPONSE_SCHEMA = {
 const SIGNAL_SYSTEM_PROMPT = `You are Touchmark Signal, an epistemic discernment and institutional-power anomaly engine.
 When analyzing a public event, legal case, or controversial claim:
 1. Establish the verified baseline facts accurately without inventing rumors.
-2. Also evaluate the "Constellation Rarity & Convergence" lens: articulate why sharp observers notice unusual timing, power asymmetries, institutional pressure, or evidentiary gaps—without making unverified accusations.
+2. Evaluate the "Constellation Rarity & Convergence" lens: articulate why sharp observers notice unusual timing, power asymmetries, institutional pressure, or evidentiary gaps—without making unverified accusations.
 3. Return valid JSON ONLY with these exact keys:
 {
   "claim": "Concise framing of the event or claim",
@@ -181,7 +323,20 @@ const VOICE_OPTIONS = [
   { id: 'Kore', label: 'Kore' }
 ];
 
-// --- HELPER: Convert Base64 Linear16 PCM (24kHz) to playable WAV URL ---
+const PULSE_THINKING_PHASES = [
+  'Listening beneath the surface…',
+  'Naming the core tension…',
+  'Tracing hidden assumptions…',
+  'Shaping grounded paths…'
+];
+
+const SIGNAL_THINKING_PHASES = [
+  'Gathering baseline record…',
+  'Checking denominators & timelines…',
+  'Weighing convergence anomalies…',
+  'Balancing counter-hypotheses…'
+];
+
 function pcmBase64ToWavUrl(base64, sampleRate = 24000) {
   const binary = atob(base64);
   const pcmLength = binary.length;
@@ -259,18 +414,17 @@ function extractJsonObject(raw) {
 export default function TouchmarkToolsApp() {
   const [mode, setMode] = useState('pulse'); // 'pulse' | 'signal'
   const [status, setStatus] = useState('idle'); // 'idle' | 'listening' | 'thinking' | 'speaking'
+  const [thinkingPhaseIndex, setThinkingPhaseIndex] = useState(0);
   const [inputText, setInputText] = useState('');
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [selectedVoice, setSelectedVoice] = useState('Aoede');
   const [errorBanner, setErrorBanner] = useState('');
 
-  // Single concise spoken subtitle under the orb (keeps the screen ultra-clean)
   const [activeCaption, setActiveCaption] = useState(
     'I’m here. Say hello to test your mic, or share what you’re discerning.'
   );
   const [history, setHistory] = useState([]);
 
-  // Slide-over Drawer for full structured breakdown
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [hasArtifact, setHasArtifact] = useState(false);
   const [pulseLedger, setPulseLedger] = useState(null);
@@ -279,6 +433,26 @@ export default function TouchmarkToolsApp() {
 
   const recognitionRef = useRef(null);
   const audioRef = useRef(null);
+  const soundscapeRef = useRef(null);
+
+  useEffect(() => {
+    soundscapeRef.current = createContemplationSoundscape();
+    return () => {
+      soundscapeRef.current?.stopThinkingDrone(false);
+    };
+  }, []);
+
+  // Cycle living contemplation whispers while thinking
+  useEffect(() => {
+    if (status !== 'thinking') {
+      setThinkingPhaseIndex(0);
+      return;
+    }
+    const timer = setInterval(() => {
+      setThinkingPhaseIndex((prev) => (prev + 1) % 4);
+    }, 1500);
+    return () => clearInterval(timer);
+  }, [status]);
 
   const stopSpeaking = () => {
     if (audioRef.current) {
@@ -291,6 +465,7 @@ export default function TouchmarkToolsApp() {
     setStatus((prev) => (prev === 'speaking' ? 'idle' : prev));
   };
 
+  // Text appears immediately; audio loads in parallel and starts speaking smoothly
   const speakResponse = async (textToSpeak) => {
     if (!voiceEnabled || !textToSpeak) {
       setStatus('idle');
@@ -416,11 +591,16 @@ export default function TouchmarkToolsApp() {
     setInputText('');
     setStatus('thinking');
 
+    // Start ambient harmonic contemplation soundscape if sound is enabled
+    if (voiceEnabled) {
+      soundscapeRef.current?.startThinkingDrone(mode);
+    }
+
     const updatedHistory = [...history, { role: 'user', text: query }];
     setHistory(updatedHistory);
 
     try {
-      // 1. Warm Copilot Chat Turn
+      // 1. Fast Warm Copilot Chat Turn
       if (isConversationalCheckIn(query)) {
         const res = await fetch('/api/discern', {
           method: 'POST',
@@ -432,16 +612,17 @@ export default function TouchmarkToolsApp() {
           })
         });
         const data = await res.json();
+        soundscapeRef.current?.stopThinkingDrone(voiceEnabled);
         if (!res.ok) throw new Error(data.error || 'Connection interrupted.');
 
         const reply = data.reply || "I hear you clearly. What's on your mind?";
         setActiveCaption(reply);
         setHistory((prev) => [...prev, { role: 'assistant', text: reply }]);
-        await speakResponse(reply);
+        speakResponse(reply);
         return;
       }
 
-      // 2. Pulse Decision Discernment
+      // 2. Snappy Pulse Decision Discernment
       if (mode === 'pulse') {
         const res = await fetch('/api/discern', {
           method: 'POST',
@@ -454,6 +635,7 @@ export default function TouchmarkToolsApp() {
           })
         });
         const data = await res.json();
+        soundscapeRef.current?.stopThinkingDrone(voiceEnabled);
         if (!res.ok) throw new Error(data.error || 'Pulse discernment failed.');
 
         const parsed = extractJsonObject(data.text);
@@ -462,7 +644,7 @@ export default function TouchmarkToolsApp() {
         const reflection = parsed.spokenReflection || 'Here is what stands out beneath the surface.';
         setActiveCaption(reflection);
         setHistory((prev) => [...prev, { role: 'assistant', text: reflection }]);
-        await speakResponse(reflection);
+        speakResponse(reflection);
         return;
       }
 
@@ -478,6 +660,7 @@ export default function TouchmarkToolsApp() {
         })
       });
       const data = await res.json();
+      soundscapeRef.current?.stopThinkingDrone(voiceEnabled);
       if (!res.ok) throw new Error(data.error || 'Signal audit failed.');
 
       const parsed = extractJsonObject(data.text);
@@ -497,8 +680,9 @@ export default function TouchmarkToolsApp() {
       const spoken = parsed.spokenSummary || 'Your Signal dossier is ready.';
       setActiveCaption(spoken);
       setHistory((prev) => [...prev, { role: 'assistant', text: spoken }]);
-      await speakResponse(spoken);
+      speakResponse(spoken);
     } catch (err) {
+      soundscapeRef.current?.stopThinkingDrone(false);
       setStatus('idle');
       setErrorBanner(err.message || 'Something interrupted that thought. Try again.');
     }
@@ -511,6 +695,11 @@ export default function TouchmarkToolsApp() {
     setCopiedReceipt(true);
     setTimeout(() => setCopiedReceipt(false), 2000);
   };
+
+  const currentThinkingLabel =
+    mode === 'signal'
+      ? SIGNAL_THINKING_PHASES[thinkingPhaseIndex]
+      : PULSE_THINKING_PHASES[thinkingPhaseIndex];
 
   return (
     <div className="min-h-screen bg-[#090807] text-stone-100 flex flex-col justify-between selection:bg-amber-400/30">
@@ -561,10 +750,13 @@ export default function TouchmarkToolsApp() {
           <button
             type="button"
             onClick={() => {
-              if (voiceEnabled) stopSpeaking();
+              if (voiceEnabled) {
+                stopSpeaking();
+                soundscapeRef.current?.stopThinkingDrone(false);
+              }
               setVoiceEnabled(!voiceEnabled);
             }}
-            aria-label="Toggle voice"
+            aria-label="Toggle voice and ambient sound"
             className="p-2 rounded-full border border-white/10 text-stone-400 hover:text-stone-200"
           >
             {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-stone-600" />}
@@ -592,14 +784,18 @@ export default function TouchmarkToolsApp() {
           </div>
         )}
 
-        <MorphingSphereOrb status={status} mode={mode} onClick={toggleListening} />
+        <MorphingSphereOrb
+          status={status}
+          mode={mode}
+          thinkingPhase={currentThinkingLabel}
+          onClick={toggleListening}
+        />
 
-        {/* Single calm spoken subtitle */}
-        <p className="mt-8 text-base sm:text-lg font-light text-stone-200/90 leading-relaxed max-w-xl">
-          {activeCaption}
+        <p className="mt-8 text-base sm:text-lg font-light text-stone-200/90 leading-relaxed max-w-xl transition-opacity duration-300">
+          {status === 'thinking' ? currentThinkingLabel : activeCaption}
         </p>
 
-        {hasArtifact && (
+        {hasArtifact && status !== 'thinking' && (
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
@@ -641,7 +837,7 @@ export default function TouchmarkToolsApp() {
         </form>
       </footer>
 
-      {/* Slide-Over Dossier Drawer (All Depth Lives Here) */}
+      {/* Slide-Over Dossier Drawer */}
       {drawerOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-sm">
           <div className="w-full max-w-lg bg-[#11100e] border-l border-white/10 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto">
@@ -715,7 +911,6 @@ export default function TouchmarkToolsApp() {
                   <h2 className="text-lg font-medium text-stone-100">“{signalReport.claim}”</h2>
                 </div>
 
-                {/* Dual-Lens Gauges */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
                     <span className="text-[10px] uppercase tracking-wider text-stone-400 block">
@@ -737,7 +932,6 @@ export default function TouchmarkToolsApp() {
                   </div>
                 </div>
 
-                {/* Convergence & Institutional Power Lens */}
                 {signalReport.convergenceHypothesis && (
                   <div className="p-4 rounded-2xl bg-amber-400/[0.05] border border-amber-300/20 space-y-1.5">
                     <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-amber-300">
@@ -750,7 +944,6 @@ export default function TouchmarkToolsApp() {
                   </div>
                 )}
 
-                {/* Mundane / Base-Rate Counterweight */}
                 {signalReport.mundaneCounterweight && (
                   <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
                     <span className="text-[11px] uppercase tracking-wider text-stone-400 block">
@@ -762,7 +955,6 @@ export default function TouchmarkToolsApp() {
                   </div>
                 )}
 
-                {/* Denominator & Evidentiary Context */}
                 {signalReport.denominatorCheck && (
                   <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
                     <span className="text-[11px] uppercase tracking-wider text-stone-400 block">
