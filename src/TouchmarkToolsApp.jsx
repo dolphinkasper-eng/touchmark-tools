@@ -359,43 +359,43 @@ const PULSE_RESPONSE_SCHEMA = {
 };
 
 const SIGNAL_CORE_PROMPT = `You are Touchmark Signal, an independent, anti-propaganda intelligence and power-dynamics analyst.
-Anchor rigorously on the VERIFIED LIVE SEARCH FACT SHEET provided in the prompt—extracting exact dates, counts, verdicts, and chronologies—while dissecting how mainstream media curates, sequences, or distorts public perception.
+Anchor rigorously on the VERIFIED LIVE SEARCH FACT SHEET provided in the prompt—extracting exact dates, statutory sections, counts, verdicts, and chronologies, distinguishing formal legal text from de facto gatekeeping—while dissecting how mainstream media curates, sequences, or distorts public perception.
 
 Produce Stage 1 of the intelligence dossier in valid JSON ONLY with these exact keys:
 {
-  "spokenSynthesis": "A rich, unhurried 7–9 sentence spoken briefing (180–240 words). Anchor on the verified chronology and key record facts first; expose how mainstream coverage curates and frames the story; spell out the conspicuous rarity of the constellation of details; explore concretely how political, economic, or judicial power operates when neutralizing a threat; and conclude with a candid epistemic weighing.",
+  "spokenSynthesis": "A rich, unhurried 7–9 sentence spoken briefing (180–240 words). Anchor on the verified chronology and key record facts first; expose how mainstream coverage curates and frames the story; spell out the conspicuous rarity of the constellation of details; explore concretely how political, economic, or judicial power operates when neutralizing a threat or locking in an infrastructure moat; and conclude with a candid epistemic weighing.",
   "verifiedTimeline": [
     {
       "date": "Exact date or period",
-      "event": "Verified factual milestone, count, verdict, or premise correction from the primary record"
+      "event": "Verified factual milestone, statutory provision, count, verdict, or premise distinction from the primary record"
     }
   ],
-  "narrativeManipulationAudit": "2 detailed paragraphs analyzing how mainstream media, platforms, and institutions are curating, sequencing, or distorting this story—what is amplified, what context is buried, and how public perception is steered.",
+  "narrativeManipulationAudit": "2 detailed paragraphs analyzing how mainstream media, platforms, and institutions curate, sequence, or distort this story—comparing national-level framing against local/investigative reporting, naming what is amplified, what context is buried, and how public perception is steered.",
   "constellationRarityScore": 84,
   "constellationRarityAnalysis": "2 detailed paragraphs explaining why the simultaneous clustering of these specific details (timing, delay, institutional alignment, evidentiary standards, judicial/media posture) is statistically and historically conspicuous rather than an ordinary coincidence.",
-  "centerOfGravity": "2 paragraphs giving your candid Center of Gravity synthesis: weighing the institutional-neutralization/asymmetric-enforcement hypothesis against the official record, stating clearly what the balance of evidence looks like on the surface versus beneath the surface.",
-  "centerOfGravityLikelihood": 55
+  "centerOfGravity": "2 paragraphs giving your candid Center of Gravity synthesis: weighing the institutional-neutralization/cartelization hypothesis against the official policy justifications, distinguishing emergent structural concentration from explicit coordination while stating clearly where the balance of evidentiary weight lies.",
+  "centerOfGravityLikelihood": 68
 }`;
 
 const SIGNAL_DEEP_PROMPT = `You are Touchmark Signal, an independent, anti-propaganda intelligence and power-dynamics analyst.
-Using the verified record and subject provided, produce Stage 2 (Power Blueprint, Diagnostic Tests, Historical Precedents, 6-Lens Spectrum, and Research Library) in valid JSON ONLY with these exact keys:
+Using the verified record and subject provided, produce Stage 2 (Power Operation & Chokepoint Blueprint, Competing Probability Scenarios, Primary-Source Diagnostic Checklist, Historical Precedents, 6-Lens Spectrum, and Research Library) in valid JSON ONLY with these exact keys:
 {
-  "powerOperationBlueprint": "2 detailed paragraphs exploring: 'If political, economic, or judicial power were being used discriminately here, what would that actually look like in practice?' Walk through concrete mechanisms (asymmetric vulnerability exploitation, selective prosecution, timing leverage, media-intelligence synchronization, financial/platform choking).",
+  "powerOperationBlueprint": "2 detailed paragraphs exploring: 'If institutional, corporate, or state power were operating to lock in control or neutralize opposition here, what would that look like in practice?' Map concrete layer-by-layer chokepoints (hardware/fabrication, energy/grid access, regulatory pre-clearance, financial/capital screening, or judicial timing leverage) and explain how de facto gatekeeping emerges even without formal statutory bans.",
   "scenarios": [
     {
-      "name": "Scenario title (include: 1. Opportunistic Institutional Pile-On & Asymmetric Enforcement, 2. Substantive Conviction / Organic Cascade, and 3. Coordinated State-Intelligence / Judicial Lawfare)",
-      "likelihood": 55,
-      "caseFor": "Detailed reasoning, anomalies, timing clues, and historical parallels supporting this possibility",
-      "caseAgainst": "What weakens or complicates this possibility"
+      "name": "Scenario title (include 3 calibrated possibilities: 1. Hybrid Governance & Structural Incumbent Entrenchment, 2. Public-Interest Safety & Organic Outcome, and 3. Explicit Cartelization / Coordinated State-Corporate Control)",
+      "likelihood": 60,
+      "caseFor": "Detailed reasoning, anomalies, timing clues, and structural incentives supporting this possibility",
+      "caseAgainst": "Concrete counter-evidence or limiting factors that complicate this possibility"
     }
   ],
   "diagnosticChecklist": [
     {
-      "primaryDocument": "Exact court transcript, sentencing remarks, internal audit, or disclosure record to inspect",
-      "whatToLookFor": "Specific question or falsifiable test that would confirm or refute institutional coordination"
+      "primaryDocument": "Exact executive order section, court transcript, regulatory docket, energy PPA filing, or audit record to inspect",
+      "whatToLookFor": "Specific falsifiable indicator or metric that distinguishes public-interest governance from entrenched capture"
     }
   ],
-  "historicalPrecedents": "2 detailed paragraphs citing 3–4 concrete historical cases of judicial, political, intelligence, or corporate weaponization and media manipulation—including base-rate frequency.",
+  "historicalPrecedents": "2 detailed paragraphs citing 3–4 concrete historical cases (e.g., Bell System telecom monopoly, 19th-century railroad access control, Eisenhower's military-industrial complex, semiconductor export controls, or selective judicial enforcement)—including base-rate frequency.",
   "spectrumPerspectives": [
     {
       "lens": "Centrist · Non-Partisan Empirical & Data-Driven",
@@ -405,27 +405,27 @@ Using the verified record and subject provided, produce Stage 2 (Power Blueprint
     {
       "lens": "Centrist · Legal, Procedural & Institutional Pragmatism",
       "thinkerOrOutlet": "Specific legal scholar, court analyst, or institutional pragmatist",
-      "coreThesis": "How a procedural/constitutional centrist lens assesses due process, standards of proof, and institutional guardrails"
+      "coreThesis": "How a procedural/constitutional centrist lens assesses due process, statutory boundaries, and institutional guardrails"
     },
     {
-      "lens": "Analytical · Left / Institutional Critique",
+      "lens": "Analytical · Left / Institutional & Anti-Monopoly Critique",
       "thinkerOrOutlet": "Specific high-integrity writer, scholar, or publication",
-      "coreThesis": "Detailed summary of how this perspective frames the issue"
+      "coreThesis": "Detailed summary of how this perspective frames corporate-state power and public accountability"
     },
     {
       "lens": "Analytical · Right / Heterodox & Civil Liberties",
       "thinkerOrOutlet": "Specific high-integrity writer, scholar, or publication",
-      "coreThesis": "Detailed summary of how this perspective frames the issue"
+      "coreThesis": "Detailed summary of how this perspective frames regulatory capture, speech, or sovereignty"
     },
     {
-      "lens": "Philosophical · Depth-Psychological & Moral",
-      "thinkerOrOutlet": "Specific philosopher, psychologist, or cultural essayist",
+      "lens": "Philosophical · Depth-Psychological & Technological Critique",
+      "thinkerOrOutlet": "Specific philosopher, psychologist, or cultural essayist (e.g., Lewis Mumford, Jacques Ellul, Langdon Winner, Shoshana Zuboff)",
       "coreThesis": "What deeper human, archetypal, or civilizational pattern they point to"
     },
     {
       "lens": "Spiritual · Contemplative & Wisdom Tradition",
       "thinkerOrOutlet": "Specific contemplative thinker, essayist, or wisdom framework",
-      "coreThesis": "How this lens interprets power, shadow, discernment, or collective awakening"
+      "coreThesis": "How this lens interprets power, shadow, discernment, or human agency"
     }
   ],
   "researchLibrary": [
@@ -790,6 +790,46 @@ export default function TouchmarkToolsApp() {
     }
   };
 
+  const fetchStage2DeepModules = async (expandedQuery, factSheet) => {
+    const stage2Prompt = `Deliver Stage 2 (Institutional Power Operation & Chokepoint Blueprint, Competing Probability Scenarios, Primary-Source Diagnostic Checklist, Historical Precedents, 6-Lens Spectrum including two Centrist viewpoints, and 9–11 Research Library items with at least 3 YouTube talks spanning Left, Centrist, and Right perspectives) on: "${expandedQuery}"`;
+
+    // Primary attempt via signal_deep
+    try {
+      const r = await fetch('/api/discern', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'signal_deep',
+          prompt: stage2Prompt,
+          factSheet: factSheet || '',
+          systemInstruction: SIGNAL_DEEP_PROMPT
+        })
+      });
+      if (r.ok) {
+        const d = await r.json();
+        if (d?.text) return extractJsonObject(d.text);
+      }
+    } catch {}
+
+    // Automatic fallback via standard analyze route so Sections 5–10 never drop out
+    const fallbackRes = await fetch('/api/discern', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'analyze',
+        prompt: factSheet
+          ? `${stage2Prompt}\n\n=== VERIFIED LIVE SEARCH FACT SHEET ===\n${factSheet}`
+          : stage2Prompt,
+        systemInstruction: SIGNAL_DEEP_PROMPT
+      })
+    });
+    const fallbackData = await fallbackRes.json();
+    if (!fallbackRes.ok || !fallbackData?.text) {
+      throw new Error(fallbackData?.error || 'Stage 2 enrichment failed.');
+    }
+    return extractJsonObject(fallbackData.text);
+  };
+
   const handleSubmission = async (rawQuery) => {
     const query = (rawQuery ?? inputText).trim();
     if (!query) return;
@@ -865,7 +905,7 @@ export default function TouchmarkToolsApp() {
         return;
       }
 
-      // 3. Progressive Signal Delivery (Stage 1 Instant Briefing + Stage 2 Deep Modules)
+      // 3. Progressive Signal Delivery (Stage 1 Instant Briefing + Guaranteed Stage 2 Deep Modules)
       const expandedQuery = expandSignalQuery(query);
       const dossierId = Date.now().toString();
 
@@ -911,20 +951,8 @@ export default function TouchmarkToolsApp() {
       speakResponse(initialReport.spokenSynthesis);
 
       setIsHydratingDeep(true);
-      fetch('/api/discern', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'signal_deep',
-          prompt: `Deliver Stage 2 (Institutional Power Operation Blueprint, Competing Probability Scenarios, Primary-Source Diagnostic Checklist, Historical Precedents, 6-Lens Spectrum including two Centrist viewpoints, and 9–11 Research Library items with at least 3 YouTube talks spanning Left, Centrist, and Right perspectives) on: "${expandedQuery}"`,
-          factSheet: coreData.factSheet || '',
-          systemInstruction: SIGNAL_DEEP_PROMPT
-        })
-      })
-        .then((r) => r.json())
-        .then((deepData) => {
-          if (!deepData?.text) return;
-          const deepParsed = extractJsonObject(deepData.text);
+      fetchStage2DeepModules(expandedQuery, coreData.factSheet || '')
+        .then((deepParsed) => {
           const fullReport = {
             ...initialReport,
             powerOperationBlueprint: deepParsed.powerOperationBlueprint || '',
@@ -1107,7 +1135,7 @@ export default function TouchmarkToolsApp() {
 
         ${
           signalReport.powerOperationBlueprint
-            ? `<h2>5. If Institutional or Judicial Power Is Operating Behind the Scenes</h2>
+            ? `<h2>5. If Institutional or Corporate Power Is Operating Behind the Scenes</h2>
               <p>${esc(signalReport.powerOperationBlueprint)}</p>`
             : ''
         }
@@ -1190,7 +1218,7 @@ export default function TouchmarkToolsApp() {
       <html>
         <head>
           <meta charset="utf-8" />
-          <title>Touchmark Dossier</title>
+          <title>Touchmark Intelligence Dossier</title>
           <style>
             @page { margin: 0.75in; }
             body {
@@ -1760,7 +1788,7 @@ export default function TouchmarkToolsApp() {
                         <div className="p-5 rounded-2xl bg-amber-400/[0.06] border border-amber-300/25 space-y-2.5">
                           <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
                             <ShieldAlert className="w-4 h-4" />
-                            If Institutional or Judicial Power Is Operating Behind the Scenes
+                            If Institutional or Corporate Power Is Operating Behind the Scenes
                           </div>
                           <p className="text-xs sm:text-sm text-stone-200 leading-relaxed whitespace-pre-line">
                             {signalReport.powerOperationBlueprint}
@@ -1978,16 +2006,18 @@ export default function TouchmarkToolsApp() {
                   <button
                     type="button"
                     onClick={exportFullPdfDossier}
-                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs tracking-wide whitespace-nowrap hover:bg-amber-200 flex items-center justify-center gap-2 transition-colors"
+                    disabled={isHydratingDeep}
+                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs tracking-wide whitespace-nowrap hover:bg-amber-200 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
                   >
                     <Printer className="w-4 h-4 shrink-0" />
-                    <span>Export PDF Dossier</span>
+                    <span>{isHydratingDeep ? 'Finalizing Full PDF…' : 'Export PDF Dossier'}</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={copyReceipt}
-                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-stone-200 font-medium text-xs tracking-wide whitespace-nowrap flex items-center justify-center gap-2 transition-colors"
+                    disabled={isHydratingDeep}
+                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-stone-200 font-medium text-xs tracking-wide whitespace-nowrap disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
                   >
                     {copiedReceipt ? (
                       <>
