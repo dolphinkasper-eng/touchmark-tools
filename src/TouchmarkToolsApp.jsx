@@ -23,7 +23,8 @@ import {
   Clock,
   FolderOpen,
   SearchCheck,
-  Trash2
+  Trash2,
+  Printer
 } from 'lucide-react';
 
 // --- BRAND MARK ---
@@ -899,6 +900,285 @@ export default function TouchmarkToolsApp() {
     setTimeout(() => setCopiedReceipt(false), 2000);
   };
 
+  const exportFullPdfDossier = () => {
+    const printWindow = window.open('', '_blank', 'width=960,height=900');
+    if (!printWindow) {
+      setErrorBanner('Pop-up blocked—allow pop-ups for this site to generate the PDF dossier.');
+      return;
+    }
+
+    const esc = (str) =>
+      String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br/>');
+
+    const dateStr = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    let bodyHtml = '';
+
+    if (mode === 'pulse' && pulseLedger) {
+      bodyHtml = `
+        <div class="meta">TOUCHMARK PULSE · STRATEGIC & RELATIONAL DISCERNMENT DOSSIER · ${dateStr}</div>
+        <h1>${esc(pulseLedger.title)}</h1>
+        <div class="callout">
+          <div class="label">SPOKEN SYNTHESIS</div>
+          <p>${esc(pulseLedger.spokenReflection)}</p>
+        </div>
+        <h2>Core Tension</h2>
+        <p>${esc(pulseLedger.coreTension)}</p>
+        <h2>Hidden Assumption & Power Dynamic</h2>
+        <p>${esc(pulseLedger.hiddenAssumption)}</p>
+        ${pulseLedger.powerDynamic ? `<p>${esc(pulseLedger.powerDynamic)}</p>` : ''}
+        <h2>Three Strategic Paths</h2>
+        ${(pulseLedger.options || [])
+          .map(
+            (opt, i) => `
+          <div class="card">
+            <h3>0${i + 1}. ${esc(opt.label)}</h3>
+            <p>${esc(opt.stance)}</p>
+            <p class="muted"><strong>Trade-off:</strong> ${esc(opt.tradeoff)}</p>
+          </div>`
+          )
+          .join('')}
+        ${
+          pulseLedger.deepDiveReferences?.length
+            ? `<h2>Thinkers, Essays & Talks to Go Deeper</h2>
+              ${pulseLedger.deepDiveReferences
+                .map(
+                  (r) => `
+                <div class="card">
+                  <div class="tag">${esc(r.lens)} · ${esc(r.format)}</div>
+                  <h3>${esc(r.title)}</h3>
+                  <p class="muted">${esc(r.creatorOrPublication)}</p>
+                  <p>${esc(r.whyItMatters)}</p>
+                  <p class="url">${esc(buildSmartResearchUrl(r))}</p>
+                </div>`
+                )
+                .join('')}`
+            : ''
+        }
+      `;
+    } else if (signalReport) {
+      bodyHtml = `
+        <div class="meta">TOUCHMARK SIGNAL · COUNTER-NARRATIVE & POWER INTELLIGENCE DOSSIER · ${dateStr}</div>
+        <h1>“${esc(signalReport.subject)}”</h1>
+        <div class="metrics">
+          <div class="metric-box">
+            <span class="label">CONSTELLATION RARITY INDEX</span>
+            <span class="score">${signalReport.constellationRarityScore}/100</span>
+          </div>
+          <div class="metric-box">
+            <span class="label">CENTER OF GRAVITY WEIGHT</span>
+            <span class="score">${signalReport.centerOfGravityLikelihood}%</span>
+          </div>
+        </div>
+
+        <div class="callout">
+          <div class="label">EXECUTIVE BRIEFING</div>
+          <p>${esc(signalReport.spokenSynthesis)}</p>
+        </div>
+
+        ${
+          signalReport.verifiedTimeline?.length
+            ? `<h2>1. Verified Record & Chronology</h2>
+              <ul>
+                ${signalReport.verifiedTimeline
+                  .map((t) => `<li><strong>${esc(t.date)}:</strong> ${esc(t.event)}</li>`)
+                  .join('')}
+              </ul>`
+            : ''
+        }
+
+        ${
+          signalReport.narrativeManipulationAudit
+            ? `<h2>2. How the Mainstream Narrative Is Curated & Distorted</h2>
+              <p>${esc(signalReport.narrativeManipulationAudit)}</p>`
+            : ''
+        }
+
+        ${
+          signalReport.constellationRarityAnalysis
+            ? `<h2>3. Constellation Rarity & Conspicuous Anomalies (${signalReport.constellationRarityScore}/100)</h2>
+              <p>${esc(signalReport.constellationRarityAnalysis)}</p>`
+            : ''
+        }
+
+        ${
+          signalReport.centerOfGravity
+            ? `<h2>4. Center of Gravity & Epistemic Weighing (${signalReport.centerOfGravityLikelihood}%)</h2>
+              <p>${esc(signalReport.centerOfGravity)}</p>`
+            : ''
+        }
+
+        ${
+          signalReport.powerOperationBlueprint
+            ? `<h2>5. If Institutional or Judicial Power Is Operating Behind the Scenes</h2>
+              <p>${esc(signalReport.powerOperationBlueprint)}</p>`
+            : ''
+        }
+
+        ${
+          signalReport.scenarios?.length
+            ? `<h2>6. Competing Possibilities & Probability Weights</h2>
+              ${signalReport.scenarios
+                .map(
+                  (sc) => `
+                <div class="card">
+                  <h3>${esc(sc.name)} — ${sc.likelihood}% Likelihood</h3>
+                  <p><strong>What points here:</strong> ${esc(sc.caseFor)}</p>
+                  ${sc.caseAgainst ? `<p class="muted"><strong>Counter-weight:</strong> ${esc(sc.caseAgainst)}</p>` : ''}
+                </div>`
+                )
+                .join('')}`
+            : ''
+        }
+
+        ${
+          signalReport.diagnosticChecklist?.length
+            ? `<h2>7. Primary Records & Falsifiable Diagnostic Tests</h2>
+              ${signalReport.diagnosticChecklist
+                .map(
+                  (d) => `
+                <div class="card">
+                  <h3>${esc(d.primaryDocument)}</h3>
+                  <p>${esc(d.whatToLookFor)}</p>
+                </div>`
+                )
+                .join('')}`
+            : ''
+        }
+
+        ${
+          signalReport.historicalPrecedents
+            ? `<h2>8. Historical Precedents & Base-Rate Frequency</h2>
+              <p>${esc(signalReport.historicalPrecedents)}</p>`
+            : ''
+        }
+
+        ${
+          signalReport.spectrumPerspectives?.length
+            ? `<h2>9. Perspectives Across the Intellectual Spectrum</h2>
+              ${signalReport.spectrumPerspectives
+                .map(
+                  (sp) => `
+                <div class="card">
+                  <div class="tag">${esc(sp.lens)}</div>
+                  <h3>${esc(sp.thinkerOrOutlet)}</h3>
+                  <p>${esc(sp.coreThesis)}</p>
+                </div>`
+                )
+                .join('')}`
+            : ''
+        }
+
+        ${
+          signalReport.researchLibrary?.length
+            ? `<h2>10. Curated Research Library (Studies, Essays, Substacks & Talks)</h2>
+              ${signalReport.researchLibrary
+                .map(
+                  (r) => `
+                <div class="card">
+                  <div class="tag">${esc(r.perspectiveTag)} · ${esc(r.format)}</div>
+                  <h3>${esc(r.title)}</h3>
+                  <p class="muted">${esc(r.authorOrChannel)}</p>
+                  <p>${esc(r.takeaway)}</p>
+                  <p class="url">${esc(buildSmartResearchUrl(r))}</p>
+                </div>`
+                )
+                .join('')}`
+            : ''
+        }
+      `;
+    }
+
+    printWindow.document.write(`<!doctype html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Touchmark Dossier</title>
+          <style>
+            @page { margin: 0.75in; }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Georgia, serif;
+              color: #1c1917;
+              line-height: 1.6;
+              max-width: 780px;
+              margin: 0 auto;
+              padding: 24px;
+              font-size: 13.5px;
+            }
+            .meta {
+              font-size: 10px;
+              letter-spacing: 0.16em;
+              text-transform: uppercase;
+              color: #78716c;
+              border-bottom: 1px solid #e7e5e4;
+              padding-bottom: 8px;
+              margin-bottom: 16px;
+            }
+            h1 { font-size: 22px; line-height: 1.3; margin: 0 0 18px; color: #0c0a09; }
+            h2 {
+              font-size: 14px;
+              text-transform: uppercase;
+              letter-spacing: 0.08em;
+              color: #92400e;
+              border-bottom: 1px solid #f5f5f4;
+              padding-bottom: 4px;
+              margin: 26px 0 10px;
+              page-break-after: avoid;
+            }
+            h3 { font-size: 14px; margin: 0 0 6px; color: #1c1917; }
+            p { margin: 0 0 10px; }
+            ul { margin: 0 0 12px; padding-left: 18px; }
+            li { margin-bottom: 6px; }
+            .metrics { display: flex; gap: 14px; margin-bottom: 18px; }
+            .metric-box {
+              flex: 1;
+              border: 1px solid #d6d3d1;
+              border-radius: 10px;
+              padding: 12px 14px;
+              background: #fafaf9;
+            }
+            .label { display: block; font-size: 9.5px; letter-spacing: 0.14em; color: #78716c; text-transform: uppercase; }
+            .score { display: block; font-size: 20px; font-weight: 700; color: #0c0a09; margin-top: 2px; }
+            .callout {
+              background: #fffbeb;
+              border-left: 3px solid #d97706;
+              padding: 14px 16px;
+              border-radius: 6px;
+              margin-bottom: 18px;
+              page-break-inside: avoid;
+            }
+            .card {
+              border: 1px solid #e7e5e4;
+              border-radius: 10px;
+              padding: 12px 14px;
+              margin-bottom: 10px;
+              page-break-inside: avoid;
+            }
+            .tag { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.12em; color: #b45309; margin-bottom: 4px; }
+            .muted { color: #57534e; font-size: 12.5px; }
+            .url { font-size: 11px; color: #2563eb; word-break: break-all; margin: 4px 0 0; }
+          </style>
+        </head>
+        <body>
+          ${bodyHtml}
+          <script>
+            window.onload = function() {
+              setTimeout(function() { window.print(); }, 250);
+            };
+          </script>
+        </body>
+      </html>`);
+    printWindow.document.close();
+  };
+  
   const currentThinkingLabel =
     mode === 'signal'
       ? SIGNAL_THINKING_PHASES[thinkingPhaseIndex]
@@ -915,24 +1195,36 @@ export default function TouchmarkToolsApp() {
 
         {/* Mode Pill */}
         <div className="flex items-center bg-white/[0.04] p-1 rounded-full border border-white/10">
-          <button
-            type="button"
-            onClick={() => setMode('pulse')}
-            className={`px-3.5 py-1 rounded-full text-xs transition-all ${
-              mode === 'pulse' ? 'bg-emerald-400/20 text-emerald-200' : 'text-stone-400 hover:text-stone-200'
-            }`}
-          >
-            Pulse
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('signal')}
-            className={`px-3.5 py-1 rounded-full text-xs transition-all ${
-              mode === 'signal' ? 'bg-amber-400/20 text-amber-200' : 'text-stone-400 hover:text-stone-200'
-            }`}
-          >
-            Signal
-          </button>
+
+        <div className="pt-4 border-t border-white/10 grid sm:grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={exportFullPdfDossier}
+                    className="w-full py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs uppercase tracking-wider hover:bg-amber-200 flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <Printer className="w-4 h-4" />
+                    Export Full PDF Dossier
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={copyReceipt}
+                    className="w-full py-3 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-stone-200 font-medium text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
+                  >
+                    {copiedReceipt ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                        Markdown Copied
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-4 h-4" />
+                        Copy All Markdown
+                      </>
+                    )}
+                  </button>
+                </div>
+          
         </div>
 
         {/* Voice, Archive & Dossier Controls */}
