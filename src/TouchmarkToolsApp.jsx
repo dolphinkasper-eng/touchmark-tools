@@ -65,6 +65,31 @@ function TouchmarkLogo({ className = 'w-7 h-7' }) {
   );
 }
 
+// --- MODE METADATA & URL HELPERS ---
+const MODE_META = {
+  signal: {
+    name: 'Touchmark Signal',
+    tagline: 'Counter-narrative intelligence, power-dynamics audits & full-spectrum research',
+    welcome:
+      'Bring any headline, policy shift, or institutional narrative to examine what is operating beneath the surface.'
+  },
+  pulse: {
+    name: 'Touchmark Pulse',
+    tagline: 'Relational, psychological & strategic discernment beneath the surface',
+    welcome:
+      'Speak or write through a personal dilemma, relational tension, or high-stakes decision to uncover hidden incentives.'
+  }
+};
+
+function resolveInitialMode() {
+  if (typeof window === 'undefined') return 'signal';
+  const path = window.location.pathname.toLowerCase();
+  const params = new URLSearchParams(window.location.search);
+  const queryMode = (params.get('mode') || '').toLowerCase();
+  if (path.includes('pulse') || queryMode === 'pulse') return 'pulse';
+  return 'signal';
+}
+
 // --- WEB AUDIO HARMONIC CONTEMPLATION ENGINE ---
 function createContemplationSoundscape() {
   if (typeof window === 'undefined') return null;
@@ -219,7 +244,7 @@ function MorphingSphereOrb({ status, mode, onClick }) {
         type="button"
         onClick={onClick}
         aria-label={isListening ? 'Stop listening' : 'Tap sphere to speak'}
-        className="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center focus:outline-none group cursor-pointer"
+        className="relative w-52 h-52 sm:w-60 sm:h-60 flex items-center justify-center focus:outline-none group cursor-pointer"
       >
         <div
           style={{ background: palette.aura }}
@@ -232,13 +257,13 @@ function MorphingSphereOrb({ status, mode, onClick }) {
           <>
             <div
               style={{ borderColor: palette.rim }}
-              className="absolute w-52 h-52 sm:w-56 sm:h-56 rounded-full border border-dashed opacity-60 orbit-cw pointer-events-none"
+              className="absolute w-48 h-48 sm:w-52 sm:h-52 rounded-full border border-dashed opacity-60 orbit-cw pointer-events-none"
             >
               <span className={`absolute -top-1 left-1/2 w-2 h-2 rounded-full ${palette.dot} shadow-lg`} />
             </div>
             <div
               style={{ borderColor: palette.rim }}
-              className="absolute w-46 h-46 sm:w-50 sm:h-50 rounded-full border border-dotted opacity-45 orbit-ccw pointer-events-none"
+              className="absolute w-42 h-42 sm:w-46 sm:h-46 rounded-full border border-dotted opacity-45 orbit-ccw pointer-events-none"
             >
               <span className={`absolute -bottom-1 left-1/2 w-1.5 h-1.5 rounded-full ${palette.dot}`} />
             </div>
@@ -250,7 +275,7 @@ function MorphingSphereOrb({ status, mode, onClick }) {
             border: `1px solid ${palette.rim}`,
             boxShadow: `inset 0 0 40px ${palette.rim}`
           }}
-          className={`absolute w-44 h-44 sm:w-48 sm:h-48 opacity-45 transition-all duration-500 ${
+          className={`absolute w-40 h-40 sm:w-44 sm:h-44 opacity-45 transition-all duration-500 ${
             isListening || isSpeaking || isThinking ? 'orb-active' : 'orb-organic'
           }`}
         />
@@ -260,7 +285,7 @@ function MorphingSphereOrb({ status, mode, onClick }) {
             background: palette.sphere,
             boxShadow: `inset -18px -22px 38px rgba(0,0,0,0.82), inset 10px 12px 24px rgba(255,255,255,0.22), 0 24px 60px rgba(0,0,0,0.75)`
           }}
-          className={`relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center transition-transform duration-500 ${
+          className={`relative w-36 h-36 sm:w-40 sm:h-40 flex items-center justify-center transition-transform duration-500 ${
             isListening || isSpeaking || isThinking ? 'orb-active' : 'orb-organic group-hover:scale-[1.03]'
           }`}
         >
@@ -559,7 +584,7 @@ function buildSmartResearchUrl(item) {
 }
 
 export default function TouchmarkToolsApp() {
-  const [mode, setMode] = useState('signal');
+  const [mode, setMode] = useState(resolveInitialMode);
   const [status, setStatus] = useState('idle');
   const [thinkingPhaseIndex, setThinkingPhaseIndex] = useState(0);
   const [inputText, setInputText] = useState('');
@@ -567,9 +592,7 @@ export default function TouchmarkToolsApp() {
   const [selectedVoice, setSelectedVoice] = useState('Aoede');
   const [errorBanner, setErrorBanner] = useState('');
 
-  const [activeCaption, setActiveCaption] = useState(
-    'I’m listening. Say hello to test your mic, or bring a narrative, case, or decision to look beneath the surface.'
-  );
+  const [activeCaption, setActiveCaption] = useState(() => MODE_META[resolveInitialMode()].welcome);
   const [history, setHistory] = useState([]);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -588,7 +611,26 @@ export default function TouchmarkToolsApp() {
   const audioRef = useRef(null);
   const soundscapeRef = useRef(null);
 
+  const switchWorkspaceMode = (nextMode) => {
+    if (nextMode === mode) return;
+    stopSpeaking();
+    setMode(nextMode);
+    setHasArtifact(false);
+    setPulseLedger(null);
+    setSignalReport(null);
+    setErrorBanner('');
+    setActiveCaption(MODE_META[nextMode].welcome);
+    if (typeof window !== 'undefined') {
+      const nextUrl = `${window.location.pathname}?mode=${nextMode}`;
+      window.history.replaceState({}, '', nextUrl);
+      document.title = `${MODE_META[nextMode].name} — ${MODE_META[nextMode].tagline}`;
+    }
+  };
+
   useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.title = `${MODE_META[mode].name} — ${MODE_META[mode].tagline}`;
+    }
     soundscapeRef.current = createContemplationSoundscape();
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -637,6 +679,9 @@ export default function TouchmarkToolsApp() {
   const loadSavedDossier = (item) => {
     setArchiveOpen(false);
     setMode(item.mode);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, '', `${window.location.pathname}?mode=${item.mode}`);
+    }
     if (item.mode === 'pulse') {
       setPulseLedger(item.data);
       setActiveCaption(item.data.spokenReflection || item.title);
@@ -793,7 +838,6 @@ export default function TouchmarkToolsApp() {
   const fetchStage2DeepModules = async (expandedQuery, factSheet) => {
     const stage2Prompt = `Deliver Stage 2 (Institutional Power Operation & Chokepoint Blueprint, Competing Probability Scenarios, Primary-Source Diagnostic Checklist, Historical Precedents, 6-Lens Spectrum including two Centrist viewpoints, and 9–11 Research Library items with at least 3 YouTube talks spanning Left, Centrist, and Right perspectives) on: "${expandedQuery}"`;
 
-    // Primary attempt via signal_deep
     try {
       const r = await fetch('/api/discern', {
         method: 'POST',
@@ -811,7 +855,6 @@ export default function TouchmarkToolsApp() {
       }
     } catch {}
 
-    // Automatic fallback via standard analyze route so Sections 5–10 never drop out
     const fallbackRes = await fetch('/api/discern', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -905,7 +948,7 @@ export default function TouchmarkToolsApp() {
         return;
       }
 
-      // 3. Progressive Signal Delivery (Stage 1 Instant Briefing + Guaranteed Stage 2 Deep Modules)
+      // 3. Progressive Signal Delivery
       const expandedQuery = expandSignalQuery(query);
       const dossierId = Date.now().toString();
 
@@ -996,6 +1039,20 @@ export default function TouchmarkToolsApp() {
   };
 
   const copyReceipt = () => {
+    if (mode === 'pulse' && pulseLedger) {
+      const pathLines = (pulseLedger.options || [])
+        .map((o, i) => `### 0${i + 1}. ${o.label}\n${o.stance}\n*Trade-off:* ${o.tradeoff}`)
+        .join('\n\n');
+      const refLines = (pulseLedger.deepDiveReferences || [])
+        .map((r) => `- [${r.lens} · ${r.format}] ${r.title} (${r.creatorOrPublication})`)
+        .join('\n');
+      const text = `# Touchmark Pulse Discernment Dossier\n## ${pulseLedger.title}\n\n### Core Tension\n${pulseLedger.coreTension}\n\n### Hidden Assumption & Power Dynamic\n${pulseLedger.hiddenAssumption}\n${pulseLedger.powerDynamic ? `\n${pulseLedger.powerDynamic}\n` : ''}\n## Strategic Paths\n${pathLines}\n\n## Deeper References\n${refLines}`;
+      navigator.clipboard?.writeText(text);
+      setCopiedReceipt(true);
+      setTimeout(() => setCopiedReceipt(false), 2000);
+      return;
+    }
+
     if (!signalReport) return;
     const timelineLines = signalReport.verifiedTimeline
       .map((t) => `- ${t.date}: ${t.event}`)
@@ -1307,14 +1364,23 @@ export default function TouchmarkToolsApp() {
       <header className="px-5 sm:px-8 h-16 grid grid-cols-3 items-center">
         <div className="flex items-center gap-2.5 text-stone-200 justify-self-start">
           <TouchmarkLogo className="w-7 h-7" />
-          <span className="text-[15px] font-medium tracking-[0.04em]">Touchmark</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-[15px] font-medium tracking-[0.04em]">Touchmark</span>
+            <span
+              className={`text-[11px] uppercase tracking-[0.18em] font-medium ${
+                mode === 'signal' ? 'text-amber-300/90' : 'text-emerald-300/90'
+              }`}
+            >
+              {mode === 'signal' ? 'Signal' : 'Pulse'}
+            </span>
+          </div>
         </div>
 
-        {/* Dead-Center Mode Pill */}
+        {/* Dead-Center Workspace Switcher (Updates direct bookmarkable URL) */}
         <div className="flex items-center bg-white/[0.04] p-1 rounded-full border border-white/10 justify-self-center">
           <button
             type="button"
-            onClick={() => setMode('pulse')}
+            onClick={() => switchWorkspaceMode('pulse')}
             className={`px-3.5 py-1 rounded-full text-xs transition-all ${
               mode === 'pulse' ? 'bg-emerald-400/20 text-emerald-200' : 'text-stone-400 hover:text-stone-200'
             }`}
@@ -1323,7 +1389,7 @@ export default function TouchmarkToolsApp() {
           </button>
           <button
             type="button"
-            onClick={() => setMode('signal')}
+            onClick={() => switchWorkspaceMode('signal')}
             className={`px-3.5 py-1 rounded-full text-xs transition-all ${
               mode === 'signal' ? 'bg-amber-400/20 text-amber-200' : 'text-stone-400 hover:text-stone-200'
             }`}
@@ -1389,8 +1455,14 @@ export default function TouchmarkToolsApp() {
         </div>
       </header>
 
-      {/* Center Sanctuary: Pure Sphere + Single Unified Status/Caption Area + Single Dossier Pill */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-3xl mx-auto w-full py-3">
+      {/* Center Sanctuary: Workspace Orientation + Pure Sphere + Single Unified Status/Caption Area */}
+      <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-3xl mx-auto w-full py-2">
+        {!hasArtifact && status === 'idle' && (
+          <p className="mb-3 text-[11px] uppercase tracking-[0.22em] text-stone-400/90 max-w-lg">
+            {MODE_META[mode].tagline}
+          </p>
+        )}
+
         {errorBanner && (
           <div className="mb-4 flex items-center gap-2 px-4 py-2 rounded-full bg-red-950/60 border border-red-400/30 text-xs text-red-200">
             <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
@@ -1639,6 +1711,24 @@ export default function TouchmarkToolsApp() {
                   >
                     <Printer className="w-4 h-4 shrink-0" />
                     <span>Export PDF Dossier</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={copyReceipt}
+                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-stone-200 font-medium text-xs tracking-wide whitespace-nowrap flex items-center justify-center gap-2 transition-colors"
+                  >
+                    {copiedReceipt ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                        <span>Markdown Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-4 h-4 shrink-0" />
+                        <span>Copy Markdown</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
