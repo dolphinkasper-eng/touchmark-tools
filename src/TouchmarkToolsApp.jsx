@@ -1199,14 +1199,15 @@ export default function TouchmarkToolsApp() {
   return (
     <div className="min-h-screen bg-[#090807] text-stone-100 flex flex-col justify-between selection:bg-amber-400/30">
       {/* Ultra-minimal Top Bar */}
-      <header className="px-5 sm:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2.5 text-stone-300 w-28">
+     {/* Ultra-minimal Top Bar — 3-column grid keeps Pulse | Signal dead-center */}
+      <header className="px-5 sm:px-8 h-16 grid grid-cols-3 items-center">
+        <div className="flex items-center gap-2.5 text-stone-300 justify-self-start">
           <TouchmarkLogo className="w-6 h-6 text-amber-300/90" />
           <span className="text-sm font-medium tracking-wide">Touchmark</span>
         </div>
 
-        {/* Centered Mode Pill */}
-        <div className="flex items-center bg-white/[0.04] p-1 rounded-full border border-white/10">
+        {/* Dead-Center Mode Pill */}
+        <div className="flex items-center bg-white/[0.04] p-1 rounded-full border border-white/10 justify-self-center">
           <button
             type="button"
             onClick={() => setMode('pulse')}
@@ -1228,7 +1229,7 @@ export default function TouchmarkToolsApp() {
         </div>
 
         {/* Voice, Archive & Dossier Controls — hidden until first output */}
-        <div className="flex items-center justify-end gap-2 w-28 sm:w-auto">
+        <div className="flex items-center justify-end gap-2 justify-self-end">
           {hasArtifact && (
             <>
               <select
