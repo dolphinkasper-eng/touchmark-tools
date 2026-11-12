@@ -12,6 +12,7 @@ export default async function handler(req, res) {
     const {
       action = 'analyze',
       prompt,
+      factSheet = '',
       systemInstruction,
       responseSchema,
       useSearch = false,
@@ -100,7 +101,97 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       return res.status(200).json({ reply: replyText });
     }
 
-    // 3. TWO-STAGE GROUNDED INTELLIGENCE SYNTHESIS
+    // 2B. LIVE TRENDING INQUIRIES (Cached at CDN edge for 1 hour)
+    if (action === 'trending') {
+      const trendingPrompt = `Identify 3 major current public controversies, legal/political developments, or institutional narratives people are actively debating right now. Frame each as a concise, single-sentence Touchmark Signal inquiry (under 14 words each) that invites looking beneath the mainstream framing. Return valid JSON ONLY as an array of 3 strings: ["...", "...", "..."]`;
+
+      const rawTrending = await callGeminiRobust(
+        apiKey,
+        {
+          contents: [{ role: 'user', parts: [{ text: trendingPrompt }] }],
+          tools: [{ google_search: {} }],
+          generationConfig: {
+            temperature: 0.5,
+            maxOutputTokens: 300
+          }
+        },
+        ['gemini-3.5-flash-lite', 'gemini-3.8-flash']
+      );
+
+      const cleaned = rawTrending.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+      const firstBracket = cleaned.indexOf('[');
+      const lastBracket = cleaned.lastIndexOf(']');
+      const prompts =
+        firstBracket !== -1 && lastBracket !== -1
+          ? JSON.parse(cleaned.slice(firstBracket, lastBracket + 1))
+          : [];
+
+      res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
+      return res.status(200).json({ prompts: Array.isArray(prompts) ? prompts.slice(0, 3) : [] });
+    }
+
+    // 3A. PROGRESSIVE SIGNAL STAGE 1 (Fast Grounded Briefing + Tab 1: Record, Rarity & Framing)
+    if (action === 'signal_core') {
+      if (!prompt || !prompt.trim()) {
+        return res.status(400).json({ error: 'Prompt is required.' });
+      }
+
+      const searchResult = await runLiveFactRetrieval(apiKey, prompt);
+      const enrichedPrompt = searchResult.factSheet
+        ? `${prompt}\n\n=== VERIFIED LIVE SEARCH FACT SHEET & PRIMARY RECORD ===\n${searchResult.factSheet}\n\nAnchor all dates, counts, verdicts, and chronologies accurately using this verified fact sheet.`
+        : prompt;
+
+      const rawText = await callGeminiRobust(
+        apiKey,
+        {
+          contents: [{ role: 'user', parts: [{ text: enrichedPrompt }] }],
+          systemInstruction: systemInstruction
+            ? { parts: [{ text: systemInstruction }] }
+            : undefined,
+          generationConfig: {
+            temperature: 0.45,
+            maxOutputTokens: 3200
+          }
+        },
+        ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
+      );
+
+      return res.status(200).json({
+        text: rawText,
+        factSheet: searchResult.factSheet,
+        groundingSources: searchResult.sources
+      });
+    }
+
+    // 3B. PROGRESSIVE SIGNAL STAGE 2 (Deep Power Blueprint, Diagnostic Tests & Full-Spectrum Library)
+    if (action === 'signal_deep') {
+      if (!prompt || !prompt.trim()) {
+        return res.status(400).json({ error: 'Prompt is required.' });
+      }
+
+      const enrichedPrompt = factSheet
+        ? `${prompt}\n\n=== VERIFIED LIVE SEARCH FACT SHEET & PRIMARY RECORD ===\n${factSheet}`
+        : prompt;
+
+      const rawText = await callGeminiRobust(
+        apiKey,
+        {
+          contents: [{ role: 'user', parts: [{ text: enrichedPrompt }] }],
+          systemInstruction: systemInstruction
+            ? { parts: [{ text: systemInstruction }] }
+            : undefined,
+          generationConfig: {
+            temperature: 0.45,
+            maxOutputTokens: 4800
+          }
+        },
+        ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
+      );
+
+      return res.status(200).json({ text: rawText });
+    }
+
+    // 4. STANDARD PULSE / SINGLE-PASS ANALYSIS
     if (!prompt || !prompt.trim()) {
       return res.status(400).json({ error: 'Prompt is required.' });
     }
@@ -108,20 +199,17 @@ The user is greeting you, checking their mic, or warming up before exploring a d
     let enrichedPrompt = prompt;
     let groundingSources = [];
 
-    // Stage A: Dedicated Live Search Grounding Pass for hard dates, counts, timelines & primary docs
     if (useSearch) {
       const searchResult = await runLiveFactRetrieval(apiKey, prompt);
       if (searchResult.factSheet) {
-        enrichedPrompt = `${prompt}\n\n=== VERIFIED LIVE SEARCH FACT SHEET & PRIMARY RECORD ===\n${searchResult.factSheet}\n\nIMPORTANT: Anchor all dates, counts, verdicts, chronologies, and primary documents accurately using the verified fact sheet above (correcting any minor premise inaccuracies in the user's question respectfully), and then apply Touchmark's full counter-narrative, institutional-power, and multi-scenario analysis.`;
+        enrichedPrompt = `${prompt}\n\n=== VERIFIED LIVE SEARCH FACT SHEET & PRIMARY RECORD ===\n${searchResult.factSheet}`;
         groundingSources = searchResult.sources;
       }
     }
 
-    // Stage B: Structured Intelligence & Counter-Narrative Synthesis
     const generationConfig = {
       temperature: 0.45,
-      maxOutputTokens: 8192,
-      thinkingConfig: { thinkingLevel: 'LOW' }
+      maxOutputTokens: 6144
     };
 
     if (responseSchema) {
@@ -154,7 +242,7 @@ The user is greeting you, checking their mic, or warming up before exploring a d
 
 async function runLiveFactRetrieval(apiKey, query) {
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`;
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -164,7 +252,7 @@ async function runLiveFactRetrieval(apiKey, query) {
             role: 'user',
             parts: [
               {
-                text: `Gather a precise, factual, chronological intelligence briefing on this query using Google Search. Include exact dates, counts, verdicts, ages/numbers, investigative timelines, official findings, internal audits, and primary public documents: "${query}"`
+                text: `Gather a concise, factual, chronological intelligence brief on this query using Google Search. Include exact dates, counts, verdicts, investigative timelines, official findings, and primary public documents: "${query}"`
               }
             ]
           }
@@ -172,7 +260,7 @@ async function runLiveFactRetrieval(apiKey, query) {
         tools: [{ google_search: {} }],
         generationConfig: {
           temperature: 0.2,
-          maxOutputTokens: 2048
+          maxOutputTokens: 1400
         }
       })
     });
@@ -219,27 +307,6 @@ async function callGeminiRobust(apiKey, payload, models) {
       if (text) return text;
       lastError = `Empty response from ${model}.`;
       continue;
-    }
-
-    if (payload.generationConfig?.thinkingConfig) {
-      const fallbackPayload = {
-        ...payload,
-        generationConfig: { ...payload.generationConfig }
-      };
-      delete fallbackPayload.generationConfig.thinkingConfig;
-      const retryRes = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fallbackPayload)
-      });
-      const retryData = await retryRes.json();
-      if (retryRes.ok) {
-        const retryText = retryData?.candidates?.[0]?.content?.parts
-          ?.map((p) => p.text || '')
-          .join('')
-          .trim();
-        if (retryText) return retryText;
-      }
     }
 
     lastError = data?.error?.message || `HTTP ${response.status} from ${model}`;
