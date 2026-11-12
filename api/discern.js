@@ -107,7 +107,7 @@ The user is greeting you, checking their mic, or warming up before exploring a d
 
     const generationConfig = {
       temperature: 0.45,
-      maxOutputTokens: 4096,
+      maxOutputTokens: 6144,
       thinkingConfig: { thinkingLevel: 'LOW' }
     };
 
@@ -129,11 +129,10 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       payload.tools = [{ google_search: {} }];
     }
 
-    const modelOrder = useSearch
-      ? ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
-      : ['gemini-3.8-flash', 'gemini-3.5-flash-lite'];
-
-    const rawText = await callGeminiRobust(apiKey, payload, modelOrder);
+    const rawText = await callGeminiRobust(apiKey, payload, [
+      'gemini-3.8-flash',
+      'gemini-3.5-flash-lite'
+    ]);
     return res.status(200).json({ text: rawText });
   } catch (err) {
     console.error('Touchmark /api/discern error:', err);
@@ -186,7 +185,7 @@ async function callGeminiRobust(apiKey, payload, models) {
       }
     }
 
-    lastError = data?.error?.message || `HTTP ${response.status} from ${model}`;
+    lastError = data?.error?.message || `HTTP ${response.status} from${model}`;
   }
 
   throw new Error(lastError);
