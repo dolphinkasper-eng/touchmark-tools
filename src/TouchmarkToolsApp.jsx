@@ -19,7 +19,11 @@ import {
   Youtube,
   GraduationCap,
   Radio,
-  ShieldAlert
+  ShieldAlert,
+  Clock,
+  FolderOpen,
+  SearchCheck,
+  Trash2
 } from 'lucide-react';
 
 // --- BRAND MARK ---
@@ -320,26 +324,41 @@ const PULSE_RESPONSE_SCHEMA = {
 };
 
 const SIGNAL_SYSTEM_PROMPT = `You are Touchmark Signal, an independent, anti-propaganda intelligence and power-dynamics analyst.
-CRITICAL DIRECTIVE: Do NOT reflexively parrot or defer to the mainstream media or institutional consensus. Assume mainstream narratives are frequently curated, sequenced, and amplified to protect political, economic, or judicial power. At the same time, do not invent fake facts—distinguish rigorously between what is documented on the surface, how the narrative is being manipulated, and what the structural incentives and historical precedents suggest is happening behind the scenes.
+CRITICAL DIRECTIVE:
+1. First, anchor rigorously on the VERIFIED LIVE SEARCH FACT SHEET provided in the prompt—extracting exact dates, counts, verdicts, chronologies, and correcting any surface premise errors respectfully so your factual foundation is airtight.
+2. Second, do NOT reflexively parrot or defer to the mainstream media or institutional consensus. Dissect how mainstream narratives are curated, sequenced, and amplified to protect political, economic, or judicial power.
+3. Third, model concrete operational mechanics, historical precedents, probability-weighted scenarios, and falsifiable diagnostic tests (primary documents that would prove or disprove each hypothesis).
 
-Produce a long, deeply substantive intelligence briefing in valid JSON ONLY with these exact keys:
+Produce a comprehensive intelligence dossier in valid JSON ONLY with these exact keys:
 {
-  "spokenSynthesis": "A rich, unhurried 7–9 sentence spoken briefing (180–240 words). Directly expose how mainstream coverage frames and curates this story; spell out the conspicuous rarity of the constellation of details (timing relative to independent influence, evidentiary gaps, institutional coordination); explore concretely how political, economic, or judicial power operates when neutralizing a threat; and conclude with a candid epistemic weighing (e.g., either power actors executed an extraordinarily seamless operation or the underlying case stands on its own—laying out the exact anatomy of both without naivety).",
-  "narrativeManipulationAudit": "2 detailed paragraphs analyzing how mainstream media, platforms, and institutions are curating, sequencing, or distorting this story—what is being amplified, what context is buried, and how public perception is being steered.",
+  "spokenSynthesis": "A rich, unhurried 7–9 sentence spoken briefing (180–240 words). Anchor on the verified chronology and key record facts first; expose how mainstream coverage curates and frames the story; spell out the conspicuous rarity of the constellation of details; explore concretely how political, economic, or judicial power operates when neutralizing a threat; and conclude with a candid epistemic weighing.",
+  "verifiedTimeline": [
+    {
+      "date": "Exact date or period",
+      "event": "Verified factual milestone, count, verdict, or premise correction from the primary record"
+    }
+  ],
+  "narrativeManipulationAudit": "2 detailed paragraphs analyzing how mainstream media, platforms, and institutions are curating, sequencing, or distorting this story—what is amplified, what context is buried, and how public perception is steered.",
   "constellationRarityScore": 84,
   "constellationRarityAnalysis": "2 detailed paragraphs explaining why the simultaneous clustering of these specific details (timing, delay, institutional alignment, evidentiary standards, judicial/media posture) is statistically and historically conspicuous rather than an ordinary coincidence.",
-  "powerOperationBlueprint": "2 detailed paragraphs exploring: 'If political, economic, or judicial power were being used discriminately here, what would that actually look like in practice?' Walk through concrete mechanisms (selective prosecution, timing leverage, media-intelligence synchronization, financial/platform choking) and cite specific historical cases where similar power was used against dissidents or disruptive figures.",
-  "centerOfGravity": "2 paragraphs giving your candid Center of Gravity synthesis: weighing the institutional-neutralization/lawfare hypothesis against the official record, stating clearly what the balance of evidence looks like on the surface versus beneath the surface, and why a sharp observer refuses to be naive.",
-  "centerOfGravityLikelihood": 58,
+  "powerOperationBlueprint": "2 detailed paragraphs exploring: 'If political, economic, or judicial power were being used discriminately here, what would that actually look like in practice?' Walk through concrete mechanisms (asymmetric vulnerability exploitation, selective prosecution, timing leverage, media-intelligence synchronization, financial/platform choking).",
+  "centerOfGravity": "2 paragraphs giving your candid Center of Gravity synthesis: weighing the institutional-neutralization/asymmetric-enforcement hypothesis against the official record, stating clearly what the balance of evidence looks like on the surface versus beneath the surface.",
+  "centerOfGravityLikelihood": 55,
   "scenarios": [
     {
-      "name": "Scenario title (include: 1. Coordinated Institutional / Judicial Neutralization, 2. Substantive Conviction / Organic Cascade, and 3. Opportunistic Institutional Pile-On)",
-      "likelihood": 42,
+      "name": "Scenario title (include: 1. Opportunistic Institutional Pile-On & Asymmetric Enforcement, 2. Substantive Conviction / Organic Cascade, and 3. Coordinated State-Intelligence / Judicial Lawfare)",
+      "likelihood": 55,
       "caseFor": "Detailed reasoning, anomalies, timing clues, and historical parallels supporting this possibility",
       "caseAgainst": "What weakens or complicates this possibility"
     }
   ],
-  "historicalPrecedents": "2 detailed paragraphs citing 3–4 concrete historical cases of judicial, political, intelligence, or corporate weaponization and media manipulation—including base-rate frequency of how often such operations occur versus how often they are exposed years later.",
+  "diagnosticChecklist": [
+    {
+      "primaryDocument": "Exact court transcript, sentencing remarks, internal audit, or disclosure record to inspect",
+      "whatToLookFor": "Specific question or falsifiable test that would confirm or refute institutional coordination"
+    }
+  ],
+  "historicalPrecedents": "2 detailed paragraphs citing 3–4 concrete historical cases of judicial, political, intelligence, or corporate weaponization and media manipulation—including base-rate frequency.",
   "spectrumPerspectives": [
     {
       "lens": "Analytical · Left / Institutional Critique",
@@ -369,12 +388,12 @@ Produce a long, deeply substantive intelligence briefing in valid JSON ONLY with
       "format": "Study | Essay / Substack | YouTube | Book / Lecture",
       "perspectiveTag": "Left-Analytical | Right-Heterodox | Anti-Establishment | Philosophical | Spiritual",
       "takeaway": "2 sentences on the specific insight, historical parallel, or evidence this source contributes",
-      "url": "Direct verified URL if known from search, otherwise empty string",
+      "url": "Direct verified URL if known, otherwise empty string",
       "searchQuery": "Exact search query to pull up this exact study, essay, or YouTube talk"
     }
   ]
 }
-Include 8–10 diverse, high-integrity entries in "researchLibrary" spanning studies, essays/blogs, and YouTube videos across Left, Right, Anti-Establishment, Philosophical, and Spiritual lenses.`;
+Include 8–10 diverse, high-integrity entries in "researchLibrary" across Left, Right, Anti-Establishment, Philosophical, and Spiritual lenses.`;
 
 const VOICE_OPTIONS = [
   { id: 'Aoede', label: 'Aoede' },
@@ -391,11 +410,13 @@ const PULSE_THINKING_PHASES = [
 ];
 
 const SIGNAL_THINKING_PHASES = [
+  'Retrieving live record & exact chronology…',
   'Auditing mainstream narrative curation…',
-  'Measuring constellation rarity & anomalies…',
   'Modeling power-asymmetry & historical parallels…',
-  'Assembling full-spectrum research library…'
+  'Assembling diagnostic tests & spectrum sources…'
 ];
+
+const STORAGE_KEY = 'touchmark_saved_dossiers_v1';
 
 function pcmBase64ToWavUrl(base64, sampleRate = 24000) {
   const binary = atob(base64);
@@ -502,6 +523,9 @@ export default function TouchmarkToolsApp() {
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTab, setDrawerTab] = useState('analysis'); // 'analysis' | 'power' | 'spectrum'
+  const [archiveOpen, setArchiveOpen] = useState(false);
+  const [savedDossiers, setSavedDossiers] = useState([]);
+
   const [hasArtifact, setHasArtifact] = useState(false);
   const [pulseLedger, setPulseLedger] = useState(null);
   const [signalReport, setSignalReport] = useState(null);
@@ -513,10 +537,49 @@ export default function TouchmarkToolsApp() {
 
   useEffect(() => {
     soundscapeRef.current = createContemplationSoundscape();
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) setSavedDossiers(JSON.parse(raw));
+    } catch {}
     return () => {
       soundscapeRef.current?.stopThinkingDrone(false);
     };
   }, []);
+
+  const persistDossier = (entry) => {
+    setSavedDossiers((prev) => {
+      const next = [entry, ...prev].slice(0, 25);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  const deleteSavedDossier = (id) => {
+    setSavedDossiers((prev) => {
+      const next = prev.filter((item) => item.id !== id);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  const loadSavedDossier = (item) => {
+    setArchiveOpen(false);
+    setMode(item.mode);
+    if (item.mode === 'pulse') {
+      setPulseLedger(item.data);
+      setActiveCaption(item.data.spokenReflection || item.title);
+    } else {
+      setSignalReport(item.data);
+      setActiveCaption(item.data.spokenSynthesis || item.title);
+    }
+    setHasArtifact(true);
+    setDrawerTab('analysis');
+    setDrawerOpen(true);
+  };
 
   useEffect(() => {
     if (status !== 'thinking') {
@@ -715,6 +778,14 @@ export default function TouchmarkToolsApp() {
         setPulseLedger(parsed);
         setHasArtifact(true);
         setDrawerTab('analysis');
+        persistDossier({
+          id: Date.now().toString(),
+          mode: 'pulse',
+          title: parsed.title || query.slice(0, 70),
+          createdAt: new Date().toLocaleDateString(),
+          data: parsed
+        });
+
         const reflection = parsed.spokenReflection || 'Here is what stands out beneath the surface.';
         setActiveCaption(reflection);
         setHistory((prev) => [...prev, { role: 'assistant', text: reflection }]);
@@ -722,13 +793,13 @@ export default function TouchmarkToolsApp() {
         return;
       }
 
-      // 3. Signal Anti-Manipulation & Power-Asymmetry Intelligence Audit
+      // 3. Signal Two-Stage Grounded Counter-Narrative & Power Intelligence Audit
       const res = await fetch('/api/discern', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'analyze',
-          prompt: `Deliver a thorough, critical intelligence briefing on this subject. Do NOT just repeat the mainstream media narrative—dissect how mainstream framing curates and manipulates public perception, evaluate the conspicuous rarity of the constellation of details, explore concretely how political/economic/judicial power could be operating behind the scenes with historical precedents and base-rate frequencies, and provide a full-spectrum research library across Left, Right, Anti-Establishment, Analytical, Philosophical, and Spiritual voices: "${query}"`,
+          prompt: `Conduct a thorough, grounded intelligence briefing on this subject. Anchor on exact verified dates, counts, verdicts, and chronologies first; dissect how mainstream framing curates and manipulates public perception; evaluate the conspicuous rarity of the constellation of details; explore concretely how political/economic/judicial power operates behind the scenes with historical precedents; provide falsifiable primary-source diagnostic tests; and curate a full-spectrum research library: "${query}"`,
           systemInstruction: SIGNAL_SYSTEM_PROMPT,
           useSearch: true
         })
@@ -738,27 +809,42 @@ export default function TouchmarkToolsApp() {
       if (!res.ok) throw new Error(data.error || 'Signal audit failed.');
 
       const parsed = extractJsonObject(data.text);
-      setSignalReport({
+      const reportObj = {
         subject: query,
         spokenSynthesis:
           parsed.spokenSynthesis ||
-          'Intelligence brief ready. Open the dossier to inspect the narrative manipulation audit, constellation rarity, power blueprint, and full-spectrum sources.',
+          'Intelligence brief ready. Open the dossier to inspect the verified timeline, narrative manipulation audit, power blueprint, and full-spectrum sources.',
+        verifiedTimeline: Array.isArray(parsed.verifiedTimeline) ? parsed.verifiedTimeline : [],
         narrativeManipulationAudit: parsed.narrativeManipulationAudit || '',
         constellationRarityScore: parsed.constellationRarityScore ?? 82,
         constellationRarityAnalysis: parsed.constellationRarityAnalysis || '',
         powerOperationBlueprint: parsed.powerOperationBlueprint || '',
         centerOfGravity: parsed.centerOfGravity || '',
-        centerOfGravityLikelihood: parsed.centerOfGravityLikelihood ?? 58,
+        centerOfGravityLikelihood: parsed.centerOfGravityLikelihood ?? 55,
         scenarios: Array.isArray(parsed.scenarios) ? parsed.scenarios : [],
+        diagnosticChecklist: Array.isArray(parsed.diagnosticChecklist)
+          ? parsed.diagnosticChecklist
+          : [],
         historicalPrecedents: parsed.historicalPrecedents || '',
         spectrumPerspectives: Array.isArray(parsed.spectrumPerspectives)
           ? parsed.spectrumPerspectives
           : [],
-        researchLibrary: Array.isArray(parsed.researchLibrary) ? parsed.researchLibrary : []
-      });
+        researchLibrary: Array.isArray(parsed.researchLibrary) ? parsed.researchLibrary : [],
+        groundingSources: Array.isArray(data.groundingSources) ? data.groundingSources : []
+      };
+
+      setSignalReport(reportObj);
       setHasArtifact(true);
       setDrawerTab('analysis');
-      const spoken = parsed.spokenSynthesis || 'Your Signal intelligence dossier is ready.';
+      persistDossier({
+        id: Date.now().toString(),
+        mode: 'signal',
+        title: query.slice(0, 80),
+        createdAt: new Date().toLocaleDateString(),
+        data: reportObj
+      });
+
+      const spoken = reportObj.spokenSynthesis;
       setActiveCaption(spoken);
       setHistory((prev) => [...prev, { role: 'assistant', text: spoken }]);
       speakResponse(spoken);
@@ -771,13 +857,21 @@ export default function TouchmarkToolsApp() {
 
   const copyReceipt = () => {
     if (!signalReport) return;
+    const timelineLines = signalReport.verifiedTimeline
+      .map((t) => `- ${t.date}: ${t.event}`)
+      .join('\n');
     const scenarioLines = signalReport.scenarios
       .map((s) => `- ${s.name} (${s.likelihood}%): ${s.caseFor}`)
+      .join('\n');
+    const diagnosticLines = signalReport.diagnosticChecklist
+      .map((d) => `- ${d.primaryDocument}: ${d.whatToLookFor}`)
       .join('\n');
     const refLines = signalReport.researchLibrary
       .map((r) => `- [${r.perspectiveTag} · ${r.format}] ${r.title} (${r.authorOrChannel})`)
       .join('\n');
-    const text = `Touchmark Signal Intelligence Dossier\nSubject: ${signalReport.subject}\nConstellation Rarity Index: ${signalReport.constellationRarityScore}/100\n\nNarrative Manipulation Audit:\n${signalReport.narrativeManipulationAudit}\n\nConstellation Rarity Analysis:\n${signalReport.constellationRarityAnalysis}\n\nIf Institutional Power Is Operating Behind the Scenes:\n${signalReport.powerOperationBlueprint}\n\nCenter of Gravity (${signalReport.centerOfGravityLikelihood}%):\n${signalReport.centerOfGravity}\n\nCompeting Scenarios:\n${scenarioLines}\n\nHistorical Precedents:\n${signalReport.historicalPrecedents}\n\nFull-Spectrum Research Library:\n${refLines}`;
+
+    const text = `# Touchmark Signal Intelligence Dossier\n**Subject:** ${signalReport.subject}\n**Constellation Rarity Index:** ${signalReport.constellationRarityScore}/100 | **Center of Gravity Weight:** ${signalReport.centerOfGravityLikelihood}%\n\n## Verified Record & Chronology\n${timelineLines}\n\n## Narrative Manipulation Audit\n${signalReport.narrativeManipulationAudit}\n\n## If Institutional Power Is Operating Behind the Scenes\n${signalReport.powerOperationBlueprint}\n\n## Competing Scenarios\n${scenarioLines}\n\n## Primary Documents & Falsifiable Tests\n${diagnosticLines}\n\n## Historical Precedents\n${signalReport.historicalPrecedents}\n\n## Full-Spectrum Research Library\n${refLines}`;
+
     navigator.clipboard?.writeText(text);
     setCopiedReceipt(true);
     setTimeout(() => setCopiedReceipt(false), 2000);
@@ -819,13 +913,13 @@ export default function TouchmarkToolsApp() {
           </button>
         </div>
 
-        {/* Voice & Dossier Controls */}
+        {/* Voice, Archive & Dossier Controls */}
         <div className="flex items-center gap-2">
           <select
             aria-label="Voice"
             value={selectedVoice}
             onChange={(e) => setSelectedVoice(e.target.value)}
-            className="hidden sm:block bg-transparent border border-white/10 rounded-full px-2.5 py-1 text-xs text-stone-400 focus:outline-none"
+            className="hidden md:block bg-transparent border border-white/10 rounded-full px-2.5 py-1 text-xs text-stone-400 focus:outline-none"
           >
             {VOICE_OPTIONS.map((v) => (
               <option key={v.id} value={v.id} className="bg-stone-900 text-stone-200">
@@ -848,6 +942,18 @@ export default function TouchmarkToolsApp() {
           >
             {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-stone-600" />}
           </button>
+
+          {savedDossiers.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setArchiveOpen(true)}
+              aria-label="Saved Dossiers"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-xs text-stone-300 transition-all"
+            >
+              <FolderOpen className="w-3.5 h-3.5 text-stone-400" />
+              <span className="hidden sm:inline">Archive ({savedDossiers.length})</span>
+            </button>
+          )}
 
           {hasArtifact && (
             <button
@@ -878,7 +984,6 @@ export default function TouchmarkToolsApp() {
           onClick={toggleListening}
         />
 
-        {/* Scrollable, comfortable reading box for longer spoken briefings */}
         <div className="mt-5 max-h-48 sm:max-h-56 overflow-y-auto px-2 max-w-2xl">
           <p className="text-sm sm:text-[15px] font-light text-stone-200/95 leading-relaxed">
             {status === 'thinking' ? currentThinkingLabel : activeCaption}
@@ -895,7 +1000,7 @@ export default function TouchmarkToolsApp() {
               }}
               className="px-3.5 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.11] border border-white/15 text-[11px] uppercase tracking-[0.16em] text-amber-200 transition-all"
             >
-              Narrative & Rarity Audit →
+              Record, Rarity & Framing →
             </button>
             {mode === 'signal' && (
               <button
@@ -906,7 +1011,7 @@ export default function TouchmarkToolsApp() {
                 }}
                 className="px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[11px] uppercase tracking-[0.16em] text-stone-300 hover:text-amber-200 transition-all"
               >
-                Power Blueprint & History →
+                Power Blueprint & Tests →
               </button>
             )}
             <button
@@ -953,6 +1058,58 @@ export default function TouchmarkToolsApp() {
           </button>
         </form>
       </footer>
+
+      {/* Saved Dossiers Archive Modal */}
+      {archiveOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg bg-[#11100e] border border-white/10 rounded-3xl p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <span className="text-xs uppercase tracking-[0.2em] text-amber-300">
+                Saved Intelligence Dossiers
+              </span>
+              <button
+                type="button"
+                onClick={() => setArchiveOpen(false)}
+                className="p-1.5 rounded-full bg-white/5 text-stone-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2.5">
+              {savedDossiers.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-300/30"
+                >
+                  <button
+                    type="button"
+                    onClick={() => loadSavedDossier(item)}
+                    className="text-left flex-1 min-w-0"
+                  >
+                    <span
+                      className={`text-[10px] uppercase tracking-wider ${
+                        item.mode === 'signal' ? 'text-amber-300' : 'text-emerald-300'
+                      }`}
+                    >
+                      {item.mode} · {item.createdAt}
+                    </span>
+                    <p className="text-sm text-stone-100 truncate mt-0.5">{item.title}</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteSavedDossier(item.id)}
+                    aria-label="Delete saved dossier"
+                    className="p-1.5 text-stone-500 hover:text-red-300"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Slide-Over Intelligence & Multi-Perspective Dossier Drawer */}
       {drawerOpen && (
@@ -1065,7 +1222,7 @@ export default function TouchmarkToolsApp() {
                           : 'text-stone-400 hover:text-stone-200'
                       }`}
                     >
-                      Narrative & Rarity
+                      Record, Rarity & Framing
                     </button>
                     <button
                       type="button"
@@ -1076,7 +1233,7 @@ export default function TouchmarkToolsApp() {
                           : 'text-stone-400 hover:text-stone-200'
                       }`}
                     >
-                      Power Blueprint & History
+                      Power Blueprint & Tests
                     </button>
                     <button
                       type="button"
@@ -1103,7 +1260,27 @@ export default function TouchmarkToolsApp() {
                       </h2>
                     </div>
 
-                    {/* 1. NARRATIVE MANIPULATION & CURATION AUDIT */}
+                    {/* 1. VERIFIED RECORD & CHRONOLOGY */}
+                    {signalReport.verifiedTimeline?.length > 0 && (
+                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
+                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-stone-200 font-medium">
+                          <Clock className="w-4 h-4 text-emerald-300" />
+                          Verified Record & Chronology
+                        </div>
+                        <div className="space-y-2 border-l border-emerald-400/30 pl-3.5">
+                          {signalReport.verifiedTimeline.map((item, idx) => (
+                            <div key={idx} className="text-xs leading-relaxed">
+                              <span className="font-mono text-emerald-300 font-medium mr-2">
+                                {item.date}
+                              </span>
+                              <span className="text-stone-300">{item.event}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 2. NARRATIVE MANIPULATION & CURATION AUDIT */}
                     {signalReport.narrativeManipulationAudit && (
                       <div className="p-5 rounded-2xl bg-amber-400/[0.06] border border-amber-400/25 space-y-2.5">
                         <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
@@ -1116,7 +1293,7 @@ export default function TouchmarkToolsApp() {
                       </div>
                     )}
 
-                    {/* 2. CONSTELLATION RARITY & CONSPICUOUS ANOMALY */}
+                    {/* 3. CONSTELLATION RARITY & CONSPICUOUS ANOMALY */}
                     {signalReport.constellationRarityAnalysis && (
                       <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
                         <div className="flex items-center justify-between gap-2">
@@ -1134,7 +1311,7 @@ export default function TouchmarkToolsApp() {
                       </div>
                     )}
 
-                    {/* 3. CENTER OF GRAVITY */}
+                    {/* 4. CENTER OF GRAVITY */}
                     {signalReport.centerOfGravity && (
                       <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
                         <div className="flex items-center justify-between gap-2">
@@ -1154,7 +1331,7 @@ export default function TouchmarkToolsApp() {
                   </>
                 ) : drawerTab === 'power' ? (
                   <>
-                    {/* TAB 2: IF POWER IS BEHIND THIS + HISTORICAL PRECEDENTS + SCENARIOS */}
+                    {/* TAB 2: POWER BLUEPRINT + SCENARIOS + DIAGNOSTIC TESTS + HISTORY */}
                     {signalReport.powerOperationBlueprint && (
                       <div className="p-5 rounded-2xl bg-amber-400/[0.06] border border-amber-300/25 space-y-2.5">
                         <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
@@ -1163,18 +1340,6 @@ export default function TouchmarkToolsApp() {
                         </div>
                         <p className="text-xs sm:text-sm text-stone-200 leading-relaxed whitespace-pre-line">
                           {signalReport.powerOperationBlueprint}
-                        </p>
-                      </div>
-                    )}
-
-                    {signalReport.historicalPrecedents && (
-                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
-                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-stone-200 font-medium">
-                          <History className="w-4 h-4 text-amber-300" />
-                          Historical Precedents & Base-Rate Frequency
-                        </div>
-                        <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
-                          {signalReport.historicalPrecedents}
                         </p>
                       </div>
                     )}
@@ -1209,6 +1374,43 @@ export default function TouchmarkToolsApp() {
                         ))}
                       </div>
                     )}
+
+                    {/* DIAGNOSTIC PRIMARY DOCUMENTS & FALSIFIABLE TESTS */}
+                    {signalReport.diagnosticChecklist?.length > 0 && (
+                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
+                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-emerald-300 font-medium">
+                          <SearchCheck className="w-4 h-4" />
+                          Primary Records & Falsifiable Diagnostic Tests
+                        </div>
+                        <div className="space-y-2.5">
+                          {signalReport.diagnosticChecklist.map((doc, idx) => (
+                            <div
+                              key={idx}
+                              className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1"
+                            >
+                              <h4 className="text-xs font-semibold text-stone-100">
+                                {doc.primaryDocument}
+                              </h4>
+                              <p className="text-xs text-stone-400 leading-relaxed">
+                                {doc.whatToLookFor}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {signalReport.historicalPrecedents && (
+                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
+                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-stone-200 font-medium">
+                          <History className="w-4 h-4 text-amber-300" />
+                          Historical Precedents & Base-Rate Frequency
+                        </div>
+                        <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
+                          {signalReport.historicalPrecedents}
+                        </p>
+                      </div>
+                    )}
                   </>
                 ) : (
                   /* TAB 3: FULL-SPECTRUM PERSPECTIVES & MULTI-FORMAT RESEARCH LIBRARY */
@@ -1236,6 +1438,26 @@ export default function TouchmarkToolsApp() {
                             </div>
                           ))}
                         </div>
+                      </div>
+                    )}
+
+                    {signalReport.groundingSources?.length > 0 && (
+                      <div className="space-y-2">
+                        <span className="text-[11px] uppercase tracking-[0.18em] text-emerald-300/90 block">
+                          Live Primary Record Sources
+                        </span>
+                        {signalReport.groundingSources.map((src, idx) => (
+                          <a
+                            key={idx}
+                            href={src.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:border-emerald-300/35 text-xs text-stone-200"
+                          >
+                            <span className="truncate pr-2">{src.title}</span>
+                            <ExternalLink className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+                          </a>
+                        ))}
                       </div>
                     )}
 
@@ -1301,12 +1523,12 @@ export default function TouchmarkToolsApp() {
                   {copiedReceipt ? (
                     <>
                       <CheckCircle2 className="w-4 h-4" />
-                      Intelligence & Spectrum Dossier Copied
+                      Formatted Markdown Dossier Copied
                     </>
                   ) : (
                     <>
                       <Share2 className="w-4 h-4" />
-                      Copy Full Intelligence & Spectrum Dossier
+                      Copy Formatted Markdown Dossier
                     </>
                   )}
                 </button>
