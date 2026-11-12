@@ -1,3 +1,111 @@
+const SIGNAL_CORE_SCHEMA = {
+  type: 'OBJECT',
+  properties: {
+    spokenSynthesis: { type: 'STRING' },
+    verifiedTimeline: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          date: { type: 'STRING' },
+          event: { type: 'STRING' }
+        },
+        required: ['date', 'event']
+      }
+    },
+    narrativeManipulationAudit: { type: 'STRING' },
+    constellationRarityScore: { type: 'INTEGER' },
+    constellationRarityAnalysis: { type: 'STRING' },
+    centerOfGravity: { type: 'STRING' },
+    centerOfGravityLikelihood: { type: 'INTEGER' }
+  },
+  required: [
+    'spokenSynthesis',
+    'verifiedTimeline',
+    'narrativeManipulationAudit',
+    'constellationRarityScore',
+    'constellationRarityAnalysis',
+    'centerOfGravity',
+    'centerOfGravityLikelihood'
+  ]
+};
+
+const SIGNAL_DEEP_SCHEMA = {
+  type: 'OBJECT',
+  properties: {
+    powerOperationBlueprint: { type: 'STRING' },
+    scenarios: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          name: { type: 'STRING' },
+          likelihood: { type: 'INTEGER' },
+          caseFor: { type: 'STRING' },
+          caseAgainst: { type: 'STRING' }
+        },
+        required: ['name', 'likelihood', 'caseFor', 'caseAgainst']
+      }
+    },
+    diagnosticChecklist: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          primaryDocument: { type: 'STRING' },
+          whatToLookFor: { type: 'STRING' }
+        },
+        required: ['primaryDocument', 'whatToLookFor']
+      }
+    },
+    historicalPrecedents: { type: 'STRING' },
+    spectrumPerspectives: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          lens: { type: 'STRING' },
+          thinkerOrOutlet: { type: 'STRING' },
+          coreThesis: { type: 'STRING' }
+        },
+        required: ['lens', 'thinkerOrOutlet', 'coreThesis']
+      }
+    },
+    researchLibrary: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          title: { type: 'STRING' },
+          authorOrChannel: { type: 'STRING' },
+          format: { type: 'STRING' },
+          perspectiveTag: { type: 'STRING' },
+          takeaway: { type: 'STRING' },
+          url: { type: 'STRING' },
+          searchQuery: { type: 'STRING' }
+        },
+        required: [
+          'title',
+          'authorOrChannel',
+          'format',
+          'perspectiveTag',
+          'takeaway',
+          'url',
+          'searchQuery'
+        ]
+      }
+    }
+  },
+  required: [
+    'powerOperationBlueprint',
+    'scenarios',
+    'diagnosticChecklist',
+    'historicalPrecedents',
+    'spectrumPerspectives',
+    'researchLibrary'
+  ]
+};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -130,7 +238,7 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       return res.status(200).json({ prompts: Array.isArray(prompts) ? prompts.slice(0, 3) : [] });
     }
 
-    // 3A. PROGRESSIVE SIGNAL STAGE 1 (Fast Grounded Briefing + Tab 1: Record, Rarity & Framing)
+    // 3A. PROGRESSIVE SIGNAL STAGE 1 (Guaranteed Valid JSON Schema)
     if (action === 'signal_core') {
       if (!prompt || !prompt.trim()) {
         return res.status(400).json({ error: 'Prompt is required.' });
@@ -149,8 +257,10 @@ The user is greeting you, checking their mic, or warming up before exploring a d
             ? { parts: [{ text: systemInstruction }] }
             : undefined,
           generationConfig: {
-            temperature: 0.45,
-            maxOutputTokens: 3200
+            temperature: 0.4,
+            maxOutputTokens: 4096,
+            responseMimeType: 'application/json',
+            responseSchema: SIGNAL_CORE_SCHEMA
           }
         },
         ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
@@ -163,7 +273,7 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       });
     }
 
-    // 3B. PROGRESSIVE SIGNAL STAGE 2 (Deep Power Blueprint, Diagnostic Tests & Full-Spectrum Library)
+    // 3B. PROGRESSIVE SIGNAL STAGE 2 (Guaranteed Valid JSON Schema for Sections 5–10)
     if (action === 'signal_deep') {
       if (!prompt || !prompt.trim()) {
         return res.status(400).json({ error: 'Prompt is required.' });
@@ -181,8 +291,10 @@ The user is greeting you, checking their mic, or warming up before exploring a d
             ? { parts: [{ text: systemInstruction }] }
             : undefined,
           generationConfig: {
-            temperature: 0.45,
-            maxOutputTokens: 4800
+            temperature: 0.4,
+            maxOutputTokens: 6144,
+            responseMimeType: 'application/json',
+            responseSchema: SIGNAL_DEEP_SCHEMA
           }
         },
         ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
@@ -191,7 +303,7 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       return res.status(200).json({ text: rawText });
     }
 
-    // 4. STANDARD PULSE / SINGLE-PASS ANALYSIS
+    // 4. STANDARD PULSE / FALLBACK ANALYSIS
     if (!prompt || !prompt.trim()) {
       return res.status(400).json({ error: 'Prompt is required.' });
     }
@@ -207,14 +319,17 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       }
     }
 
+    const activeSchema =
+      responseSchema || (prompt.includes('Stage 2') ? SIGNAL_DEEP_SCHEMA : undefined);
+
     const generationConfig = {
-      temperature: 0.45,
+      temperature: 0.4,
       maxOutputTokens: 6144
     };
 
-    if (responseSchema) {
+    if (activeSchema) {
       generationConfig.responseMimeType = 'application/json';
-      generationConfig.responseSchema = responseSchema;
+      generationConfig.responseSchema = activeSchema;
     }
 
     const payload = {
