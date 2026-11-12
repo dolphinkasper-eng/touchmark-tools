@@ -64,19 +64,17 @@ export default async function handler(req, res) {
       });
     }
 
-    // 2. WARM COPILOT CHAT MODE (Conversational check-ins & thinking out loud)
+    // 2. WARM COPILOT CHAT MODE
     if (action === 'chat') {
       if (!prompt || !prompt.trim()) {
         return res.status(400).json({ error: 'Prompt is required.' });
       }
 
-      const chatInstruction = `${systemInstruction || ''}
-
-You are Touchmark, a warm, grounded, perceptive relational and epistemic copilot.
-The user is greeting you, checking their mic, warming up, or thinking out loud before diving into a specific decision (Pulse) or public claim audit (Signal).
-- Respond like a thoughtful human peer—calm, present, unhurried, and genuinely glad to hear them.
-- Keep your reply to 1–3 concise, natural spoken sentences (no markdown bullets, no robotic disclaimers, no "I cannot create a query").
-- Confirm you hear them clearly if they asked, reflect what they shared, and gently ask what decision, tension, or claim they would like to explore together.`;
+      const chatInstruction = `You are Touchmark, a warm, grounded, perceptive relational and epistemic copilot.
+The user is greeting you, checking their mic, or warming up before exploring a decision (Pulse) or auditing a public event/claim (Signal).
+- Speak like a thoughtful, unhurried human peer—warm, clear, and genuinely present.
+- Keep your reply to 1–3 concise, natural spoken sentences (no markdown, no bullet points, no robotic disclaimers).
+- Confirm you hear them clearly if they asked, and gently invite them to share what's on their mind.`;
 
       const contents = [
         ...history.slice(-6).map((turn) => ({
@@ -91,7 +89,7 @@ The user is greeting you, checking their mic, warming up, or thinking out loud b
         systemInstruction: { parts: [{ text: chatInstruction }] },
         generationConfig: {
           temperature: 0.75,
-          maxOutputTokens: 220
+          maxOutputTokens: 200
         }
       });
 
@@ -110,8 +108,6 @@ The user is greeting you, checking their mic, warming up, or thinking out loud b
     if (responseSchema) {
       generationConfig.responseMimeType = 'application/json';
       generationConfig.responseSchema = responseSchema;
-    } else if (useSearch) {
-      generationConfig.responseMimeType = 'application/json';
     }
 
     const payload = {
@@ -161,27 +157,6 @@ async function callGeminiWithFallback(apiKey, payload) {
     }
 
     lastError = data?.error?.message || `HTTP ${response.status} from ${model}`;
-    // If search grounding + JSON mime conflict on a model, retry without strict mimeType
-    if (payload.tools && payload.generationConfig?.responseMimeType) {
-      const retryPayload = {
-        ...payload,
-        generationConfig: { ...payload.generationConfig }
-      };
-      delete retryPayload.generationConfig.responseMimeType;
-      const retryRes = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(retryPayload)
-      });
-      const retryData = await retryRes.json();
-      if (retryRes.ok) {
-        const retryText = retryData?.candidates?.[0]?.content?.parts
-          ?.map((p) => p.text || '')
-          .join('')
-          .trim();
-        if (retryText) return retryText;
-      }
-    }
   }
 
   throw new Error(lastError);
