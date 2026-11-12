@@ -17,7 +17,9 @@ import {
   Eye,
   BookOpen,
   Youtube,
-  GraduationCap
+  GraduationCap,
+  Radio,
+  ShieldAlert
 } from 'lucide-react';
 
 // --- BRAND MARK ---
@@ -185,7 +187,7 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
         type="button"
         onClick={onClick}
         aria-label={isListening ? 'Stop listening' : 'Tap sphere to speak'}
-        className="relative w-60 h-60 sm:w-68 sm:h-68 flex items-center justify-center focus:outline-none group cursor-pointer"
+        className="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center focus:outline-none group cursor-pointer"
       >
         <div
           style={{ background: palette.aura }}
@@ -198,13 +200,13 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
           <>
             <div
               style={{ borderColor: palette.rim }}
-              className="absolute w-56 h-56 sm:w-60 sm:h-60 rounded-full border border-dashed opacity-60 orbit-cw pointer-events-none"
+              className="absolute w-52 h-52 sm:w-56 sm:h-56 rounded-full border border-dashed opacity-60 orbit-cw pointer-events-none"
             >
               <span className={`absolute -top-1 left-1/2 w-2 h-2 rounded-full ${palette.dot} shadow-lg`} />
             </div>
             <div
               style={{ borderColor: palette.rim }}
-              className="absolute w-50 h-50 sm:w-54 sm:h-54 rounded-full border border-dotted opacity-45 orbit-ccw pointer-events-none"
+              className="absolute w-46 h-46 sm:w-50 sm:h-50 rounded-full border border-dotted opacity-45 orbit-ccw pointer-events-none"
             >
               <span className={`absolute -bottom-1 left-1/2 w-1.5 h-1.5 rounded-full ${palette.dot}`} />
             </div>
@@ -216,7 +218,7 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
             border: `1px solid ${palette.rim}`,
             boxShadow: `inset 0 0 40px ${palette.rim}`
           }}
-          className={`absolute w-48 h-48 sm:w-52 sm:h-52 opacity-45 transition-all duration-500 ${
+          className={`absolute w-44 h-44 sm:w-48 sm:h-48 opacity-45 transition-all duration-500 ${
             isListening || isSpeaking || isThinking ? 'orb-active' : 'orb-organic'
           }`}
         />
@@ -226,11 +228,11 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
             background: palette.sphere,
             boxShadow: `inset -18px -22px 38px rgba(0,0,0,0.82), inset 10px 12px 24px rgba(255,255,255,0.22), 0 24px 60px rgba(0,0,0,0.75)`
           }}
-          className={`relative w-44 h-44 sm:w-48 sm:h-48 flex items-center justify-center transition-transform duration-500 ${
+          className={`relative w-40 h-40 sm:w-44 sm:h-44 flex items-center justify-center transition-transform duration-500 ${
             isListening || isSpeaking || isThinking ? 'orb-active' : 'orb-organic group-hover:scale-[1.03]'
           }`}
         >
-          <div className="absolute top-6 left-8 w-14 h-9 rounded-full bg-white/20 blur-md -rotate-25 pointer-events-none" />
+          <div className="absolute top-5 left-7 w-12 h-8 rounded-full bg-white/20 blur-md -rotate-25 pointer-events-none" />
 
           <div className="relative z-10 flex flex-col items-center text-stone-100/85">
             {isListening && <Mic className="w-6 h-6 text-amber-200 animate-pulse" />}
@@ -252,7 +254,7 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
         </div>
       </button>
 
-      <span className="mt-2 text-[11px] uppercase tracking-[0.26em] text-stone-400 transition-all duration-300">
+      <span className="mt-1.5 text-[11px] uppercase tracking-[0.26em] text-stone-400 transition-all duration-300">
         {isListening
           ? 'Listening…'
           : isThinking
@@ -268,8 +270,7 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
 // --- PROMPTS & SCHEMAS ---
 const PULSE_SYSTEM_PROMPT = `You are Touchmark Pulse, a candid, deeply perceptive strategic, psychological, and relational intelligence copilot.
 Look beneath the surface of the user's situation—naming unspoken power dynamics, hidden incentives, self-deceptions, and downstream consequences.
-Also recommend 4 high-integrity thinkers, books, essays, or talks across analytical, psychological, and philosophical/spiritual traditions so the user can deepen their own reflection.
-Return JSON matching the schema.`;
+Provide a rich 5–6 sentence spoken synthesis ("spokenReflection") and populate all fields in the schema, including 5–6 high-integrity thinkers, books, essays, or YouTube talks across analytical, psychological, and philosophical/spiritual traditions.`;
 
 const PULSE_RESPONSE_SCHEMA = {
   type: 'OBJECT',
@@ -318,34 +319,37 @@ const PULSE_RESPONSE_SCHEMA = {
   ]
 };
 
-const SIGNAL_SYSTEM_PROMPT = `You are Touchmark Signal, an unvarnished political-economy, institutional-power, and epistemic intelligence analyst.
-The user wants you to look past sanitized mainstream framing, examine what is likely happening behind the scenes, establish a Center of Gravity, score competing hypotheses, and curate a Ground-News-style multi-perspective research library across the full intellectual spectrum.
+const SIGNAL_SYSTEM_PROMPT = `You are Touchmark Signal, an independent, anti-propaganda intelligence and power-dynamics analyst.
+CRITICAL DIRECTIVE: Do NOT reflexively parrot or defer to the mainstream media or institutional consensus. Assume mainstream narratives are frequently curated, sequenced, and amplified to protect political, economic, or judicial power. At the same time, do not invent fake facts—distinguish rigorously between what is documented on the surface, how the narrative is being manipulated, and what the structural incentives and historical precedents suggest is happening behind the scenes.
 
-Return valid JSON ONLY with these exact keys:
+Produce a long, deeply substantive intelligence briefing in valid JSON ONLY with these exact keys:
 {
-  "spokenSynthesis": "Rich, candid 4–5 sentence spoken briefing naming the mainstream narrative, what feels anomalous beneath the surface, your Center of Gravity assessment, and the competing possibilities.",
-  "centerOfGravity": "Thorough paragraph explaining the most probable underlying reality where power, timing, and institutional incentives intersect.",
-  "centerOfGravityLikelihood": 64,
+  "spokenSynthesis": "A rich, unhurried 7–9 sentence spoken briefing (180–240 words). Directly expose how mainstream coverage frames and curates this story; spell out the conspicuous rarity of the constellation of details (timing relative to independent influence, evidentiary gaps, institutional coordination); explore concretely how political, economic, or judicial power operates when neutralizing a threat; and conclude with a candid epistemic weighing (e.g., either power actors executed an extraordinarily seamless operation or the underlying case stands on its own—laying out the exact anatomy of both without naivety).",
+  "narrativeManipulationAudit": "2 detailed paragraphs analyzing how mainstream media, platforms, and institutions are curating, sequencing, or distorting this story—what is being amplified, what context is buried, and how public perception is being steered.",
+  "constellationRarityScore": 84,
+  "constellationRarityAnalysis": "2 detailed paragraphs explaining why the simultaneous clustering of these specific details (timing, delay, institutional alignment, evidentiary standards, judicial/media posture) is statistically and historically conspicuous rather than an ordinary coincidence.",
+  "powerOperationBlueprint": "2 detailed paragraphs exploring: 'If political, economic, or judicial power were being used discriminately here, what would that actually look like in practice?' Walk through concrete mechanisms (selective prosecution, timing leverage, media-intelligence synchronization, financial/platform choking) and cite specific historical cases where similar power was used against dissidents or disruptive figures.",
+  "centerOfGravity": "2 paragraphs giving your candid Center of Gravity synthesis: weighing the institutional-neutralization/lawfare hypothesis against the official record, stating clearly what the balance of evidence looks like on the surface versus beneath the surface, and why a sharp observer refuses to be naive.",
+  "centerOfGravityLikelihood": 58,
   "scenarios": [
     {
-      "name": "Short title of hypothesis (include the non-mainstream / institutional-power hypothesis as well as structural and organic explanations)",
-      "likelihood": 64,
-      "caseFor": "Detailed reasoning, anomalies, timing clues, and incentives supporting this possibility",
+      "name": "Scenario title (include: 1. Coordinated Institutional / Judicial Neutralization, 2. Substantive Conviction / Organic Cascade, and 3. Opportunistic Institutional Pile-On)",
+      "likelihood": 42,
+      "caseFor": "Detailed reasoning, anomalies, timing clues, and historical parallels supporting this possibility",
       "caseAgainst": "What weakens or complicates this possibility"
     }
   ],
-  "historicalPrecedents": "Substantive paragraph citing specific historical parallels and base-rate frequency.",
-  "cuiBonoAndAnomalies": "Detailed breakdown of who benefits, procedural/timing anomalies, and missing context.",
+  "historicalPrecedents": "2 detailed paragraphs citing 3–4 concrete historical cases of judicial, political, intelligence, or corporate weaponization and media manipulation—including base-rate frequency of how often such operations occur versus how often they are exposed years later.",
   "spectrumPerspectives": [
     {
       "lens": "Analytical · Left / Institutional Critique",
       "thinkerOrOutlet": "Specific high-integrity writer, scholar, or publication",
-      "coreThesis": "How this perspective frames the issue intelligently"
+      "coreThesis": "Detailed summary of how this perspective frames the issue"
     },
     {
       "lens": "Analytical · Right / Heterodox & Civil Liberties",
       "thinkerOrOutlet": "Specific high-integrity writer, scholar, or publication",
-      "coreThesis": "How this perspective frames the issue intelligently"
+      "coreThesis": "Detailed summary of how this perspective frames the issue"
     },
     {
       "lens": "Philosophical · Depth-Psychological & Moral",
@@ -360,17 +364,17 @@ Return valid JSON ONLY with these exact keys:
   ],
   "researchLibrary": [
     {
-      "title": "Specific study, essay, Substack piece, or YouTube conversation/lecture",
+      "title": "Specific study, book, essay, Substack piece, or YouTube lecture/debate",
       "authorOrChannel": "Author, researcher, or channel name",
       "format": "Study | Essay / Substack | YouTube | Book / Lecture",
-      "perspectiveTag": "Left-Analytical | Right-Heterodox | Independent / Anti-Establishment | Philosophical | Spiritual",
-      "takeaway": "1–2 sentences on why this source adds genuine intellectual depth",
+      "perspectiveTag": "Left-Analytical | Right-Heterodox | Anti-Establishment | Philosophical | Spiritual",
+      "takeaway": "2 sentences on the specific insight, historical parallel, or evidence this source contributes",
       "url": "Direct verified URL if known from search, otherwise empty string",
       "searchQuery": "Exact search query to pull up this exact study, essay, or YouTube talk"
     }
   ]
 }
-Include 6–8 diverse, high-integrity entries in "researchLibrary" spanning studies, essays/blogs, and YouTube videos across Left, Right, Heterodox, Philosophical, and Spiritual lenses.`;
+Include 8–10 diverse, high-integrity entries in "researchLibrary" spanning studies, essays/blogs, and YouTube videos across Left, Right, Anti-Establishment, Philosophical, and Spiritual lenses.`;
 
 const VOICE_OPTIONS = [
   { id: 'Aoede', label: 'Aoede' },
@@ -387,10 +391,10 @@ const PULSE_THINKING_PHASES = [
 ];
 
 const SIGNAL_THINKING_PHASES = [
-  'Scanning official & counter-narratives…',
-  'Calculating Center of Gravity…',
-  'Weighing historical precedents & frequency…',
-  'Assembling Left, Right & Philosophical sources…'
+  'Auditing mainstream narrative curation…',
+  'Measuring constellation rarity & anomalies…',
+  'Modeling power-asymmetry & historical parallels…',
+  'Assembling full-spectrum research library…'
 ];
 
 function pcmBase64ToWavUrl(base64, sampleRate = 24000) {
@@ -497,7 +501,7 @@ export default function TouchmarkToolsApp() {
   const [history, setHistory] = useState([]);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerTab, setDrawerTab] = useState('analysis'); // 'analysis' | 'spectrum'
+  const [drawerTab, setDrawerTab] = useState('analysis'); // 'analysis' | 'power' | 'spectrum'
   const [hasArtifact, setHasArtifact] = useState(false);
   const [pulseLedger, setPulseLedger] = useState(null);
   const [signalReport, setSignalReport] = useState(null);
@@ -521,7 +525,7 @@ export default function TouchmarkToolsApp() {
     }
     const timer = setInterval(() => {
       setThinkingPhaseIndex((prev) => (prev + 1) % 4);
-    }, 1600);
+    }, 1700);
     return () => clearInterval(timer);
   }, [status]);
 
@@ -718,13 +722,13 @@ export default function TouchmarkToolsApp() {
         return;
       }
 
-      // 3. Signal Intelligence + Ground-News Style Multi-Perspective Research Library
+      // 3. Signal Anti-Manipulation & Power-Asymmetry Intelligence Audit
       const res = await fetch('/api/discern', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'analyze',
-          prompt: `Conduct a deep, candid intelligence assessment of this subject—looking beyond the mainstream framing to evaluate political/economic incentives, historical precedent, frequency, competing possibilities, and a rich multi-perspective research library (studies, essays, blogs, YouTube talks across Left, Right, Heterodox, Analytical, Philosophical, and Spiritual lenses): "${query}"`,
+          prompt: `Deliver a thorough, critical intelligence briefing on this subject. Do NOT just repeat the mainstream media narrative—dissect how mainstream framing curates and manipulates public perception, evaluate the conspicuous rarity of the constellation of details, explore concretely how political/economic/judicial power could be operating behind the scenes with historical precedents and base-rate frequencies, and provide a full-spectrum research library across Left, Right, Anti-Establishment, Analytical, Philosophical, and Spiritual voices: "${query}"`,
           systemInstruction: SIGNAL_SYSTEM_PROMPT,
           useSearch: true
         })
@@ -738,12 +742,15 @@ export default function TouchmarkToolsApp() {
         subject: query,
         spokenSynthesis:
           parsed.spokenSynthesis ||
-          'Intelligence brief ready. Open the full dossier to inspect the Center of Gravity, competing scenarios, and multi-perspective research library.',
+          'Intelligence brief ready. Open the dossier to inspect the narrative manipulation audit, constellation rarity, power blueprint, and full-spectrum sources.',
+        narrativeManipulationAudit: parsed.narrativeManipulationAudit || '',
+        constellationRarityScore: parsed.constellationRarityScore ?? 82,
+        constellationRarityAnalysis: parsed.constellationRarityAnalysis || '',
+        powerOperationBlueprint: parsed.powerOperationBlueprint || '',
         centerOfGravity: parsed.centerOfGravity || '',
-        centerOfGravityLikelihood: parsed.centerOfGravityLikelihood ?? 62,
+        centerOfGravityLikelihood: parsed.centerOfGravityLikelihood ?? 58,
         scenarios: Array.isArray(parsed.scenarios) ? parsed.scenarios : [],
         historicalPrecedents: parsed.historicalPrecedents || '',
-        cuiBonoAndAnomalies: parsed.cuiBonoAndAnomalies || '',
         spectrumPerspectives: Array.isArray(parsed.spectrumPerspectives)
           ? parsed.spectrumPerspectives
           : [],
@@ -770,7 +777,7 @@ export default function TouchmarkToolsApp() {
     const refLines = signalReport.researchLibrary
       .map((r) => `- [${r.perspectiveTag} · ${r.format}] ${r.title} (${r.authorOrChannel})`)
       .join('\n');
-    const text = `Touchmark Intelligence & Spectrum Brief\nSubject: ${signalReport.subject}\n\nCenter of Gravity (${signalReport.centerOfGravityLikelihood}%):\n${signalReport.centerOfGravity}\n\nCompeting Scenarios:\n${scenarioLines}\n\nHistorical Precedents:\n${signalReport.historicalPrecedents}\n\nFurther Research Across Perspectives:\n${refLines}`;
+    const text = `Touchmark Signal Intelligence Dossier\nSubject: ${signalReport.subject}\nConstellation Rarity Index: ${signalReport.constellationRarityScore}/100\n\nNarrative Manipulation Audit:\n${signalReport.narrativeManipulationAudit}\n\nConstellation Rarity Analysis:\n${signalReport.constellationRarityAnalysis}\n\nIf Institutional Power Is Operating Behind the Scenes:\n${signalReport.powerOperationBlueprint}\n\nCenter of Gravity (${signalReport.centerOfGravityLikelihood}%):\n${signalReport.centerOfGravity}\n\nCompeting Scenarios:\n${scenarioLines}\n\nHistorical Precedents:\n${signalReport.historicalPrecedents}\n\nFull-Spectrum Research Library:\n${refLines}`;
     navigator.clipboard?.writeText(text);
     setCopiedReceipt(true);
     setTimeout(() => setCopiedReceipt(false), 2000);
@@ -856,9 +863,9 @@ export default function TouchmarkToolsApp() {
       </header>
 
       {/* Center Sanctuary: Morphing 3D Orb + Substantive Spoken Briefing */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-2xl mx-auto w-full py-4">
+      <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-3xl mx-auto w-full py-3">
         {errorBanner && (
-          <div className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full bg-red-950/60 border border-red-400/30 text-xs text-red-200">
+          <div className="mb-4 flex items-center gap-2 px-4 py-2 rounded-full bg-red-950/60 border border-red-400/30 text-xs text-red-200">
             <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
             <span>{errorBanner}</span>
           </div>
@@ -871,31 +878,46 @@ export default function TouchmarkToolsApp() {
           onClick={toggleListening}
         />
 
-        <p className="mt-7 text-sm sm:text-base font-light text-stone-200/95 leading-relaxed max-w-xl transition-opacity duration-300">
-          {status === 'thinking' ? currentThinkingLabel : activeCaption}
-        </p>
+        {/* Scrollable, comfortable reading box for longer spoken briefings */}
+        <div className="mt-5 max-h-48 sm:max-h-56 overflow-y-auto px-2 max-w-2xl">
+          <p className="text-sm sm:text-[15px] font-light text-stone-200/95 leading-relaxed">
+            {status === 'thinking' ? currentThinkingLabel : activeCaption}
+          </p>
+        </div>
 
         {hasArtifact && status !== 'thinking' && (
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <button
               type="button"
               onClick={() => {
                 setDrawerTab('analysis');
                 setDrawerOpen(true);
               }}
-              className="px-4 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.11] border border-white/15 text-[11px] uppercase tracking-[0.18em] text-amber-200 transition-all"
+              className="px-3.5 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.11] border border-white/15 text-[11px] uppercase tracking-[0.16em] text-amber-200 transition-all"
             >
-              Center of Gravity & Scenarios →
+              Narrative & Rarity Audit →
             </button>
+            {mode === 'signal' && (
+              <button
+                type="button"
+                onClick={() => {
+                  setDrawerTab('power');
+                  setDrawerOpen(true);
+                }}
+                className="px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[11px] uppercase tracking-[0.16em] text-stone-300 hover:text-amber-200 transition-all"
+              >
+                Power Blueprint & History →
+              </button>
+            )}
             <button
               type="button"
               onClick={() => {
                 setDrawerTab('spectrum');
                 setDrawerOpen(true);
               }}
-              className="px-4 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[11px] uppercase tracking-[0.18em] text-stone-300 hover:text-amber-200 transition-all"
+              className="px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[11px] uppercase tracking-[0.16em] text-stone-300 hover:text-amber-200 transition-all"
             >
-              Explore Spectrum & Sources →
+              Spectrum & Sources →
             </button>
           </div>
         )}
@@ -917,7 +939,7 @@ export default function TouchmarkToolsApp() {
             placeholder={
               mode === 'pulse'
                 ? 'Speak to the orb, or unpack a personal/strategic tension…'
-                : 'Speak to the orb, or probe what is really driving an event…'
+                : 'Speak to the orb, or dissect a narrative and its hidden power dynamics…'
             }
             className="flex-1 bg-transparent text-sm text-stone-200 placeholder:text-stone-600 focus:outline-none"
           />
@@ -1018,11 +1040,11 @@ export default function TouchmarkToolsApp() {
               </div>
             ) : mode === 'signal' && signalReport ? (
               <div className="space-y-6">
-                {/* Drawer Header + Sub-Tab Switcher */}
+                {/* Drawer Header + 3-Tab Switcher */}
                 <div className="space-y-4 border-b border-white/10 pb-4">
                   <div className="flex items-center justify-between">
                     <span className="text-xs uppercase tracking-[0.2em] text-amber-300">
-                      Signal Intelligence & Spectrum Dossier
+                      Signal Counter-Narrative & Power Dossier
                     </span>
                     <button
                       type="button"
@@ -1033,29 +1055,39 @@ export default function TouchmarkToolsApp() {
                     </button>
                   </div>
 
-                  {/* Two-Tab Navigation inside Drawer */}
-                  <div className="flex items-center gap-2 bg-white/[0.04] p-1 rounded-full border border-white/10 w-fit">
+                  <div className="flex flex-wrap items-center gap-1.5 bg-white/[0.04] p-1 rounded-full border border-white/10 w-fit">
                     <button
                       type="button"
                       onClick={() => setDrawerTab('analysis')}
-                      className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                         drawerTab === 'analysis'
                           ? 'bg-amber-400/20 text-amber-200'
                           : 'text-stone-400 hover:text-stone-200'
                       }`}
                     >
-                      Center of Gravity & Scenarios
+                      Narrative & Rarity
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDrawerTab('power')}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        drawerTab === 'power'
+                          ? 'bg-amber-400/20 text-amber-200'
+                          : 'text-stone-400 hover:text-stone-200'
+                      }`}
+                    >
+                      Power Blueprint & History
                     </button>
                     <button
                       type="button"
                       onClick={() => setDrawerTab('spectrum')}
-                      className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                         drawerTab === 'spectrum'
                           ? 'bg-amber-400/20 text-amber-200'
                           : 'text-stone-400 hover:text-stone-200'
                       }`}
                     >
-                      Perspectives & Research ({signalReport.researchLibrary?.length || 0})
+                      Spectrum & Sources ({signalReport.researchLibrary?.length || 0})
                     </button>
                   </div>
                 </div>
@@ -1071,23 +1103,82 @@ export default function TouchmarkToolsApp() {
                       </h2>
                     </div>
 
-                    {/* 1. CENTER OF GRAVITY */}
-                    <div className="p-5 rounded-2xl bg-amber-400/[0.07] border border-amber-400/25 space-y-2.5">
-                      <div className="flex items-center justify-between">
+                    {/* 1. NARRATIVE MANIPULATION & CURATION AUDIT */}
+                    {signalReport.narrativeManipulationAudit && (
+                      <div className="p-5 rounded-2xl bg-amber-400/[0.06] border border-amber-400/25 space-y-2.5">
                         <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
-                          <Compass className="w-4 h-4" />
-                          Center of Gravity
+                          <Radio className="w-4 h-4" />
+                          How the Mainstream Narrative Is Curated & Distorted
                         </div>
-                        <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-xs font-semibold text-amber-200">
-                          {signalReport.centerOfGravityLikelihood}% Likelihood
-                        </span>
+                        <p className="text-xs sm:text-sm text-stone-200 leading-relaxed whitespace-pre-line">
+                          {signalReport.narrativeManipulationAudit}
+                        </p>
                       </div>
-                      <p className="text-sm text-stone-200 leading-relaxed">
-                        {signalReport.centerOfGravity}
-                      </p>
-                    </div>
+                    )}
 
-                    {/* 2. COMPETING SCENARIOS */}
+                    {/* 2. CONSTELLATION RARITY & CONSPICUOUS ANOMALY */}
+                    {signalReport.constellationRarityAnalysis && (
+                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-emerald-300 font-medium">
+                            <Eye className="w-4 h-4" />
+                            Constellation Rarity & Conspicuous Anomalies
+                          </div>
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-400/15 text-xs font-semibold text-emerald-200">
+                            Rarity: {signalReport.constellationRarityScore}/100
+                          </span>
+                        </div>
+                        <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
+                          {signalReport.constellationRarityAnalysis}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* 3. CENTER OF GRAVITY */}
+                    {signalReport.centerOfGravity && (
+                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-200 font-medium">
+                            <Compass className="w-4 h-4" />
+                            Center of Gravity & Epistemic Weighing
+                          </div>
+                          <span className="px-2.5 py-0.5 rounded-full bg-white/[0.07] text-xs font-mono text-stone-200">
+                            {signalReport.centerOfGravityLikelihood}% Weight
+                          </span>
+                        </div>
+                        <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
+                          {signalReport.centerOfGravity}
+                        </p>
+                      </div>
+                    )}
+                  </>
+                ) : drawerTab === 'power' ? (
+                  <>
+                    {/* TAB 2: IF POWER IS BEHIND THIS + HISTORICAL PRECEDENTS + SCENARIOS */}
+                    {signalReport.powerOperationBlueprint && (
+                      <div className="p-5 rounded-2xl bg-amber-400/[0.06] border border-amber-300/25 space-y-2.5">
+                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
+                          <ShieldAlert className="w-4 h-4" />
+                          If Institutional or Judicial Power Is Operating Behind the Scenes
+                        </div>
+                        <p className="text-xs sm:text-sm text-stone-200 leading-relaxed whitespace-pre-line">
+                          {signalReport.powerOperationBlueprint}
+                        </p>
+                      </div>
+                    )}
+
+                    {signalReport.historicalPrecedents && (
+                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
+                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-stone-200 font-medium">
+                          <History className="w-4 h-4 text-amber-300" />
+                          Historical Precedents & Base-Rate Frequency
+                        </div>
+                        <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
+                          {signalReport.historicalPrecedents}
+                        </p>
+                      </div>
+                    )}
+
                     {signalReport.scenarios?.length > 0 && (
                       <div className="space-y-3">
                         <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400 block">
@@ -1118,37 +1209,10 @@ export default function TouchmarkToolsApp() {
                         ))}
                       </div>
                     )}
-
-                    {/* 3. HISTORICAL PRECEDENTS */}
-                    {signalReport.historicalPrecedents && (
-                      <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
-                        <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-stone-300">
-                          <History className="w-3.5 h-3.5 text-amber-300" />
-                          Historical Precedents & Base-Rate Frequency
-                        </div>
-                        <p className="text-xs text-stone-300 leading-relaxed">
-                          {signalReport.historicalPrecedents}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* 4. CUI BONO & ANOMALIES */}
-                    {signalReport.cuiBonoAndAnomalies && (
-                      <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
-                        <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-stone-300">
-                          <Eye className="w-3.5 h-3.5 text-emerald-300" />
-                          Incentives, Timing & Missing Context
-                        </div>
-                        <p className="text-xs text-stone-300 leading-relaxed">
-                          {signalReport.cuiBonoAndAnomalies}
-                        </p>
-                      </div>
-                    )}
                   </>
                 ) : (
-                  /* TAB 2: GROUND-NEWS STYLE PERSPECTIVES SPECTRUM & MULTI-FORMAT RESEARCH LIBRARY */
+                  /* TAB 3: FULL-SPECTRUM PERSPECTIVES & MULTI-FORMAT RESEARCH LIBRARY */
                   <div className="space-y-6">
-                    {/* Intellectual & Epistemological Spectrum Map */}
                     {signalReport.spectrumPerspectives?.length > 0 && (
                       <div className="space-y-3">
                         <span className="text-[11px] uppercase tracking-[0.18em] text-amber-300/90 block">
@@ -1175,7 +1239,6 @@ export default function TouchmarkToolsApp() {
                       </div>
                     )}
 
-                    {/* Curated Studies, Essays, Blogs & YouTube Videos */}
                     {signalReport.researchLibrary?.length > 0 && (
                       <div className="space-y-3">
                         <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400 block">
@@ -1238,12 +1301,12 @@ export default function TouchmarkToolsApp() {
                   {copiedReceipt ? (
                     <>
                       <CheckCircle2 className="w-4 h-4" />
-                      Intelligence & Spectrum Brief Copied
+                      Intelligence & Spectrum Dossier Copied
                     </>
                   ) : (
                     <>
                       <Share2 className="w-4 h-4" />
-                      Copy Full Intelligence & Spectrum Brief
+                      Copy Full Intelligence & Spectrum Dossier
                     </>
                   )}
                 </button>
