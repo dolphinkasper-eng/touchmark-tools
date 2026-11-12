@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       history = []
     } = req.body || {};
 
-    // 1. STUDIO-GRADE HUMAN VOICE (Supports full 45-60s intelligence briefings)
+    // 1. STUDIO-GRADE HUMAN VOICE (Gemini 3.8 Flash-Lite TTS)
     if (action === 'speak') {
       if (!text || !text.trim()) {
         return res.status(400).json({ error: 'Text is required for speech.' });
@@ -100,13 +100,26 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       return res.status(200).json({ reply: replyText });
     }
 
-    // 3. DEEP STRUCTURED PULSE / SIGNAL INTELLIGENCE ANALYSIS
+    // 3. TWO-STAGE GROUNDED INTELLIGENCE SYNTHESIS
     if (!prompt || !prompt.trim()) {
       return res.status(400).json({ error: 'Prompt is required.' });
     }
 
+    let enrichedPrompt = prompt;
+    let groundingSources = [];
+
+    // Stage A: Dedicated Live Search Grounding Pass for hard dates, counts, timelines & primary docs
+    if (useSearch) {
+      const searchResult = await runLiveFactRetrieval(apiKey, prompt);
+      if (searchResult.factSheet) {
+        enrichedPrompt = `${prompt}\n\n=== VERIFIED LIVE SEARCH FACT SHEET & PRIMARY RECORD ===\n${searchResult.factSheet}\n\nIMPORTANT: Anchor all dates, counts, verdicts, chronologies, and primary documents accurately using the verified fact sheet above (correcting any minor premise inaccuracies in the user's question respectfully), and then apply Touchmark's full counter-narrative, institutional-power, and multi-scenario analysis.`;
+        groundingSources = searchResult.sources;
+      }
+    }
+
+    // Stage B: Structured Intelligence & Counter-Narrative Synthesis
     const generationConfig = {
-      temperature: 0.5,
+      temperature: 0.45,
       maxOutputTokens: 8192,
       thinkingConfig: { thinkingLevel: 'LOW' }
     };
@@ -117,7 +130,7 @@ The user is greeting you, checking their mic, or warming up before exploring a d
     }
 
     const payload = {
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      contents: [{ role: 'user', parts: [{ text: enrichedPrompt }] }],
       generationConfig
     };
 
@@ -125,20 +138,64 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       payload.systemInstruction = { parts: [{ text: systemInstruction }] };
     }
 
-    if (useSearch) {
-      payload.tools = [{ google_search: {} }];
-    }
-
     const rawText = await callGeminiRobust(apiKey, payload, [
       'gemini-3.8-flash',
       'gemini-3.5-flash-lite'
     ]);
-    return res.status(200).json({ text: rawText });
+
+    return res.status(200).json({ text: rawText, groundingSources });
   } catch (err) {
     console.error('Touchmark /api/discern error:', err);
     return res.status(500).json({
       error: err.message || 'Unexpected server error in /api/discern.'
     });
+  }
+}
+
+async function runLiveFactRetrieval(apiKey, query) {
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: `Gather a precise, factual, chronological intelligence briefing on this query using Google Search. Include exact dates, counts, verdicts, ages/numbers, investigative timelines, official findings, internal audits, and primary public documents: "${query}"`
+              }
+            ]
+          }
+        ],
+        tools: [{ google_search: {} }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 2048
+        }
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) return { factSheet: '', sources: [] };
+
+    const candidate = data?.candidates?.[0];
+    const factSheet =
+      candidate?.content?.parts
+        ?.map((p) => p.text || '')
+        .join('')
+        .trim() || '';
+
+    const chunks = candidate?.groundingMetadata?.groundingChunks || [];
+    const sources = chunks
+      .filter((c) => c.web?.uri && c.web?.title)
+      .map((c) => ({ title: c.web.title, url: c.web.uri }))
+      .slice(0, 6);
+
+    return { factSheet, sources };
+  } catch {
+    return { factSheet: '', sources: [] };
   }
 }
 
