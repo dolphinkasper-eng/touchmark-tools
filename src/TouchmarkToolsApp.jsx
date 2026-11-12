@@ -561,7 +561,6 @@ export default function TouchmarkToolsApp() {
       if (raw) setSavedDossiers(JSON.parse(raw));
     } catch {}
 
-    // Fetch live trending counter-narrative starter inquiries
     fetch('/api/discern', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1198,8 +1197,7 @@ export default function TouchmarkToolsApp() {
 
   return (
     <div className="min-h-screen bg-[#090807] text-stone-100 flex flex-col justify-between selection:bg-amber-400/30">
-      {/* Ultra-minimal Top Bar */}
-     {/* Ultra-minimal Top Bar — 3-column grid keeps Pulse | Signal dead-center */}
+      {/* Ultra-minimal Top Bar — 3-column grid keeps Pulse | Signal dead-center */}
       <header className="px-5 sm:px-8 h-16 grid grid-cols-3 items-center">
         <div className="flex items-center gap-2.5 text-stone-300 justify-self-start">
           <TouchmarkLogo className="w-6 h-6 text-amber-300/90" />
@@ -1536,7 +1534,6 @@ export default function TouchmarkToolsApp() {
                   </div>
                 )}
 
-                {/* Centered PDF & Markdown Export Buttons */}
                 <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <button
                     type="button"
