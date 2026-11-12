@@ -1196,30 +1196,30 @@ export default function TouchmarkToolsApp() {
         {/* Mode Pill */}
         <div className="flex items-center bg-white/[0.04] p-1 rounded-full border border-white/10">
 
-        <div className="pt-4 border-t border-white/10 grid sm:grid-cols-2 gap-2.5">
+        <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <button
                     type="button"
                     onClick={exportFullPdfDossier}
-                    className="w-full py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs uppercase tracking-wider hover:bg-amber-200 flex items-center justify-center gap-2 transition-colors"
+                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs tracking-wide whitespace-nowrap hover:bg-amber-200 flex items-center justify-center gap-2 transition-colors"
                   >
-                    <Printer className="w-4 h-4" />
-                    Export Full PDF Dossier
+                    <Printer className="w-4 h-4 shrink-0" />
+                    <span>Export PDF Dossier</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={copyReceipt}
-                    className="w-full py-3 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-stone-200 font-medium text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
+                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-stone-200 font-medium text-xs tracking-wide whitespace-nowrap flex items-center justify-center gap-2 transition-colors"
                   >
                     {copiedReceipt ? (
                       <>
-                        <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-                        Markdown Copied
+                        <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                        <span>Markdown Copied</span>
                       </>
                     ) : (
                       <>
-                        <Share2 className="w-4 h-4" />
-                        Copy All Markdown
+                        <Share2 className="w-4 h-4 shrink-0" />
+                        <span>Copy Markdown</span>
                       </>
                     )}
                   </button>
@@ -1257,28 +1257,31 @@ export default function TouchmarkToolsApp() {
             {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-stone-600" />}
           </button>
 
-          {savedDossiers.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setArchiveOpen(true)}
-              aria-label="Saved Dossiers"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-xs text-stone-300 transition-all"
-            >
-              <FolderOpen className="w-3.5 h-3.5 text-stone-400" />
-              <span className="hidden sm:inline">Archive ({savedDossiers.length})</span>
-            </button>
+          {hasArtifact && (
+            <>
+              {savedDossiers.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setArchiveOpen(true)}
+                  aria-label="Saved Dossiers"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-xs text-stone-300 transition-all"
+                >
+                  <FolderOpen className="w-3.5 h-3.5 text-stone-400" />
+                  <span className="hidden sm:inline">Archive ({savedDossiers.length})</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(true)}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-xs text-amber-200 transition-all"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Dossier</span>
+              </button>
+            </>
           )}
 
-          {hasArtifact && (
-            <button
-              type="button"
-              onClick={() => setDrawerOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-xs text-amber-200 transition-all"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>Dossier</span>
-            </button>
-          )}
         </div>
       </header>
 
