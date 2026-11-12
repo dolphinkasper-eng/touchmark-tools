@@ -12,7 +12,12 @@ import {
   AlertTriangle,
   Sparkles,
   Scale,
-  ShieldAlert
+  Compass,
+  History,
+  Eye,
+  BookOpen,
+  Youtube,
+  GraduationCap
 } from 'lucide-react';
 
 // --- BRAND MARK ---
@@ -26,7 +31,7 @@ function TouchmarkLogo({ className = 'w-6 h-6' }) {
   );
 }
 
-// --- WEB AUDIO HARMONIC CONTEMPLATION ENGINE (Zero external files) ---
+// --- WEB AUDIO HARMONIC CONTEMPLATION ENGINE ---
 function createContemplationSoundscape() {
   if (typeof window === 'undefined') return null;
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -45,13 +50,12 @@ function createContemplationSoundscape() {
       const now = ctx.currentTime;
       masterGain = ctx.createGain();
       masterGain.gain.setValueAtTime(0.0001, now);
-      masterGain.gain.exponentialRampToValueAtTime(0.045, now + 0.9); // Whisper-soft harmonic bed
+      masterGain.gain.exponentialRampToValueAtTime(0.045, now + 0.9);
 
       const filter = ctx.createBiquadFilter();
       filter.type = 'lowpass';
       filter.frequency.setValueAtTime(340, now);
 
-      // Gentle breathing LFO on filter
       const lfo = ctx.createOscillator();
       const lfoGain = ctx.createGain();
       lfo.frequency.setValueAtTime(0.28, now);
@@ -59,8 +63,7 @@ function createContemplationSoundscape() {
       lfo.connect(lfoGain);
       lfoGain.connect(filter.frequency);
 
-      // Warm open-fifth harmonic chord (A2 + E3 + B3)
-      const root = mode === 'signal' ? 110 : 98; // A2 for Signal, G2 for Pulse
+      const root = mode === 'signal' ? 110 : 98;
       const freqs = [root, root * 1.498, root * 2.247];
       const oscs = freqs.map((f, idx) => {
         const osc = ctx.createOscillator();
@@ -79,9 +82,7 @@ function createContemplationSoundscape() {
       masterGain.connect(ctx.destination);
 
       activeNodes = [...oscs, lfo];
-    } catch {
-      // Ignore autoplay restrictions silently
-    }
+    } catch {}
   };
 
   const stopThinkingDrone = (playChime = true) => {
@@ -103,13 +104,12 @@ function createContemplationSoundscape() {
         });
       }, 400);
 
-      // Soft crystal resolution harmonic when insight arrives
       if (playChime) {
         const chimeOsc = ctx.createOscillator();
         const chimeGain = ctx.createGain();
         chimeOsc.type = 'sine';
-        chimeOsc.frequency.setValueAtTime(587.33, now); // D5
-        chimeOsc.frequency.exponentialRampToValueAtTime(880, now + 0.45); // A5
+        chimeOsc.frequency.setValueAtTime(587.33, now);
+        chimeOsc.frequency.exponentialRampToValueAtTime(880, now + 0.45);
         chimeGain.gain.setValueAtTime(0.0001, now);
         chimeGain.gain.exponentialRampToValueAtTime(0.032, now + 0.06);
         chimeGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.85);
@@ -124,7 +124,7 @@ function createContemplationSoundscape() {
   return { startThinkingDrone, stopThinkingDrone };
 }
 
-// --- 3D MORPHING SPHERICAL RESONANCE ORB WITH ORBITAL TELEMETRY ---
+// --- 3D MORPHING SPHERICAL RESONANCE ORB ---
 function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
   const isListening = status === 'listening';
   const isThinking = status === 'thinking';
@@ -185,9 +185,8 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
         type="button"
         onClick={onClick}
         aria-label={isListening ? 'Stop listening' : 'Tap sphere to speak'}
-        className="relative w-64 h-64 sm:w-72 sm:h-72 flex items-center justify-center focus:outline-none group cursor-pointer"
+        className="relative w-60 h-60 sm:w-68 sm:h-68 flex items-center justify-center focus:outline-none group cursor-pointer"
       >
-        {/* Ambient outer halo */}
         <div
           style={{ background: palette.aura }}
           className={`absolute inset-0 rounded-full blur-3xl transition-all duration-700 ${
@@ -195,49 +194,44 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
           }`}
         />
 
-        {/* Luminous Orbital Filaments during Thinking / Discerning */}
         {isThinking && (
           <>
             <div
               style={{ borderColor: palette.rim }}
-              className="absolute w-60 h-60 sm:w-64 sm:h-64 rounded-full border border-dashed opacity-60 orbit-cw pointer-events-none"
+              className="absolute w-56 h-56 sm:w-60 sm:h-60 rounded-full border border-dashed opacity-60 orbit-cw pointer-events-none"
             >
               <span className={`absolute -top-1 left-1/2 w-2 h-2 rounded-full ${palette.dot} shadow-lg`} />
             </div>
             <div
               style={{ borderColor: palette.rim }}
-              className="absolute w-54 h-54 sm:w-58 sm:h-58 rounded-full border border-dotted opacity-45 orbit-ccw pointer-events-none"
+              className="absolute w-50 h-50 sm:w-54 sm:h-54 rounded-full border border-dotted opacity-45 orbit-ccw pointer-events-none"
             >
               <span className={`absolute -bottom-1 left-1/2 w-1.5 h-1.5 rounded-full ${palette.dot}`} />
             </div>
           </>
         )}
 
-        {/* Secondary morphing liquid membrane */}
         <div
           style={{
             border: `1px solid ${palette.rim}`,
             boxShadow: `inset 0 0 40px ${palette.rim}`
           }}
-          className={`absolute w-52 h-52 sm:w-56 sm:h-56 opacity-45 transition-all duration-500 ${
+          className={`absolute w-48 h-48 sm:w-52 sm:h-52 opacity-45 transition-all duration-500 ${
             isListening || isSpeaking || isThinking ? 'orb-active' : 'orb-organic'
           }`}
         />
 
-        {/* Primary 3D Sculpted Morphing Sphere */}
         <div
           style={{
             background: palette.sphere,
             boxShadow: `inset -18px -22px 38px rgba(0,0,0,0.82), inset 10px 12px 24px rgba(255,255,255,0.22), 0 24px 60px rgba(0,0,0,0.75)`
           }}
-          className={`relative w-48 h-48 sm:w-52 sm:h-52 flex items-center justify-center transition-transform duration-500 ${
+          className={`relative w-44 h-44 sm:w-48 sm:h-48 flex items-center justify-center transition-transform duration-500 ${
             isListening || isSpeaking || isThinking ? 'orb-active' : 'orb-organic group-hover:scale-[1.03]'
           }`}
         >
-          {/* Specular 3D highlight */}
-          <div className="absolute top-6 left-8 w-16 h-10 rounded-full bg-white/20 blur-md -rotate-25 pointer-events-none" />
+          <div className="absolute top-6 left-8 w-14 h-9 rounded-full bg-white/20 blur-md -rotate-25 pointer-events-none" />
 
-          {/* Subtle center state cue */}
           <div className="relative z-10 flex flex-col items-center text-stone-100/85">
             {isListening && <Mic className="w-6 h-6 text-amber-200 animate-pulse" />}
             {isThinking && (
@@ -272,8 +266,10 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
 }
 
 // --- PROMPTS & SCHEMAS ---
-const PULSE_SYSTEM_PROMPT = `You are Touchmark Pulse, a calm, perceptive relational and decision discernment sanctuary.
-Given a user's situation or tension, distill the core tension, name the hidden assumption, offer 3 grounded strategic paths with trade-offs, and provide a warm 2-sentence spoken reflection.`;
+const PULSE_SYSTEM_PROMPT = `You are Touchmark Pulse, a candid, deeply perceptive strategic, psychological, and relational intelligence copilot.
+Look beneath the surface of the user's situation—naming unspoken power dynamics, hidden incentives, self-deceptions, and downstream consequences.
+Also recommend 4 high-integrity thinkers, books, essays, or talks across analytical, psychological, and philosophical/spiritual traditions so the user can deepen their own reflection.
+Return JSON matching the schema.`;
 
 const PULSE_RESPONSE_SCHEMA = {
   type: 'OBJECT',
@@ -281,6 +277,7 @@ const PULSE_RESPONSE_SCHEMA = {
     title: { type: 'STRING' },
     coreTension: { type: 'STRING' },
     hiddenAssumption: { type: 'STRING' },
+    powerDynamic: { type: 'STRING' },
     spokenReflection: { type: 'STRING' },
     options: {
       type: 'ARRAY',
@@ -293,28 +290,87 @@ const PULSE_RESPONSE_SCHEMA = {
         },
         required: ['label', 'stance', 'tradeoff']
       }
+    },
+    deepDiveReferences: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          title: { type: 'STRING' },
+          creatorOrPublication: { type: 'STRING' },
+          lens: { type: 'STRING' },
+          format: { type: 'STRING' },
+          whyItMatters: { type: 'STRING' },
+          searchQuery: { type: 'STRING' }
+        },
+        required: ['title', 'creatorOrPublication', 'lens', 'format', 'whyItMatters', 'searchQuery']
+      }
     }
   },
-  required: ['title', 'coreTension', 'hiddenAssumption', 'spokenReflection', 'options']
+  required: [
+    'title',
+    'coreTension',
+    'hiddenAssumption',
+    'powerDynamic',
+    'spokenReflection',
+    'options',
+    'deepDiveReferences'
+  ]
 };
 
-const SIGNAL_SYSTEM_PROMPT = `You are Touchmark Signal, an epistemic discernment and institutional-power anomaly engine.
-When analyzing a public event, legal case, or controversial claim:
-1. Establish the verified baseline facts accurately without inventing rumors.
-2. Evaluate the "Constellation Rarity & Convergence" lens: articulate why sharp observers notice unusual timing, power asymmetries, institutional pressure, or evidentiary gaps—without making unverified accusations.
-3. Return valid JSON ONLY with these exact keys:
+const SIGNAL_SYSTEM_PROMPT = `You are Touchmark Signal, an unvarnished political-economy, institutional-power, and epistemic intelligence analyst.
+The user wants you to look past sanitized mainstream framing, examine what is likely happening behind the scenes, establish a Center of Gravity, score competing hypotheses, and curate a Ground-News-style multi-perspective research library across the full intellectual spectrum.
+
+Return valid JSON ONLY with these exact keys:
 {
-  "claim": "Concise framing of the event or claim",
-  "verdict": "Supported | Nuanced / Contested | High Convergence Anomaly | Unsubstantiated",
-  "evidentiaryScore": 75,
-  "convergenceRarityScore": 78,
-  "spokenSummary": "Warm, measured 2-3 sentence spoken reflection honoring both the official record and what feels unusual beneath the surface",
-  "denominatorCheck": "Baseline context, evidentiary standards, and what is missing from surface headlines",
-  "convergenceHypothesis": "Steel-manned articulation of the institutional-power / timing anomaly lens (why observers suspect coordinated pressure or selective enforcement)",
-  "mundaneCounterweight": "Strongest non-conspiratorial explanation for the same pattern",
-  "receiptNote": "Balanced, citable creator summary",
-  "sources": [{ "title": "Source title", "url": "https://..." }]
-}`;
+  "spokenSynthesis": "Rich, candid 4–5 sentence spoken briefing naming the mainstream narrative, what feels anomalous beneath the surface, your Center of Gravity assessment, and the competing possibilities.",
+  "centerOfGravity": "Thorough paragraph explaining the most probable underlying reality where power, timing, and institutional incentives intersect.",
+  "centerOfGravityLikelihood": 64,
+  "scenarios": [
+    {
+      "name": "Short title of hypothesis (include the non-mainstream / institutional-power hypothesis as well as structural and organic explanations)",
+      "likelihood": 64,
+      "caseFor": "Detailed reasoning, anomalies, timing clues, and incentives supporting this possibility",
+      "caseAgainst": "What weakens or complicates this possibility"
+    }
+  ],
+  "historicalPrecedents": "Substantive paragraph citing specific historical parallels and base-rate frequency.",
+  "cuiBonoAndAnomalies": "Detailed breakdown of who benefits, procedural/timing anomalies, and missing context.",
+  "spectrumPerspectives": [
+    {
+      "lens": "Analytical · Left / Institutional Critique",
+      "thinkerOrOutlet": "Specific high-integrity writer, scholar, or publication",
+      "coreThesis": "How this perspective frames the issue intelligently"
+    },
+    {
+      "lens": "Analytical · Right / Heterodox & Civil Liberties",
+      "thinkerOrOutlet": "Specific high-integrity writer, scholar, or publication",
+      "coreThesis": "How this perspective frames the issue intelligently"
+    },
+    {
+      "lens": "Philosophical · Depth-Psychological & Moral",
+      "thinkerOrOutlet": "Specific philosopher, psychologist, or cultural essayist",
+      "coreThesis": "What deeper human, archetypal, or civilizational pattern they point to"
+    },
+    {
+      "lens": "Spiritual · Contemplative & Wisdom Tradition",
+      "thinkerOrOutlet": "Specific contemplative thinker, essayist, or wisdom framework",
+      "coreThesis": "How this lens interprets power, shadow, discernment, or collective awakening"
+    }
+  ],
+  "researchLibrary": [
+    {
+      "title": "Specific study, essay, Substack piece, or YouTube conversation/lecture",
+      "authorOrChannel": "Author, researcher, or channel name",
+      "format": "Study | Essay / Substack | YouTube | Book / Lecture",
+      "perspectiveTag": "Left-Analytical | Right-Heterodox | Independent / Anti-Establishment | Philosophical | Spiritual",
+      "takeaway": "1–2 sentences on why this source adds genuine intellectual depth",
+      "url": "Direct verified URL if known from search, otherwise empty string",
+      "searchQuery": "Exact search query to pull up this exact study, essay, or YouTube talk"
+    }
+  ]
+}
+Include 6–8 diverse, high-integrity entries in "researchLibrary" spanning studies, essays/blogs, and YouTube videos across Left, Right, Heterodox, Philosophical, and Spiritual lenses.`;
 
 const VOICE_OPTIONS = [
   { id: 'Aoede', label: 'Aoede' },
@@ -324,17 +380,17 @@ const VOICE_OPTIONS = [
 ];
 
 const PULSE_THINKING_PHASES = [
-  'Listening beneath the surface…',
-  'Naming the core tension…',
-  'Tracing hidden assumptions…',
-  'Shaping grounded paths…'
+  'Reading beneath the surface…',
+  'Mapping hidden incentives…',
+  'Testing unspoken assumptions…',
+  'Curating philosophical & analytical voices…'
 ];
 
 const SIGNAL_THINKING_PHASES = [
-  'Gathering baseline record…',
-  'Checking denominators & timelines…',
-  'Weighing convergence anomalies…',
-  'Balancing counter-hypotheses…'
+  'Scanning official & counter-narratives…',
+  'Calculating Center of Gravity…',
+  'Weighing historical precedents & frequency…',
+  'Assembling Left, Right & Philosophical sources…'
 ];
 
 function pcmBase64ToWavUrl(base64, sampleRate = 24000) {
@@ -411,9 +467,24 @@ function extractJsonObject(raw) {
   return JSON.parse(stripped.slice(firstBrace, lastBrace + 1));
 }
 
+function buildSmartResearchUrl(item) {
+  if (item.url && item.url.startsWith('http') && !item.url.includes('vertexaisearch')) {
+    return item.url;
+  }
+  const q = encodeURIComponent(item.searchQuery || `${item.title} ${item.authorOrChannel || ''}`);
+  const fmt = (item.format || '').toLowerCase();
+  if (fmt.includes('youtube') || fmt.includes('video')) {
+    return `https://www.youtube.com/results?search_query=${q}`;
+  }
+  if (fmt.includes('study') || fmt.includes('paper')) {
+    return `https://scholar.google.com/scholar?q=${q}`;
+  }
+  return `https://www.google.com/search?q=${q}`;
+}
+
 export default function TouchmarkToolsApp() {
-  const [mode, setMode] = useState('pulse'); // 'pulse' | 'signal'
-  const [status, setStatus] = useState('idle'); // 'idle' | 'listening' | 'thinking' | 'speaking'
+  const [mode, setMode] = useState('signal');
+  const [status, setStatus] = useState('idle');
   const [thinkingPhaseIndex, setThinkingPhaseIndex] = useState(0);
   const [inputText, setInputText] = useState('');
   const [voiceEnabled, setVoiceEnabled] = useState(true);
@@ -421,11 +492,12 @@ export default function TouchmarkToolsApp() {
   const [errorBanner, setErrorBanner] = useState('');
 
   const [activeCaption, setActiveCaption] = useState(
-    'I’m here. Say hello to test your mic, or share what you’re discerning.'
+    'I’m listening. Say hello to test your mic, or bring a narrative, case, or decision to look beneath the surface.'
   );
   const [history, setHistory] = useState([]);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerTab, setDrawerTab] = useState('analysis'); // 'analysis' | 'spectrum'
   const [hasArtifact, setHasArtifact] = useState(false);
   const [pulseLedger, setPulseLedger] = useState(null);
   const [signalReport, setSignalReport] = useState(null);
@@ -442,7 +514,6 @@ export default function TouchmarkToolsApp() {
     };
   }, []);
 
-  // Cycle living contemplation whispers while thinking
   useEffect(() => {
     if (status !== 'thinking') {
       setThinkingPhaseIndex(0);
@@ -450,7 +521,7 @@ export default function TouchmarkToolsApp() {
     }
     const timer = setInterval(() => {
       setThinkingPhaseIndex((prev) => (prev + 1) % 4);
-    }, 1500);
+    }, 1600);
     return () => clearInterval(timer);
   }, [status]);
 
@@ -465,7 +536,6 @@ export default function TouchmarkToolsApp() {
     setStatus((prev) => (prev === 'speaking' ? 'idle' : prev));
   };
 
-  // Text appears immediately; audio loads in parallel and starts speaking smoothly
   const speakResponse = async (textToSpeak) => {
     if (!voiceEnabled || !textToSpeak) {
       setStatus('idle');
@@ -591,7 +661,6 @@ export default function TouchmarkToolsApp() {
     setInputText('');
     setStatus('thinking');
 
-    // Start ambient harmonic contemplation soundscape if sound is enabled
     if (voiceEnabled) {
       soundscapeRef.current?.startThinkingDrone(mode);
     }
@@ -600,7 +669,7 @@ export default function TouchmarkToolsApp() {
     setHistory(updatedHistory);
 
     try {
-      // 1. Fast Warm Copilot Chat Turn
+      // 1. Warm Copilot Chat Turn
       if (isConversationalCheckIn(query)) {
         const res = await fetch('/api/discern', {
           method: 'POST',
@@ -622,7 +691,7 @@ export default function TouchmarkToolsApp() {
         return;
       }
 
-      // 2. Snappy Pulse Decision Discernment
+      // 2. Pulse Deep Discernment
       if (mode === 'pulse') {
         const res = await fetch('/api/discern', {
           method: 'POST',
@@ -641,6 +710,7 @@ export default function TouchmarkToolsApp() {
         const parsed = extractJsonObject(data.text);
         setPulseLedger(parsed);
         setHasArtifact(true);
+        setDrawerTab('analysis');
         const reflection = parsed.spokenReflection || 'Here is what stands out beneath the surface.';
         setActiveCaption(reflection);
         setHistory((prev) => [...prev, { role: 'assistant', text: reflection }]);
@@ -648,13 +718,13 @@ export default function TouchmarkToolsApp() {
         return;
       }
 
-      // 3. Signal Epistemic & Convergence Audit
+      // 3. Signal Intelligence + Ground-News Style Multi-Perspective Research Library
       const res = await fetch('/api/discern', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'analyze',
-          prompt: `Examine this event, case, or claim thoroughly using both the verified record and the institutional-power / convergence rarity lens: "${query}"`,
+          prompt: `Conduct a deep, candid intelligence assessment of this subject—looking beyond the mainstream framing to evaluate political/economic incentives, historical precedent, frequency, competing possibilities, and a rich multi-perspective research library (studies, essays, blogs, YouTube talks across Left, Right, Heterodox, Analytical, Philosophical, and Spiritual lenses): "${query}"`,
           systemInstruction: SIGNAL_SYSTEM_PROMPT,
           useSearch: true
         })
@@ -665,19 +735,23 @@ export default function TouchmarkToolsApp() {
 
       const parsed = extractJsonObject(data.text);
       setSignalReport({
-        claim: parsed.claim || query,
-        verdict: parsed.verdict || 'Nuanced / Contested',
-        evidentiaryScore: parsed.evidentiaryScore ?? 72,
-        convergenceRarityScore: parsed.convergenceRarityScore ?? 76,
-        spokenSummary: parsed.spokenSummary || 'Audit complete. Open the dossier to inspect both lenses.',
-        denominatorCheck: parsed.denominatorCheck || '',
-        convergenceHypothesis: parsed.convergenceHypothesis || '',
-        mundaneCounterweight: parsed.mundaneCounterweight || '',
-        receiptNote: parsed.receiptNote || parsed.spokenSummary || query,
-        sources: Array.isArray(parsed.sources) ? parsed.sources : []
+        subject: query,
+        spokenSynthesis:
+          parsed.spokenSynthesis ||
+          'Intelligence brief ready. Open the full dossier to inspect the Center of Gravity, competing scenarios, and multi-perspective research library.',
+        centerOfGravity: parsed.centerOfGravity || '',
+        centerOfGravityLikelihood: parsed.centerOfGravityLikelihood ?? 62,
+        scenarios: Array.isArray(parsed.scenarios) ? parsed.scenarios : [],
+        historicalPrecedents: parsed.historicalPrecedents || '',
+        cuiBonoAndAnomalies: parsed.cuiBonoAndAnomalies || '',
+        spectrumPerspectives: Array.isArray(parsed.spectrumPerspectives)
+          ? parsed.spectrumPerspectives
+          : [],
+        researchLibrary: Array.isArray(parsed.researchLibrary) ? parsed.researchLibrary : []
       });
       setHasArtifact(true);
-      const spoken = parsed.spokenSummary || 'Your Signal dossier is ready.';
+      setDrawerTab('analysis');
+      const spoken = parsed.spokenSynthesis || 'Your Signal intelligence dossier is ready.';
       setActiveCaption(spoken);
       setHistory((prev) => [...prev, { role: 'assistant', text: spoken }]);
       speakResponse(spoken);
@@ -690,7 +764,13 @@ export default function TouchmarkToolsApp() {
 
   const copyReceipt = () => {
     if (!signalReport) return;
-    const text = `Touchmark Signal Dossier\nSubject: ${signalReport.claim}\nVerdict: ${signalReport.verdict}\nEvidentiary Record: ${signalReport.evidentiaryScore}/100 | Convergence Rarity: ${signalReport.convergenceRarityScore}/100\nSummary: ${signalReport.receiptNote}`;
+    const scenarioLines = signalReport.scenarios
+      .map((s) => `- ${s.name} (${s.likelihood}%): ${s.caseFor}`)
+      .join('\n');
+    const refLines = signalReport.researchLibrary
+      .map((r) => `- [${r.perspectiveTag} · ${r.format}] ${r.title} (${r.authorOrChannel})`)
+      .join('\n');
+    const text = `Touchmark Intelligence & Spectrum Brief\nSubject: ${signalReport.subject}\n\nCenter of Gravity (${signalReport.centerOfGravityLikelihood}%):\n${signalReport.centerOfGravity}\n\nCompeting Scenarios:\n${scenarioLines}\n\nHistorical Precedents:\n${signalReport.historicalPrecedents}\n\nFurther Research Across Perspectives:\n${refLines}`;
     navigator.clipboard?.writeText(text);
     setCopiedReceipt(true);
     setTimeout(() => setCopiedReceipt(false), 2000);
@@ -710,7 +790,7 @@ export default function TouchmarkToolsApp() {
           <span className="text-sm font-medium tracking-wide">Touchmark</span>
         </div>
 
-        {/* Minimal Mode Pill */}
+        {/* Mode Pill */}
         <div className="flex items-center bg-white/[0.04] p-1 rounded-full border border-white/10">
           <button
             type="button"
@@ -775,10 +855,10 @@ export default function TouchmarkToolsApp() {
         </div>
       </header>
 
-      {/* Center Sanctuary: Morphing 3D Orb + Single Poetic Subtitle */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-2xl mx-auto w-full">
+      {/* Center Sanctuary: Morphing 3D Orb + Substantive Spoken Briefing */}
+      <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-2xl mx-auto w-full py-4">
         {errorBanner && (
-          <div className="mb-6 flex items-center gap-2 px-4 py-2 rounded-full bg-red-950/60 border border-red-400/30 text-xs text-red-200">
+          <div className="mb-5 flex items-center gap-2 px-4 py-2 rounded-full bg-red-950/60 border border-red-400/30 text-xs text-red-200">
             <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
             <span>{errorBanner}</span>
           </div>
@@ -791,22 +871,37 @@ export default function TouchmarkToolsApp() {
           onClick={toggleListening}
         />
 
-        <p className="mt-8 text-base sm:text-lg font-light text-stone-200/90 leading-relaxed max-w-xl transition-opacity duration-300">
+        <p className="mt-7 text-sm sm:text-base font-light text-stone-200/95 leading-relaxed max-w-xl transition-opacity duration-300">
           {status === 'thinking' ? currentThinkingLabel : activeCaption}
         </p>
 
         {hasArtifact && status !== 'thinking' && (
-          <button
-            type="button"
-            onClick={() => setDrawerOpen(true)}
-            className="mt-4 text-xs uppercase tracking-[0.2em] text-amber-300/80 hover:text-amber-200 transition-colors"
-          >
-            Inspect Full Breakdown →
-          </button>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => {
+                setDrawerTab('analysis');
+                setDrawerOpen(true);
+              }}
+              className="px-4 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.11] border border-white/15 text-[11px] uppercase tracking-[0.18em] text-amber-200 transition-all"
+            >
+              Center of Gravity & Scenarios →
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setDrawerTab('spectrum');
+                setDrawerOpen(true);
+              }}
+              className="px-4 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[11px] uppercase tracking-[0.18em] text-stone-300 hover:text-amber-200 transition-all"
+            >
+              Explore Spectrum & Sources →
+            </button>
+          </div>
         )}
       </main>
 
-      {/* Whisper-quiet Bottom Input Bar */}
+      {/* Bottom Input Bar */}
       <footer className="px-4 sm:px-8 pb-6 pt-2 max-w-xl mx-auto w-full">
         <form
           onSubmit={(e) => {
@@ -821,8 +916,8 @@ export default function TouchmarkToolsApp() {
             onChange={(e) => setInputText(e.target.value)}
             placeholder={
               mode === 'pulse'
-                ? 'Speak to the orb, or type a tension…'
-                : 'Speak to the orb, or test a public narrative…'
+                ? 'Speak to the orb, or unpack a personal/strategic tension…'
+                : 'Speak to the orb, or probe what is really driving an event…'
             }
             className="flex-1 bg-transparent text-sm text-stone-200 placeholder:text-stone-600 focus:outline-none"
           />
@@ -837,15 +932,15 @@ export default function TouchmarkToolsApp() {
         </form>
       </footer>
 
-      {/* Slide-Over Dossier Drawer */}
+      {/* Slide-Over Intelligence & Multi-Perspective Dossier Drawer */}
       {drawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-[#11100e] border-l border-white/10 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/80 backdrop-blur-sm">
+          <div className="w-full max-w-2xl bg-[#11100e] border-l border-white/10 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto">
             {mode === 'pulse' && pulseLedger ? (
               <div className="space-y-6">
                 <div className="flex items-center justify-between border-b border-white/10 pb-4">
                   <span className="text-xs uppercase tracking-[0.2em] text-emerald-300">
-                    Pulse Discernment
+                    Pulse Deep Discernment
                   </span>
                   <button
                     type="button"
@@ -858,7 +953,7 @@ export default function TouchmarkToolsApp() {
 
                 <h2 className="text-xl font-medium text-stone-100">{pulseLedger.title}</h2>
 
-                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1">
+                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1.5">
                   <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-emerald-300">
                     <Scale className="w-3.5 h-3.5" />
                     Core Tension
@@ -866,17 +961,22 @@ export default function TouchmarkToolsApp() {
                   <p className="text-sm text-stone-300 leading-relaxed">{pulseLedger.coreTension}</p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1">
+                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1.5">
                   <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-amber-300">
                     <Sparkles className="w-3.5 h-3.5" />
-                    Hidden Assumption
+                    Hidden Assumption & Power Dynamic
                   </div>
                   <p className="text-sm text-stone-300 leading-relaxed">{pulseLedger.hiddenAssumption}</p>
+                  {pulseLedger.powerDynamic && (
+                    <p className="text-xs text-stone-400 pt-2 border-t border-white/5 leading-relaxed">
+                      {pulseLedger.powerDynamic}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-3">
                   <span className="text-[11px] uppercase tracking-wider text-stone-500">
-                    Three Grounded Paths
+                    Three Strategic Paths
                   </span>
                   {pulseLedger.options?.map((opt, idx) => (
                     <div key={idx} className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
@@ -888,101 +988,245 @@ export default function TouchmarkToolsApp() {
                     </div>
                   ))}
                 </div>
+
+                {pulseLedger.deepDiveReferences?.length > 0 && (
+                  <div className="space-y-3 pt-2 border-t border-white/10">
+                    <span className="text-[11px] uppercase tracking-wider text-emerald-300/90 block">
+                      Thinkers, Essays & Talks to Go Deeper
+                    </span>
+                    {pulseLedger.deepDiveReferences.map((ref, idx) => (
+                      <a
+                        key={idx}
+                        href={buildSmartResearchUrl(ref)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-emerald-300/35 transition-colors space-y-1.5"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10px] uppercase tracking-wider text-emerald-300">
+                            {ref.lens} · {ref.format}
+                          </span>
+                          <ExternalLink className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+                        </div>
+                        <h4 className="text-sm font-medium text-stone-100">{ref.title}</h4>
+                        <p className="text-xs text-stone-400">{ref.creatorOrPublication}</p>
+                        <p className="text-xs text-stone-300 leading-relaxed">{ref.whyItMatters}</p>
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : mode === 'signal' && signalReport ? (
               <div className="space-y-6">
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                  <span className="text-xs uppercase tracking-[0.2em] text-amber-300">
-                    Signal Epistemic & Convergence Dossier
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setDrawerOpen(false)}
-                    className="p-1.5 rounded-full bg-white/5 text-stone-400 hover:text-white"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div>
-                  <span className="inline-block px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-xs text-amber-200 mb-2">
-                    {signalReport.verdict}
-                  </span>
-                  <h2 className="text-lg font-medium text-stone-100">“{signalReport.claim}”</h2>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
-                    <span className="text-[10px] uppercase tracking-wider text-stone-400 block">
-                      Official Record Strength
+                {/* Drawer Header + Sub-Tab Switcher */}
+                <div className="space-y-4 border-b border-white/10 pb-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs uppercase tracking-[0.2em] text-amber-300">
+                      Signal Intelligence & Spectrum Dossier
                     </span>
-                    <span className="text-2xl font-semibold text-stone-100 mt-1 block">
-                      {signalReport.evidentiaryScore}
-                      <span className="text-xs text-stone-500">/100</span>
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setDrawerOpen(false)}
+                      className="p-1.5 rounded-full bg-white/5 text-stone-400 hover:text-white"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                   </div>
-                  <div className="p-4 rounded-2xl bg-amber-400/[0.06] border border-amber-400/20">
-                    <span className="text-[10px] uppercase tracking-wider text-amber-300/90 block">
-                      Convergence Rarity Index
-                    </span>
-                    <span className="text-2xl font-semibold text-amber-200 mt-1 block">
-                      {signalReport.convergenceRarityScore}
-                      <span className="text-xs text-amber-300/60">/100</span>
-                    </span>
+
+                  {/* Two-Tab Navigation inside Drawer */}
+                  <div className="flex items-center gap-2 bg-white/[0.04] p-1 rounded-full border border-white/10 w-fit">
+                    <button
+                      type="button"
+                      onClick={() => setDrawerTab('analysis')}
+                      className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        drawerTab === 'analysis'
+                          ? 'bg-amber-400/20 text-amber-200'
+                          : 'text-stone-400 hover:text-stone-200'
+                      }`}
+                    >
+                      Center of Gravity & Scenarios
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDrawerTab('spectrum')}
+                      className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        drawerTab === 'spectrum'
+                          ? 'bg-amber-400/20 text-amber-200'
+                          : 'text-stone-400 hover:text-stone-200'
+                      }`}
+                    >
+                      Perspectives & Research ({signalReport.researchLibrary?.length || 0})
+                    </button>
                   </div>
                 </div>
 
-                {signalReport.convergenceHypothesis && (
-                  <div className="p-4 rounded-2xl bg-amber-400/[0.05] border border-amber-300/20 space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-amber-300">
-                      <ShieldAlert className="w-3.5 h-3.5" />
-                      Convergence & Power-Asymmetry Lens
+                {drawerTab === 'analysis' ? (
+                  <>
+                    <div>
+                      <span className="text-[11px] uppercase tracking-wider text-stone-500 block mb-1">
+                        Subject Under Examination
+                      </span>
+                      <h2 className="text-lg font-medium text-stone-100 leading-snug">
+                        “{signalReport.subject}”
+                      </h2>
                     </div>
-                    <p className="text-xs text-stone-200 leading-relaxed">
-                      {signalReport.convergenceHypothesis}
-                    </p>
-                  </div>
-                )}
 
-                {signalReport.mundaneCounterweight && (
-                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
-                    <span className="text-[11px] uppercase tracking-wider text-stone-400 block">
-                      Base-Rate Counterweight
-                    </span>
-                    <p className="text-xs text-stone-300 leading-relaxed">
-                      {signalReport.mundaneCounterweight}
-                    </p>
-                  </div>
-                )}
+                    {/* 1. CENTER OF GRAVITY */}
+                    <div className="p-5 rounded-2xl bg-amber-400/[0.07] border border-amber-400/25 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
+                          <Compass className="w-4 h-4" />
+                          Center of Gravity
+                        </div>
+                        <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-xs font-semibold text-amber-200">
+                          {signalReport.centerOfGravityLikelihood}% Likelihood
+                        </span>
+                      </div>
+                      <p className="text-sm text-stone-200 leading-relaxed">
+                        {signalReport.centerOfGravity}
+                      </p>
+                    </div>
 
-                {signalReport.denominatorCheck && (
-                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
-                    <span className="text-[11px] uppercase tracking-wider text-stone-400 block">
-                      Evidentiary & Baseline Context
-                    </span>
-                    <p className="text-xs text-stone-300 leading-relaxed">
-                      {signalReport.denominatorCheck}
-                    </p>
-                  </div>
-                )}
+                    {/* 2. COMPETING SCENARIOS */}
+                    {signalReport.scenarios?.length > 0 && (
+                      <div className="space-y-3">
+                        <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400 block">
+                          Competing Possibilities & Probability Weights
+                        </span>
+                        {signalReport.scenarios.map((sc, idx) => (
+                          <div
+                            key={idx}
+                            className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2"
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <h3 className="text-sm font-medium text-stone-100">{sc.name}</h3>
+                              <span className="shrink-0 px-2.5 py-0.5 rounded-full bg-white/[0.07] text-xs font-mono text-amber-200">
+                                {sc.likelihood}%
+                              </span>
+                            </div>
+                            <p className="text-xs text-stone-300 leading-relaxed">
+                              <span className="text-emerald-300/90 font-medium">What points here: </span>
+                              {sc.caseFor}
+                            </p>
+                            {sc.caseAgainst && (
+                              <p className="text-xs text-stone-400 leading-relaxed">
+                                <span className="text-stone-500 font-medium">Counter-weight: </span>
+                                {sc.caseAgainst}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
 
-                {signalReport.sources?.length > 0 && (
-                  <div className="space-y-2">
-                    <span className="text-[11px] uppercase tracking-wider text-stone-500 block">
-                      Reference Grounding
-                    </span>
-                    {signalReport.sources.map((src, i) => (
-                      <a
-                        key={i}
-                        href={src.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-amber-300/30 text-xs text-stone-300"
-                      >
-                        <span className="truncate pr-2">{src.title}</span>
-                        <ExternalLink className="w-3.5 h-3.5 text-stone-500 shrink-0" />
-                      </a>
-                    ))}
+                    {/* 3. HISTORICAL PRECEDENTS */}
+                    {signalReport.historicalPrecedents && (
+                      <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-stone-300">
+                          <History className="w-3.5 h-3.5 text-amber-300" />
+                          Historical Precedents & Base-Rate Frequency
+                        </div>
+                        <p className="text-xs text-stone-300 leading-relaxed">
+                          {signalReport.historicalPrecedents}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* 4. CUI BONO & ANOMALIES */}
+                    {signalReport.cuiBonoAndAnomalies && (
+                      <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-stone-300">
+                          <Eye className="w-3.5 h-3.5 text-emerald-300" />
+                          Incentives, Timing & Missing Context
+                        </div>
+                        <p className="text-xs text-stone-300 leading-relaxed">
+                          {signalReport.cuiBonoAndAnomalies}
+                        </p>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  /* TAB 2: GROUND-NEWS STYLE PERSPECTIVES SPECTRUM & MULTI-FORMAT RESEARCH LIBRARY */
+                  <div className="space-y-6">
+                    {/* Intellectual & Epistemological Spectrum Map */}
+                    {signalReport.spectrumPerspectives?.length > 0 && (
+                      <div className="space-y-3">
+                        <span className="text-[11px] uppercase tracking-[0.18em] text-amber-300/90 block">
+                          How High-Integrity Thinkers Frame This Across Lenses
+                        </span>
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          {signalReport.spectrumPerspectives.map((sp, idx) => (
+                            <div
+                              key={idx}
+                              className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5"
+                            >
+                              <span className="text-[10px] uppercase tracking-wider text-amber-300 block">
+                                {sp.lens}
+                              </span>
+                              <h4 className="text-xs font-semibold text-stone-100">
+                                {sp.thinkerOrOutlet}
+                              </h4>
+                              <p className="text-xs text-stone-300 leading-relaxed">
+                                {sp.coreThesis}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Curated Studies, Essays, Blogs & YouTube Videos */}
+                    {signalReport.researchLibrary?.length > 0 && (
+                      <div className="space-y-3">
+                        <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400 block">
+                          Curated Studies, Essays, Substacks & Long-Form Talks
+                        </span>
+                        {signalReport.researchLibrary.map((item, idx) => {
+                          const fmt = (item.format || '').toLowerCase();
+                          const Icon = fmt.includes('youtube')
+                            ? Youtube
+                            : fmt.includes('study')
+                            ? GraduationCap
+                            : BookOpen;
+
+                          return (
+                            <a
+                              key={idx}
+                              href={buildSmartResearchUrl(item)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-300/35 transition-all space-y-2"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/[0.07] text-[10px] uppercase tracking-wider text-stone-200">
+                                    <Icon className="w-3 h-3 text-amber-300" />
+                                    {item.format}
+                                  </span>
+                                  <span className="px-2.5 py-0.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-[10px] uppercase tracking-wider text-amber-200">
+                                    {item.perspectiveTag}
+                                  </span>
+                                </div>
+                                <ExternalLink className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+                              </div>
+
+                              <div>
+                                <h4 className="text-sm font-medium text-stone-100 leading-snug">
+                                  {item.title}
+                                </h4>
+                                <span className="text-xs text-stone-400">
+                                  {item.authorOrChannel}
+                                </span>
+                              </div>
+
+                              <p className="text-xs text-stone-300 leading-relaxed">
+                                {item.takeaway}
+                              </p>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -994,12 +1238,12 @@ export default function TouchmarkToolsApp() {
                   {copiedReceipt ? (
                     <>
                       <CheckCircle2 className="w-4 h-4" />
-                      Receipt Copied
+                      Intelligence & Spectrum Brief Copied
                     </>
                   ) : (
                     <>
                       <Share2 className="w-4 h-4" />
-                      Copy Balanced Dossier
+                      Copy Full Intelligence & Spectrum Brief
                     </>
                   )}
                 </button>
