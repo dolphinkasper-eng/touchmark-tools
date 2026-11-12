@@ -1,3 +1,362 @@
+Here is the complete upgrade to address every single one of those points—making **Touchmark** feel faster, cleaner, and far more intentional.
+
+### What Was Upgraded
+
+1. **Progressive Two-Stage Delivery (Instant Perceived Speed):**
+* Instead of making the user stare at a spinner for 15–20 seconds while the entire 10-section dossier generates in one giant block, **Signal now streams its intelligence in two live phases**:
+* **Phase 1 (~4–6 seconds):** Immediately delivers the **Executive Spoken Synthesis**, starts speaking aloud right away, and populates **Tab 1 (`Record, Rarity & Framing`)** so the user can listen and start reading immediately.
+* **Phase 2 (Silent Background Hydration):** While the user is listening to the synthesis or reading Tab 1, Touchmark quietly finishes generating **Tab 2 (`Power Blueprint & Tests`)** and **Tab 3 (`Spectrum & Sources`)** in the background—lighting up a subtle indicator as each tab locks in.
+
+
+
+
+2. **Eliminated Duplicate Thinking Text + 8-Step Non-Repeating Telemetry:**
+* Removed the duplicate `currentThinkingLabel` underneath the orb so the status appears **only once** in clean, refined typography.
+* Expanded the thinking sequence to **8 distinct, sequential analytical steps** spaced every **2.8 seconds** (spanning ~22 seconds before it ever loops, and stopping cleanly on the final synthesis step rather than cycling noticeably).
+
+
+3. **Bespoke Precision-Crafted Logo Mark:**
+* Replaced the three plain circles with a custom geometric **Touchmark Astrolabe / Resonance Lens** SVG—featuring fine crosshair calibration ticks, an asymmetric golden-ratio orbital ring, a subtle amber gradient core, and a crisp focal point.
+
+
+4. **Single "Open Dossier" Pill Underneath the Summary:**
+* Replaced the three cluttered pills below the spoken text with **one centered, high-contrast `"Open Dossier →"` pill** (which also subtly pulses while Phase 2 deep modules finish loading in the background). Inside the slide-over Dossier drawer, the 3-tab switcher and centered **Export PDF Dossier** / **Copy Markdown** buttons handle all navigation and exports.
+
+
+
+---
+
+### Step 1: Update `api/discern.js` (Full File)
+
+Open **`api/discern.js`** in GitHub, click **Edit (pencil icon)**, select all (`Cmd+A` / `Ctrl+A`), replace everything with the code below, and click **Commit changes**:
+
+```javascript
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: 'GEMINI_API_KEY is not configured on Vercel.' });
+  }
+
+  try {
+    const {
+      action = 'analyze',
+      prompt,
+      factSheet = '',
+      systemInstruction,
+      responseSchema,
+      useSearch = false,
+      text,
+      voiceName = 'Aoede',
+      history = []
+    } = req.body || {};
+
+    // 1. STUDIO-GRADE HUMAN VOICE (Gemini 3.8 Flash-Lite TTS)
+    if (action === 'speak') {
+      if (!text || !text.trim()) {
+        return res.status(400).json({ error: 'Text is required for speech.' });
+      }
+
+      const ttsUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash-lite-tts:generateContent?key=${apiKey}`;
+      const ttsResponse = await fetch(ttsUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: text.slice(0, 3200) }] }],
+          generationConfig: {
+            responseModalities: ['AUDIO'],
+            speechConfig: {
+              voiceConfig: {
+                prebuiltVoiceConfig: { voiceName }
+              }
+            }
+          }
+        })
+      });
+
+      const ttsData = await ttsResponse.json();
+      if (!ttsResponse.ok) {
+        return res.status(ttsResponse.status).json({
+          error: ttsData?.error?.message || 'TTS generation failed.'
+        });
+      }
+
+      const inlineAudio = ttsData?.candidates?.[0]?.content?.parts?.find(
+        (p) => p.inlineData?.data
+      )?.inlineData;
+
+      if (!inlineAudio?.data) {
+        return res.status(502).json({ error: 'No audio returned from Gemini TTS.' });
+      }
+
+      return res.status(200).json({
+        audioBase64: inlineAudio.data,
+        mimeType: inlineAudio.mimeType || 'audio/pcm;rate=24000'
+      });
+    }
+
+    // 2. WARM COPILOT CHAT MODE
+    if (action === 'chat') {
+      if (!prompt || !prompt.trim()) {
+        return res.status(400).json({ error: 'Prompt is required.' });
+      }
+
+      const chatInstruction = `You are Touchmark, a sharp, grounded, perceptive relational and geopolitical/epistemic intelligence copilot.
+The user is greeting you, checking their mic, or warming up before exploring a decision (Pulse) or dissecting a public event/narrative (Signal).
+- Speak like a thoughtful, unhurried human peer—warm, candid, and genuinely present.
+- Keep your reply to 2–3 natural spoken sentences (no markdown, no bullet points).
+- Confirm you hear them clearly if they asked, and invite them to bring whatever situation, power dynamic, or public narrative they want to examine beneath the surface.`;
+
+      const contents = [
+        ...history.slice(-6).map((turn) => ({
+          role: turn.role === 'user' ? 'user' : 'model',
+          parts: [{ text: turn.text }]
+        })),
+        { role: 'user', parts: [{ text: prompt }] }
+      ];
+
+      const replyText = await callGeminiRobust(
+        apiKey,
+        {
+          contents,
+          systemInstruction: { parts: [{ text: chatInstruction }] },
+          generationConfig: {
+            temperature: 0.72,
+            maxOutputTokens: 280
+          }
+        },
+        ['gemini-3.5-flash-lite', 'gemini-3.8-flash']
+      );
+
+      return res.status(200).json({ reply: replyText });
+    }
+
+    // 2B. LIVE TRENDING INQUIRIES (Cached at CDN edge for 1 hour)
+    if (action === 'trending') {
+      const trendingPrompt = `Identify 3 major current public controversies, legal/political developments, or institutional narratives people are actively debating right now. Frame each as a concise, single-sentence Touchmark Signal inquiry (under 14 words each) that invites looking beneath the mainstream framing. Return valid JSON ONLY as an array of 3 strings: ["...", "...", "..."]`;
+
+      const rawTrending = await callGeminiRobust(
+        apiKey,
+        {
+          contents: [{ role: 'user', parts: [{ text: trendingPrompt }] }],
+          tools: [{ google_search: {} }],
+          generationConfig: {
+            temperature: 0.5,
+            maxOutputTokens: 300
+          }
+        },
+        ['gemini-3.5-flash-lite', 'gemini-3.8-flash']
+      );
+
+      const cleaned = rawTrending.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+      const firstBracket = cleaned.indexOf('[');
+      const lastBracket = cleaned.lastIndexOf(']');
+      const prompts =
+        firstBracket !== -1 && lastBracket !== -1
+          ? JSON.parse(cleaned.slice(firstBracket, lastBracket + 1))
+          : [];
+
+      res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
+      return res.status(200).json({ prompts: Array.isArray(prompts) ? prompts.slice(0, 3) : [] });
+    }
+
+    // 3A. PROGRESSIVE SIGNAL STAGE 1 (Fast Grounded Briefing + Tab 1: Record, Rarity & Framing)
+    if (action === 'signal_core') {
+      if (!prompt || !prompt.trim()) {
+        return res.status(400).json({ error: 'Prompt is required.' });
+      }
+
+      const searchResult = await runLiveFactRetrieval(apiKey, prompt);
+      const enrichedPrompt = searchResult.factSheet
+        ? `${prompt}\n\n=== VERIFIED LIVE SEARCH FACT SHEET & PRIMARY RECORD ===\n${searchResult.factSheet}\n\nAnchor all dates, counts, verdicts, and chronologies accurately using this verified fact sheet.`
+        : prompt;
+
+      const rawText = await callGeminiRobust(
+        apiKey,
+        {
+          contents: [{ role: 'user', parts: [{ text: enrichedPrompt }] }],
+          systemInstruction: systemInstruction
+            ? { parts: [{ text: systemInstruction }] }
+            : undefined,
+          generationConfig: {
+            temperature: 0.45,
+            maxOutputTokens: 3200
+          }
+        },
+        ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
+      );
+
+      return res.status(200).json({
+        text: rawText,
+        factSheet: searchResult.factSheet,
+        groundingSources: searchResult.sources
+      });
+    }
+
+    // 3B. PROGRESSIVE SIGNAL STAGE 2 (Deep Power Blueprint, Diagnostic Tests & Full-Spectrum Library)
+    if (action === 'signal_deep') {
+      if (!prompt || !prompt.trim()) {
+        return res.status(400).json({ error: 'Prompt is required.' });
+      }
+
+      const enrichedPrompt = factSheet
+        ? `${prompt}\n\n=== VERIFIED LIVE SEARCH FACT SHEET & PRIMARY RECORD ===\n${factSheet}`
+        : prompt;
+
+      const rawText = await callGeminiRobust(
+        apiKey,
+        {
+          contents: [{ role: 'user', parts: [{ text: enrichedPrompt }] }],
+          systemInstruction: systemInstruction
+            ? { parts: [{ text: systemInstruction }] }
+            : undefined,
+          generationConfig: {
+            temperature: 0.45,
+            maxOutputTokens: 4800
+          }
+        },
+        ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
+      );
+
+      return res.status(200).json({ text: rawText });
+    }
+
+    // 4. STANDARD PULSE / SINGLE-PASS ANALYSIS
+    if (!prompt || !prompt.trim()) {
+      return res.status(400).json({ error: 'Prompt is required.' });
+    }
+
+    let enrichedPrompt = prompt;
+    let groundingSources = [];
+
+    if (useSearch) {
+      const searchResult = await runLiveFactRetrieval(apiKey, prompt);
+      if (searchResult.factSheet) {
+        enrichedPrompt = `${prompt}\n\n=== VERIFIED LIVE SEARCH FACT SHEET & PRIMARY RECORD ===\n${searchResult.factSheet}`;
+        groundingSources = searchResult.sources;
+      }
+    }
+
+    const generationConfig = {
+      temperature: 0.45,
+      maxOutputTokens: 6144
+    };
+
+    if (responseSchema) {
+      generationConfig.responseMimeType = 'application/json';
+      generationConfig.responseSchema = responseSchema;
+    }
+
+    const payload = {
+      contents: [{ role: 'user', parts: [{ text: enrichedPrompt }] }],
+      generationConfig
+    };
+
+    if (systemInstruction) {
+      payload.systemInstruction = { parts: [{ text: systemInstruction }] };
+    }
+
+    const rawText = await callGeminiRobust(apiKey, payload, [
+      'gemini-3.8-flash',
+      'gemini-3.5-flash-lite'
+    ]);
+
+    return res.status(200).json({ text: rawText, groundingSources });
+  } catch (err) {
+    console.error('Touchmark /api/discern error:', err);
+    return res.status(500).json({
+      error: err.message || 'Unexpected server error in /api/discern.'
+    });
+  }
+}
+
+async function runLiveFactRetrieval(apiKey, query) {
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: `Gather a concise, factual, chronological intelligence brief on this query using Google Search. Include exact dates, counts, verdicts, investigative timelines, official findings, and primary public documents: "${query}"`
+              }
+            ]
+          }
+        ],
+        tools: [{ google_search: {} }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 1400
+        }
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) return { factSheet: '', sources: [] };
+
+    const candidate = data?.candidates?.[0];
+    const factSheet =
+      candidate?.content?.parts
+        ?.map((p) => p.text || '')
+        .join('')
+        .trim() || '';
+
+    const chunks = candidate?.groundingMetadata?.groundingChunks || [];
+    const sources = chunks
+      .filter((c) => c.web?.uri && c.web?.title)
+      .map((c) => ({ title: c.web.title, url: c.web.uri }))
+      .slice(0, 6);
+
+    return { factSheet, sources };
+  } catch {
+    return { factSheet: '', sources: [] };
+  }
+}
+
+async function callGeminiRobust(apiKey, payload, models) {
+  let lastError = 'Gemini request failed.';
+
+  for (const model of models) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      const text = data?.candidates?.[0]?.content?.parts
+        ?.map((p) => p.text || '')
+        .join('')
+        .trim();
+      if (text) return text;
+      lastError = `Empty response from ${model}.`;
+      continue;
+    }
+
+    lastError = data?.error?.message || `HTTP ${response.status} from ${model}`;
+  }
+
+  throw new Error(lastError);
+}
+
+```
+
+---
+
+### Step 2: Update `src/TouchmarkToolsApp.jsx` (Full File)
+
+Open **`src/TouchmarkToolsApp.jsx`** in GitHub, click **Edit (pencil icon)**, select all (`Cmd+A` / `Ctrl+A`), replace everything with the code below, and click **Commit changes**:
+
+```jsx
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Mic,
@@ -24,16 +383,48 @@ import {
   FolderOpen,
   SearchCheck,
   Trash2,
-  Printer
+  Printer,
+  ArrowUpRight
 } from 'lucide-react';
 
-// --- BRAND MARK ---
-function TouchmarkLogo({ className = 'w-6 h-6' }) {
+// --- BESPOKE PRECISION TOUCHMARK LOGO (Resonance Astrolabe & Focal Lens) ---
+function TouchmarkLogo({ className = 'w-7 h-7' }) {
   return (
-    <svg viewBox="0 0 36 36" fill="none" className={className} aria-hidden="true">
-      <circle cx="18" cy="18" r="15.5" stroke="currentColor" strokeOpacity="0.28" strokeWidth="1.2" />
-      <circle cx="18" cy="18" r="9.5" stroke="currentColor" strokeOpacity="0.55" strokeWidth="1.2" />
-      <circle cx="18" cy="18" r="2.8" fill="currentColor" />
+    <svg viewBox="0 0 40 40" fill="none" className={className} aria-hidden="true">
+      <defs>
+        <radialGradient id="tmCoreGlow" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#FEF3C7" />
+          <stop offset="55%" stopColor="#F59E0B" />
+          <stop offset="100%" stopColor="#92400E" />
+        </radialGradient>
+        <linearGradient id="tmRingGrad" x1="4" y1="4" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#FDE68A" stopOpacity="0.85" />
+          <stop offset="50%" stopColor="#D97706" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#FBBF24" stopOpacity="0.75" />
+        </linearGradient>
+      </defs>
+      {/* Outer Precision Horizon */}
+      <circle cx="20" cy="20" r="17.5" stroke="url(#tmRingGrad)" strokeWidth="1.2" />
+      {/* Cardinal Calibration Ticks */}
+      <line x1="20" y1="1.5" x2="20" y2="5" stroke="#FCD34D" strokeOpacity="0.7" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="20" y1="35" x2="20" y2="38.5" stroke="#FCD34D" strokeOpacity="0.7" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="1.5" y1="20" x2="5" y2="20" stroke="#FCD34D" strokeOpacity="0.7" strokeWidth="1.2" strokeLinecap="round" />
+      <line x1="35" y1="20" x2="38.5" y2="20" stroke="#FCD34D" strokeOpacity="0.7" strokeWidth="1.2" strokeLinecap="round" />
+      {/* Asymmetric Tilted Orbital Ellipse */}
+      <ellipse
+        cx="20"
+        cy="20"
+        rx="13.5"
+        ry="7.5"
+        transform="rotate(-32 20 20)"
+        stroke="#FBBF24"
+        strokeOpacity="0.55"
+        strokeWidth="1.15"
+      />
+      {/* Inner Resonance Aperture */}
+      <circle cx="20" cy="20" r="8.2" stroke="#FDE68A" strokeOpacity="0.28" strokeWidth="1" strokeDasharray="2 2.5" />
+      {/* Luminous Touchmark Focal Core */}
+      <circle cx="20" cy="20" r="3.4" fill="url(#tmCoreGlow)" />
     </svg>
   );
 }
@@ -259,7 +650,8 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
         </div>
       </button>
 
-      <span className="mt-1.5 text-[11px] uppercase tracking-[0.26em] text-stone-400 transition-all duration-300">
+      {/* Single, clean status telemetry line (no duplicate block below) */}
+      <span className="mt-2 text-[11px] uppercase tracking-[0.24em] text-amber-200/80 transition-all duration-500 min-h-[18px]">
         {isListening
           ? 'Listening…'
           : isThinking
@@ -272,7 +664,7 @@ function MorphingSphereOrb({ status, mode, thinkingPhase, onClick }) {
   );
 }
 
-// --- PROMPTS, STARTERS & SCHEMAS ---
+// --- PROMPTS, STARTERS & PROGRESSIVE SCHEMAS ---
 const SIGNAL_STARTER_PROMPTS = [
   "Examine the timing, media curation & power dynamics behind Russell Brand's 2026 conviction",
   "Look beneath the mainstream framing of digital IDs and central bank programmable currency",
@@ -341,13 +733,11 @@ const PULSE_RESPONSE_SCHEMA = {
   ]
 };
 
-const SIGNAL_SYSTEM_PROMPT = `You are Touchmark Signal, an independent, anti-propaganda intelligence and power-dynamics analyst.
-CRITICAL DIRECTIVE:
-1. First, anchor rigorously on the VERIFIED LIVE SEARCH FACT SHEET provided in the prompt—extracting exact dates, counts, verdicts, chronologies, and correcting any surface premise errors respectfully so your factual foundation is airtight.
-2. Second, do NOT reflexively parrot or defer to the mainstream media or institutional consensus. Dissect how mainstream narratives are curated, sequenced, and amplified to protect political, economic, or judicial power.
-3. Third, model concrete operational mechanics, historical precedents, probability-weighted scenarios, and falsifiable diagnostic tests (primary documents that would prove or disprove each hypothesis).
+// Stage 1 Prompt: Fast Grounded Briefing + Tab 1 (Record, Rarity & Framing)
+const SIGNAL_CORE_PROMPT = `You are Touchmark Signal, an independent, anti-propaganda intelligence and power-dynamics analyst.
+Anchor rigorously on the VERIFIED LIVE SEARCH FACT SHEET provided in the prompt—extracting exact dates, counts, verdicts, and chronologies—while dissecting how mainstream media curates, sequences, or distorts public perception.
 
-Produce a comprehensive intelligence dossier in valid JSON ONLY with these exact keys:
+Produce Stage 1 of the intelligence dossier in valid JSON ONLY with these exact keys:
 {
   "spokenSynthesis": "A rich, unhurried 7–9 sentence spoken briefing (180–240 words). Anchor on the verified chronology and key record facts first; expose how mainstream coverage curates and frames the story; spell out the conspicuous rarity of the constellation of details; explore concretely how political, economic, or judicial power operates when neutralizing a threat; and conclude with a candid epistemic weighing.",
   "verifiedTimeline": [
@@ -359,9 +749,15 @@ Produce a comprehensive intelligence dossier in valid JSON ONLY with these exact
   "narrativeManipulationAudit": "2 detailed paragraphs analyzing how mainstream media, platforms, and institutions are curating, sequencing, or distorting this story—what is amplified, what context is buried, and how public perception is steered.",
   "constellationRarityScore": 84,
   "constellationRarityAnalysis": "2 detailed paragraphs explaining why the simultaneous clustering of these specific details (timing, delay, institutional alignment, evidentiary standards, judicial/media posture) is statistically and historically conspicuous rather than an ordinary coincidence.",
-  "powerOperationBlueprint": "2 detailed paragraphs exploring: 'If political, economic, or judicial power were being used discriminately here, what would that actually look like in practice?' Walk through concrete mechanisms (asymmetric vulnerability exploitation, selective prosecution, timing leverage, media-intelligence synchronization, financial/platform choking).",
   "centerOfGravity": "2 paragraphs giving your candid Center of Gravity synthesis: weighing the institutional-neutralization/asymmetric-enforcement hypothesis against the official record, stating clearly what the balance of evidence looks like on the surface versus beneath the surface.",
-  "centerOfGravityLikelihood": 55,
+  "centerOfGravityLikelihood": 55
+}`;
+
+// Stage 2 Prompt: Background Hydration of Tab 2 (Power Blueprint & Tests) & Tab 3 (Spectrum & Sources)
+const SIGNAL_DEEP_PROMPT = `You are Touchmark Signal, an independent, anti-propaganda intelligence and power-dynamics analyst.
+Using the verified record and subject provided, produce Stage 2 (Power Blueprint, Diagnostic Tests, Historical Precedents, 6-Lens Spectrum, and Research Library) in valid JSON ONLY with these exact keys:
+{
+  "powerOperationBlueprint": "2 detailed paragraphs exploring: 'If political, economic, or judicial power were being used discriminately here, what would that actually look like in practice?' Walk through concrete mechanisms (asymmetric vulnerability exploitation, selective prosecution, timing leverage, media-intelligence synchronization, financial/platform choking).",
   "scenarios": [
     {
       "name": "Scenario title (include: 1. Opportunistic Institutional Pile-On & Asymmetric Enforcement, 2. Substantive Conviction / Organic Cascade, and 3. Coordinated State-Intelligence / Judicial Lawfare)",
@@ -431,17 +827,21 @@ const VOICE_OPTIONS = [
 ];
 
 const PULSE_THINKING_PHASES = [
-  'Reading beneath the surface…',
-  'Mapping hidden incentives…',
-  'Testing unspoken assumptions…',
-  'Curating philosophical & analytical voices…'
+  'Reading beneath the surface of the tension…',
+  'Mapping unspoken relational & strategic incentives…',
+  'Testing hidden assumptions & blind spots…',
+  'Weighing downstream trade-offs across paths…',
+  'Curating psychological & philosophical voices…',
+  'Synthesizing your strategic reflection…'
 ];
 
 const SIGNAL_THINKING_PHASES = [
-  'Retrieving live record & exact chronology…',
-  'Auditing mainstream narrative curation…',
-  'Modeling power-asymmetry & historical parallels…',
-  'Assembling Centrist, Left & Right sources…'
+  'Querying live primary records & chronologies…',
+  'Cross-checking official filings against media timelines…',
+  'Auditing narrative framing, omissions & amplification…',
+  'Measuring constellation rarity & statistical anomalies…',
+  'Evaluating institutional incentives & power vectors…',
+  'Synthesizing executive briefing & Center of Gravity…'
 ];
 
 const STORAGE_KEY = 'touchmark_saved_dossiers_v1';
@@ -556,6 +956,7 @@ export default function TouchmarkToolsApp() {
   const [liveSignalPrompts, setLiveSignalPrompts] = useState(SIGNAL_STARTER_PROMPTS);
 
   const [hasArtifact, setHasArtifact] = useState(false);
+  const [isHydratingDeep, setIsHydratingDeep] = useState(false);
   const [pulseLedger, setPulseLedger] = useState(null);
   const [signalReport, setSignalReport] = useState(null);
   const [copiedReceipt, setCopiedReceipt] = useState(false);
@@ -591,7 +992,8 @@ export default function TouchmarkToolsApp() {
 
   const persistDossier = (entry) => {
     setSavedDossiers((prev) => {
-      const next = [entry, ...prev].slice(0, 25);
+      const filtered = prev.filter((p) => p.id !== entry.id);
+      const next = [entry, ...filtered].slice(0, 25);
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       } catch {}
@@ -619,21 +1021,25 @@ export default function TouchmarkToolsApp() {
       setSignalReport(item.data);
       setActiveCaption(item.data.spokenSynthesis || item.title);
     }
+    setIsHydratingDeep(false);
     setHasArtifact(true);
     setDrawerTab('analysis');
     setDrawerOpen(true);
   };
 
+  // Smooth, unhurried 6-step progression (2.8s per step, holds on final synthesis step without awkward looping)
   useEffect(() => {
     if (status !== 'thinking') {
       setThinkingPhaseIndex(0);
       return;
     }
+    const maxSteps =
+      mode === 'signal' ? SIGNAL_THINKING_PHASES.length : PULSE_THINKING_PHASES.length;
     const timer = setInterval(() => {
-      setThinkingPhaseIndex((prev) => (prev + 1) % 4);
-    }, 1700);
+      setThinkingPhaseIndex((prev) => (prev < maxSteps - 1 ? prev + 1 : prev));
+    }, 2800);
     return () => clearInterval(timer);
-  }, [status]);
+  }, [status, mode]);
 
   const stopSpeaking = () => {
     if (audioRef.current) {
@@ -770,6 +1176,7 @@ export default function TouchmarkToolsApp() {
     stopSpeaking();
     setInputText('');
     setStatus('thinking');
+    setIsHydratingDeep(false);
 
     if (voiceEnabled) {
       soundscapeRef.current?.startThinkingDrone(mode);
@@ -836,64 +1243,106 @@ export default function TouchmarkToolsApp() {
         return;
       }
 
-      // 3. Signal Two-Stage Grounded Counter-Narrative & Power Intelligence Audit
+      // 3. Progressive Signal Delivery (Stage 1 Instant Briefing + Stage 2 Deep Modules)
       const expandedQuery = expandSignalQuery(query);
-      const res = await fetch('/api/discern', {
+      const dossierId = Date.now().toString();
+
+      // Stage 1: Fast Grounded Briefing + Tab 1 (Record, Rarity & Framing)
+      const coreRes = await fetch('/api/discern', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'analyze',
-          prompt: `Conduct a thorough, grounded intelligence briefing on this subject. Anchor on exact verified dates, counts, verdicts, and chronologies first; dissect how mainstream framing curates and manipulates public perception; evaluate the conspicuous rarity of the constellation of details; explore concretely how political/economic/judicial power operates behind the scenes with historical precedents; provide falsifiable primary-source diagnostic tests; include two distinct Centrist analytical viewpoints; and curate a full-spectrum research library with at least 3 credible YouTube talks spanning Left, Centrist, and Right perspectives: "${expandedQuery}"`,
-          systemInstruction: SIGNAL_SYSTEM_PROMPT,
-          useSearch: true
+          action: 'signal_core',
+          prompt: `Deliver Stage 1 (Spoken Briefing, Verified Chronology, Narrative Manipulation Audit, Constellation Rarity, and Center of Gravity) on: "${expandedQuery}"`,
+          systemInstruction: SIGNAL_CORE_PROMPT
         })
       });
-      const data = await res.json();
+      const coreData = await coreRes.json();
       soundscapeRef.current?.stopThinkingDrone(voiceEnabled);
-      if (!res.ok) throw new Error(data.error || 'Signal audit failed.');
+      if (!coreRes.ok) throw new Error(coreData.error || 'Signal audit failed.');
 
-      const parsed = extractJsonObject(data.text);
-      const reportObj = {
+      const coreParsed = extractJsonObject(coreData.text);
+      const initialReport = {
         subject: query,
         spokenSynthesis:
-          parsed.spokenSynthesis ||
-          'Intelligence brief ready. Open the dossier to inspect the verified timeline, narrative manipulation audit, power blueprint, and full-spectrum sources.',
-        verifiedTimeline: Array.isArray(parsed.verifiedTimeline) ? parsed.verifiedTimeline : [],
-        narrativeManipulationAudit: parsed.narrativeManipulationAudit || '',
-        constellationRarityScore: parsed.constellationRarityScore ?? 82,
-        constellationRarityAnalysis: parsed.constellationRarityAnalysis || '',
-        powerOperationBlueprint: parsed.powerOperationBlueprint || '',
-        centerOfGravity: parsed.centerOfGravity || '',
-        centerOfGravityLikelihood: parsed.centerOfGravityLikelihood ?? 55,
-        scenarios: Array.isArray(parsed.scenarios) ? parsed.scenarios : [],
-        diagnosticChecklist: Array.isArray(parsed.diagnosticChecklist)
-          ? parsed.diagnosticChecklist
-          : [],
-        historicalPrecedents: parsed.historicalPrecedents || '',
-        spectrumPerspectives: Array.isArray(parsed.spectrumPerspectives)
-          ? parsed.spectrumPerspectives
-          : [],
-        researchLibrary: Array.isArray(parsed.researchLibrary) ? parsed.researchLibrary : [],
-        groundingSources: Array.isArray(data.groundingSources) ? data.groundingSources : []
+          coreParsed.spokenSynthesis ||
+          'Intelligence brief ready. Open the dossier to inspect the verified timeline, narrative audit, and full-spectrum analysis.',
+        verifiedTimeline: Array.isArray(coreParsed.verifiedTimeline) ? coreParsed.verifiedTimeline : [],
+        narrativeManipulationAudit: coreParsed.narrativeManipulationAudit || '',
+        constellationRarityScore: coreParsed.constellationRarityScore ?? 82,
+        constellationRarityAnalysis: coreParsed.constellationRarityAnalysis || '',
+        centerOfGravity: coreParsed.centerOfGravity || '',
+        centerOfGravityLikelihood: coreParsed.centerOfGravityLikelihood ?? 55,
+        powerOperationBlueprint: '',
+        scenarios: [],
+        diagnosticChecklist: [],
+        historicalPrecedents: '',
+        spectrumPerspectives: [],
+        researchLibrary: [],
+        groundingSources: Array.isArray(coreData.groundingSources) ? coreData.groundingSources : []
       };
 
-      setSignalReport(reportObj);
+      // Immediately surface Stage 1 & begin speaking while Stage 2 hydrates in the background
+      setSignalReport(initialReport);
       setHasArtifact(true);
       setDrawerTab('analysis');
-      persistDossier({
-        id: Date.now().toString(),
-        mode: 'signal',
-        title: query.slice(0, 80),
-        createdAt: new Date().toLocaleDateString(),
-        data: reportObj
-      });
+      setActiveCaption(initialReport.spokenSynthesis);
+      setHistory((prev) => [...prev, { role: 'assistant', text: initialReport.spokenSynthesis }]);
+      speakResponse(initialReport.spokenSynthesis);
 
-      const spoken = reportObj.spokenSynthesis;
-      setActiveCaption(spoken);
-      setHistory((prev) => [...prev, { role: 'assistant', text: spoken }]);
-      speakResponse(spoken);
+      // Stage 2: Background Hydration of Power Blueprint, Diagnostic Tests, 6-Lens Spectrum & YouTube Library
+      setIsHydratingDeep(true);
+      fetch('/api/discern', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'signal_deep',
+          prompt: `Deliver Stage 2 (Institutional Power Operation Blueprint, Competing Probability Scenarios, Primary-Source Diagnostic Checklist, Historical Precedents, 6-Lens Spectrum including two Centrist viewpoints, and 9–11 Research Library items with at least 3 YouTube talks spanning Left, Centrist, and Right perspectives) on: "${expandedQuery}"`,
+          factSheet: coreData.factSheet || '',
+          systemInstruction: SIGNAL_DEEP_PROMPT
+        })
+      })
+        .then((r) => r.json())
+        .then((deepData) => {
+          if (!deepData?.text) return;
+          const deepParsed = extractJsonObject(deepData.text);
+          const fullReport = {
+            ...initialReport,
+            powerOperationBlueprint: deepParsed.powerOperationBlueprint || '',
+            scenarios: Array.isArray(deepParsed.scenarios) ? deepParsed.scenarios : [],
+            diagnosticChecklist: Array.isArray(deepParsed.diagnosticChecklist)
+              ? deepParsed.diagnosticChecklist
+              : [],
+            historicalPrecedents: deepParsed.historicalPrecedents || '',
+            spectrumPerspectives: Array.isArray(deepParsed.spectrumPerspectives)
+              ? deepParsed.spectrumPerspectives
+              : [],
+            researchLibrary: Array.isArray(deepParsed.researchLibrary) ? deepParsed.researchLibrary : []
+          };
+          setSignalReport(fullReport);
+          persistDossier({
+            id: dossierId,
+            mode: 'signal',
+            title: query.slice(0, 80),
+            createdAt: new Date().toLocaleDateString(),
+            data: fullReport
+          });
+        })
+        .catch(() => {
+          persistDossier({
+            id: dossierId,
+            mode: 'signal',
+            title: query.slice(0, 80),
+            createdAt: new Date().toLocaleDateString(),
+            data: initialReport
+          });
+        })
+        .finally(() => {
+          setIsHydratingDeep(false);
+        });
     } catch (err) {
       soundscapeRef.current?.stopThinkingDrone(false);
+      setIsHydratingDeep(false);
       setStatus('idle');
       setErrorBanner(err.message || 'Something interrupted that thought. Try again.');
     }
@@ -1209,9 +1658,9 @@ export default function TouchmarkToolsApp() {
     <div className="min-h-screen bg-[#090807] text-stone-100 flex flex-col justify-between selection:bg-amber-400/30">
       {/* Ultra-minimal Top Bar — 3-column grid keeps Pulse | Signal dead-center */}
       <header className="px-5 sm:px-8 h-16 grid grid-cols-3 items-center">
-        <div className="flex items-center gap-2.5 text-stone-300 justify-self-start">
-          <TouchmarkLogo className="w-6 h-6 text-amber-300/90" />
-          <span className="text-sm font-medium tracking-wide">Touchmark</span>
+        <div className="flex items-center gap-2.5 text-stone-200 justify-self-start">
+          <TouchmarkLogo className="w-7 h-7" />
+          <span className="text-[15px] font-medium tracking-[0.04em]">Touchmark</span>
         </div>
 
         {/* Dead-Center Mode Pill */}
@@ -1293,7 +1742,7 @@ export default function TouchmarkToolsApp() {
         </div>
       </header>
 
-      {/* Center Sanctuary: Morphing 3D Orb + Substantive Spoken Briefing */}
+      {/* Center Sanctuary: Morphing 3D Orb + Substantive Spoken Briefing + Single Dossier Pill */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-3xl mx-auto w-full py-3">
         {errorBanner && (
           <div className="mb-4 flex items-center gap-2 px-4 py-2 rounded-full bg-red-950/60 border border-red-400/30 text-xs text-red-200">
@@ -1309,45 +1758,29 @@ export default function TouchmarkToolsApp() {
           onClick={toggleListening}
         />
 
-        <div className="mt-5 max-h-48 sm:max-h-56 overflow-y-auto px-2 max-w-2xl">
-          <p className="text-sm sm:text-[15px] font-light text-stone-200/95 leading-relaxed">
-            {status === 'thinking' ? currentThinkingLabel : activeCaption}
-          </p>
-        </div>
+        {/* Only renders once thinking completes so status text is never duplicated */}
+        {status !== 'thinking' && (
+          <div className="mt-5 max-h-48 sm:max-h-56 overflow-y-auto px-2 max-w-2xl">
+            <p className="text-sm sm:text-[15px] font-light text-stone-200/95 leading-relaxed">
+              {activeCaption}
+            </p>
+          </div>
+        )}
 
+        {/* Single, clean Dossier CTA button */}
         {hasArtifact && status !== 'thinking' && (
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <div className="mt-5 flex justify-center">
             <button
               type="button"
               onClick={() => {
                 setDrawerTab('analysis');
                 setDrawerOpen(true);
               }}
-              className="px-3.5 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.11] border border-white/15 text-[11px] uppercase tracking-[0.16em] text-amber-200 transition-all"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-300/15 hover:bg-amber-300/25 border border-amber-300/35 text-xs font-medium tracking-[0.14em] uppercase text-amber-200 transition-all shadow-lg shadow-amber-950/20"
             >
-              Record, Rarity & Framing →
-            </button>
-            {mode === 'signal' && (
-              <button
-                type="button"
-                onClick={() => {
-                  setDrawerTab('power');
-                  setDrawerOpen(true);
-                }}
-                className="px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[11px] uppercase tracking-[0.16em] text-stone-300 hover:text-amber-200 transition-all"
-              >
-                Power Blueprint & Tests →
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                setDrawerTab('spectrum');
-                setDrawerOpen(true);
-              }}
-              className="px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[11px] uppercase tracking-[0.16em] text-stone-300 hover:text-amber-200 transition-all"
-            >
-              Spectrum & Sources →
+              <FileText className="w-3.5 h-3.5" />
+              <span>{isHydratingDeep ? 'Open Dossier · Enriching Sources…' : 'Open Dossier'}</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
@@ -1593,7 +2026,7 @@ export default function TouchmarkToolsApp() {
                           : 'text-stone-400 hover:text-stone-200'
                       }`}
                     >
-                      Power Blueprint & Tests
+                      Power Blueprint & Tests {isHydratingDeep && '· …'}
                     </button>
                     <button
                       type="button"
@@ -1677,4 +2110,286 @@ export default function TouchmarkToolsApp() {
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-200 font-medium">
                             <Compass className="w-4 h-4" />
-                            Center of
+                            Center of Gravity & Epistemic Weighing
+                          </div>
+                          <span className="px-2.5 py-0.5 rounded-full bg-white/[0.07] text-xs font-mono text-stone-200">
+                            {signalReport.centerOfGravityLikelihood}% Weight
+                          </span>
+                        </div>
+                        <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
+                          {signalReport.centerOfGravity}
+                        </p>
+                      </div>
+                    )}
+                  </>
+                ) : drawerTab === 'power' ? (
+                  isHydratingDeep && !signalReport.powerOperationBlueprint ? (
+                    <div className="py-16 text-center space-y-2">
+                      <p className="text-xs uppercase tracking-[0.22em] text-amber-300 animate-pulse">
+                        Modeling Power Vectors, Scenarios & Historical Precedents…
+                      </p>
+                      <p className="text-xs text-stone-500">
+                        Completing deep institutional audit in the background.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      {/* TAB 2: POWER BLUEPRINT + SCENARIOS + DIAGNOSTIC TESTS + HISTORY */}
+                      {signalReport.powerOperationBlueprint && (
+                        <div className="p-5 rounded-2xl bg-amber-400/[0.06] border border-amber-300/25 space-y-2.5">
+                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
+                            <ShieldAlert className="w-4 h-4" />
+                            If Institutional or Judicial Power Is Operating Behind the Scenes
+                          </div>
+                          <p className="text-xs sm:text-sm text-stone-200 leading-relaxed whitespace-pre-line">
+                            {signalReport.powerOperationBlueprint}
+                          </p>
+                        </div>
+                      )}
+
+                      {signalReport.scenarios?.length > 0 && (
+                        <div className="space-y-3">
+                          <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400 block">
+                            Competing Possibilities & Probability Weights
+                          </span>
+                          {signalReport.scenarios.map((sc, idx) => (
+                            <div
+                              key={idx}
+                              className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <h3 className="text-sm font-medium text-stone-100">{sc.name}</h3>
+                                <span className="shrink-0 px-2.5 py-0.5 rounded-full bg-white/[0.07] text-xs font-mono text-amber-200">
+                                  {sc.likelihood}%
+                                </span>
+                              </div>
+                              <p className="text-xs text-stone-300 leading-relaxed">
+                                <span className="text-emerald-300/90 font-medium">What points here: </span>
+                                {sc.caseFor}
+                              </p>
+                              {sc.caseAgainst && (
+                                <p className="text-xs text-stone-400 leading-relaxed">
+                                  <span className="text-stone-500 font-medium">Counter-weight: </span>
+                                  {sc.caseAgainst}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* DIAGNOSTIC PRIMARY DOCUMENTS & FALSIFIABLE TESTS */}
+                      {signalReport.diagnosticChecklist?.length > 0 && (
+                        <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
+                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-emerald-300 font-medium">
+                            <SearchCheck className="w-4 h-4" />
+                            Primary Records & Falsifiable Diagnostic Tests
+                          </div>
+                          <div className="space-y-2.5">
+                            {signalReport.diagnosticChecklist.map((doc, idx) => (
+                              <div
+                                key={idx}
+                                className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1"
+                              >
+                                <h4 className="text-xs font-semibold text-stone-100">
+                                  {doc.primaryDocument}
+                                </h4>
+                                <p className="text-xs text-stone-400 leading-relaxed">
+                                  {doc.whatToLookFor}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {signalReport.historicalPrecedents && (
+                        <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
+                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-stone-200 font-medium">
+                            <History className="w-4 h-4 text-amber-300" />
+                            Historical Precedents & Base-Rate Frequency
+                          </div>
+                          <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
+                            {signalReport.historicalPrecedents}
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  )
+                ) : isHydratingDeep && signalReport.researchLibrary?.length === 0 ? (
+                  <div className="py-16 text-center space-y-2">
+                    <p className="text-xs uppercase tracking-[0.22em] text-amber-300 animate-pulse">
+                      Assembling Centrist, Left & Right Perspectives & YouTube Sources…
+                    </p>
+                    <p className="text-xs text-stone-500">
+                      Curating multi-lens talks, studies & Substack essays.
+                    </p>
+                  </div>
+                ) : (
+                  /* TAB 3: FULL-SPECTRUM PERSPECTIVES & MULTI-FORMAT RESEARCH LIBRARY */
+                  <div className="space-y-6">
+                    {signalReport.spectrumPerspectives?.length > 0 && (
+                      <div className="space-y-3">
+                        <span className="text-[11px] uppercase tracking-[0.18em] text-amber-300/90 block">
+                          How High-Integrity Thinkers Frame This Across Lenses
+                        </span>
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          {signalReport.spectrumPerspectives.map((sp, idx) => {
+                            const isCentrist = (sp.lens || '').toLowerCase().includes('centrist');
+                            return (
+                              <div
+                                key={idx}
+                                className={`p-4 rounded-2xl border space-y-1.5 ${
+                                  isCentrist
+                                    ? 'bg-sky-400/[0.04] border-sky-400/20'
+                                    : 'bg-white/[0.03] border-white/10'
+                                }`}
+                              >
+                                <span
+                                  className={`text-[10px] uppercase tracking-wider block ${
+                                    isCentrist ? 'text-sky-300' : 'text-amber-300'
+                                  }`}
+                                >
+                                  {sp.lens}
+                                </span>
+                                <h4 className="text-xs font-semibold text-stone-100">
+                                  {sp.thinkerOrOutlet}
+                                </h4>
+                                <p className="text-xs text-stone-300 leading-relaxed">
+                                  {sp.coreThesis}
+                                </p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {signalReport.groundingSources?.length > 0 && (
+                      <div className="space-y-2">
+                        <span className="text-[11px] uppercase tracking-[0.18em] text-emerald-300/90 block">
+                          Live Primary Record Sources
+                        </span>
+                        {signalReport.groundingSources.map((src, idx) => (
+                          <a
+                            key={idx}
+                            href={src.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:border-emerald-300/35 text-xs text-stone-200"
+                          >
+                            <span className="truncate pr-2">{src.title}</span>
+                            <ExternalLink className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+                          </a>
+                        ))}
+                      </div>
+                    )}
+
+                    {signalReport.researchLibrary?.length > 0 && (
+                      <div className="space-y-3">
+                        <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400 block">
+                          Curated YouTube Talks (Left, Centrist & Right), Studies & Essays
+                        </span>
+                        {signalReport.researchLibrary.map((item, idx) => {
+                          const fmt = (item.format || '').toLowerCase();
+                          const tag = (item.perspectiveTag || '').toLowerCase();
+                          const Icon = fmt.includes('youtube')
+                            ? Youtube
+                            : fmt.includes('study')
+                            ? GraduationCap
+                            : BookOpen;
+
+                          const badgeStyle = tag.includes('centrist')
+                            ? 'bg-sky-400/10 border-sky-400/25 text-sky-200'
+                            : tag.includes('left')
+                            ? 'bg-indigo-400/10 border-indigo-400/25 text-indigo-200'
+                            : tag.includes('right')
+                            ? 'bg-rose-400/10 border-rose-400/25 text-rose-200'
+                            : 'bg-amber-400/10 border-amber-400/20 text-amber-200';
+
+                          return (
+                            <a
+                              key={idx}
+                              href={buildSmartResearchUrl(item)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-300/35 transition-all space-y-2"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/[0.07] text-[10px] uppercase tracking-wider text-stone-200">
+                                    <Icon
+                                      className={`w-3 h-3 ${
+                                        fmt.includes('youtube') ? 'text-red-400' : 'text-amber-300'
+                                      }`}
+                                    />
+                                    {item.format}
+                                  </span>
+                                  <span
+                                    className={`px-2.5 py-0.5 rounded-full border text-[10px] uppercase tracking-wider ${badgeStyle}`}
+                                  >
+                                    {item.perspectiveTag}
+                                  </span>
+                                </div>
+                                <ExternalLink className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+                              </div>
+
+                              <div>
+                                <h4 className="text-sm font-medium text-stone-100 leading-snug">
+                                  {item.title}
+                                </h4>
+                                <span className="text-xs text-stone-400">
+                                  {item.authorOrChannel}
+                                </span>
+                              </div>
+
+                              <p className="text-xs text-stone-300 leading-relaxed">
+                                {item.takeaway}
+                              </p>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Centered PDF & Markdown Export Buttons inside Dossier Drawer */}
+                <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={exportFullPdfDossier}
+                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs tracking-wide whitespace-nowrap hover:bg-amber-200 flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <Printer className="w-4 h-4 shrink-0" />
+                    <span>Export PDF Dossier</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={copyReceipt}
+                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-stone-200 font-medium text-xs tracking-wide whitespace-nowrap flex items-center justify-center gap-2 transition-colors"
+                  >
+                    {copiedReceipt ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                        <span>Markdown Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-4 h-4 shrink-0" />
+                        <span>Copy Markdown</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+```
