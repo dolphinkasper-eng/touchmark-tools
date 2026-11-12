@@ -379,6 +379,16 @@ Produce a comprehensive intelligence dossier in valid JSON ONLY with these exact
   "historicalPrecedents": "2 detailed paragraphs citing 3–4 concrete historical cases of judicial, political, intelligence, or corporate weaponization and media manipulation—including base-rate frequency.",
   "spectrumPerspectives": [
     {
+      "lens": "Centrist · Non-Partisan Empirical & Data-Driven",
+      "thinkerOrOutlet": "Specific credible centrist/non-partisan analyst, researcher, or publication",
+      "coreThesis": "How an empirical, non-ideological centrist lens evaluates the verified record and trade-offs"
+    },
+    {
+      "lens": "Centrist · Legal, Procedural & Institutional Pragmatism",
+      "thinkerOrOutlet": "Specific legal scholar, court analyst, or institutional pragmatist",
+      "coreThesis": "How a procedural/constitutional centrist lens assesses due process, standards of proof, and institutional guardrails"
+    },
+    {
       "lens": "Analytical · Left / Institutional Critique",
       "thinkerOrOutlet": "Specific high-integrity writer, scholar, or publication",
       "coreThesis": "Detailed summary of how this perspective frames the issue"
@@ -402,16 +412,16 @@ Produce a comprehensive intelligence dossier in valid JSON ONLY with these exact
   "researchLibrary": [
     {
       "title": "Specific study, book, essay, Substack piece, or YouTube lecture/debate",
-      "authorOrChannel": "Author, researcher, or channel name",
-      "format": "Study | Essay / Substack | YouTube | Book / Lecture",
-      "perspectiveTag": "Left-Analytical | Right-Heterodox | Anti-Establishment | Philosophical | Spiritual",
+      "authorOrChannel": "Credible, high-integrity author, researcher, or YouTube channel name",
+      "format": "YouTube | Study | Essay / Substack | Book / Lecture",
+      "perspectiveTag": "Centrist | Left-Analytical | Right-Heterodox | Anti-Establishment | Philosophical | Spiritual",
       "takeaway": "2 sentences on the specific insight, historical parallel, or evidence this source contributes",
-      "url": "Direct verified URL if known, otherwise empty string",
-      "searchQuery": "Exact search query to pull up this exact study, essay, or YouTube talk"
+      "url": "Direct verified URL if known from search, otherwise empty string",
+      "searchQuery": "Exact search query to pull up this exact YouTube video, study, or essay"
     }
   ]
 }
-Include 8–10 diverse, high-integrity entries in "researchLibrary" across Left, Right, Anti-Establishment, Philosophical, and Spiritual lenses.`;
+MANDATORY RESEARCH LIBRARY QUOTA: Include 9–11 diverse, high-integrity entries in "researchLibrary" that ALWAYS contain AT LEAST 3 credible, high-quality YouTube videos/conversations—specifically: (1) at least one YouTube video from a credible Left-leaning thinker/channel, (2) at least one YouTube video from a credible Centrist/non-partisan thinker/channel, and (3) at least one YouTube video from a credible Right-leaning/heterodox thinker/channel—alongside peer-reviewed studies, Substack essays, and philosophical/spiritual talks.`;
 
 const VOICE_OPTIONS = [
   { id: 'Aoede', label: 'Aoede' },
@@ -431,7 +441,7 @@ const SIGNAL_THINKING_PHASES = [
   'Retrieving live record & exact chronology…',
   'Auditing mainstream narrative curation…',
   'Modeling power-asymmetry & historical parallels…',
-  'Assembling diagnostic tests & spectrum sources…'
+  'Assembling Centrist, Left & Right sources…'
 ];
 
 const STORAGE_KEY = 'touchmark_saved_dossiers_v1';
@@ -833,7 +843,7 @@ export default function TouchmarkToolsApp() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'analyze',
-          prompt: `Conduct a thorough, grounded intelligence briefing on this subject. Anchor on exact verified dates, counts, verdicts, and chronologies first; dissect how mainstream framing curates and manipulates public perception; evaluate the conspicuous rarity of the constellation of details; explore concretely how political/economic/judicial power operates behind the scenes with historical precedents; provide falsifiable primary-source diagnostic tests; and curate a full-spectrum research library: "${expandedQuery}"`,
+          prompt: `Conduct a thorough, grounded intelligence briefing on this subject. Anchor on exact verified dates, counts, verdicts, and chronologies first; dissect how mainstream framing curates and manipulates public perception; evaluate the conspicuous rarity of the constellation of details; explore concretely how political/economic/judicial power operates behind the scenes with historical precedents; provide falsifiable primary-source diagnostic tests; include two distinct Centrist analytical viewpoints; and curate a full-spectrum research library with at least 3 credible YouTube talks spanning Left, Centrist, and Right perspectives: "${expandedQuery}"`,
           systemInstruction: SIGNAL_SYSTEM_PROMPT,
           useSearch: true
         })
@@ -1074,7 +1084,7 @@ export default function TouchmarkToolsApp() {
 
         ${
           signalReport.spectrumPerspectives?.length
-            ? `<h2>9. Perspectives Across the Intellectual Spectrum</h2>
+            ? `<h2>9. Perspectives Across the Intellectual Spectrum (Centrist, Left, Right, Philosophical & Spiritual)</h2>
               ${signalReport.spectrumPerspectives
                 .map(
                   (sp) => `
@@ -1090,7 +1100,7 @@ export default function TouchmarkToolsApp() {
 
         ${
           signalReport.researchLibrary?.length
-            ? `<h2>10. Curated Research Library (Studies, Essays, Substacks & Talks)</h2>
+            ? `<h2>10. Curated Research Library (YouTube Talks Across Spectrum, Studies & Essays)</h2>
               ${signalReport.researchLibrary
                 .map(
                   (r) => `
@@ -1667,238 +1677,4 @@ export default function TouchmarkToolsApp() {
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-200 font-medium">
                             <Compass className="w-4 h-4" />
-                            Center of Gravity & Epistemic Weighing
-                          </div>
-                          <span className="px-2.5 py-0.5 rounded-full bg-white/[0.07] text-xs font-mono text-stone-200">
-                            {signalReport.centerOfGravityLikelihood}% Weight
-                          </span>
-                        </div>
-                        <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
-                          {signalReport.centerOfGravity}
-                        </p>
-                      </div>
-                    )}
-                  </>
-                ) : drawerTab === 'power' ? (
-                  <>
-                    {/* TAB 2: POWER BLUEPRINT + SCENARIOS + DIAGNOSTIC TESTS + HISTORY */}
-                    {signalReport.powerOperationBlueprint && (
-                      <div className="p-5 rounded-2xl bg-amber-400/[0.06] border border-amber-300/25 space-y-2.5">
-                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
-                          <ShieldAlert className="w-4 h-4" />
-                          If Institutional or Judicial Power Is Operating Behind the Scenes
-                        </div>
-                        <p className="text-xs sm:text-sm text-stone-200 leading-relaxed whitespace-pre-line">
-                          {signalReport.powerOperationBlueprint}
-                        </p>
-                      </div>
-                    )}
-
-                    {signalReport.scenarios?.length > 0 && (
-                      <div className="space-y-3">
-                        <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400 block">
-                          Competing Possibilities & Probability Weights
-                        </span>
-                        {signalReport.scenarios.map((sc, idx) => (
-                          <div
-                            key={idx}
-                            className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2"
-                          >
-                            <div className="flex items-center justify-between gap-2">
-                              <h3 className="text-sm font-medium text-stone-100">{sc.name}</h3>
-                              <span className="shrink-0 px-2.5 py-0.5 rounded-full bg-white/[0.07] text-xs font-mono text-amber-200">
-                                {sc.likelihood}%
-                              </span>
-                            </div>
-                            <p className="text-xs text-stone-300 leading-relaxed">
-                              <span className="text-emerald-300/90 font-medium">What points here: </span>
-                              {sc.caseFor}
-                            </p>
-                            {sc.caseAgainst && (
-                              <p className="text-xs text-stone-400 leading-relaxed">
-                                <span className="text-stone-500 font-medium">Counter-weight: </span>
-                                {sc.caseAgainst}
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* DIAGNOSTIC PRIMARY DOCUMENTS & FALSIFIABLE TESTS */}
-                    {signalReport.diagnosticChecklist?.length > 0 && (
-                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
-                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-emerald-300 font-medium">
-                          <SearchCheck className="w-4 h-4" />
-                          Primary Records & Falsifiable Diagnostic Tests
-                        </div>
-                        <div className="space-y-2.5">
-                          {signalReport.diagnosticChecklist.map((doc, idx) => (
-                            <div
-                              key={idx}
-                              className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1"
-                            >
-                              <h4 className="text-xs font-semibold text-stone-100">
-                                {doc.primaryDocument}
-                              </h4>
-                              <p className="text-xs text-stone-400 leading-relaxed">
-                                {doc.whatToLookFor}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {signalReport.historicalPrecedents && (
-                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
-                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-stone-200 font-medium">
-                          <History className="w-4 h-4 text-amber-300" />
-                          Historical Precedents & Base-Rate Frequency
-                        </div>
-                        <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
-                          {signalReport.historicalPrecedents}
-                        </p>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  /* TAB 3: FULL-SPECTRUM PERSPECTIVES & MULTI-FORMAT RESEARCH LIBRARY */
-                  <div className="space-y-6">
-                    {signalReport.spectrumPerspectives?.length > 0 && (
-                      <div className="space-y-3">
-                        <span className="text-[11px] uppercase tracking-[0.18em] text-amber-300/90 block">
-                          How High-Integrity Thinkers Frame This Across Lenses
-                        </span>
-                        <div className="grid sm:grid-cols-2 gap-3">
-                          {signalReport.spectrumPerspectives.map((sp, idx) => (
-                            <div
-                              key={idx}
-                              className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5"
-                            >
-                              <span className="text-[10px] uppercase tracking-wider text-amber-300 block">
-                                {sp.lens}
-                              </span>
-                              <h4 className="text-xs font-semibold text-stone-100">
-                                {sp.thinkerOrOutlet}
-                              </h4>
-                              <p className="text-xs text-stone-300 leading-relaxed">
-                                {sp.coreThesis}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {signalReport.groundingSources?.length > 0 && (
-                      <div className="space-y-2">
-                        <span className="text-[11px] uppercase tracking-[0.18em] text-emerald-300/90 block">
-                          Live Primary Record Sources
-                        </span>
-                        {signalReport.groundingSources.map((src, idx) => (
-                          <a
-                            key={idx}
-                            href={src.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:border-emerald-300/35 text-xs text-stone-200"
-                          >
-                            <span className="truncate pr-2">{src.title}</span>
-                            <ExternalLink className="w-3.5 h-3.5 text-stone-500 shrink-0" />
-                          </a>
-                        ))}
-                      </div>
-                    )}
-
-                    {signalReport.researchLibrary?.length > 0 && (
-                      <div className="space-y-3">
-                        <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400 block">
-                          Curated Studies, Essays, Substacks & Long-Form Talks
-                        </span>
-                        {signalReport.researchLibrary.map((item, idx) => {
-                          const fmt = (item.format || '').toLowerCase();
-                          const Icon = fmt.includes('youtube')
-                            ? Youtube
-                            : fmt.includes('study')
-                            ? GraduationCap
-                            : BookOpen;
-
-                          return (
-                            <a
-                              key={idx}
-                              href={buildSmartResearchUrl(item)}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="block p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-300/35 transition-all space-y-2"
-                            >
-                              <div className="flex items-center justify-between gap-2">
-                                <div className="flex flex-wrap items-center gap-1.5">
-                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/[0.07] text-[10px] uppercase tracking-wider text-stone-200">
-                                    <Icon className="w-3 h-3 text-amber-300" />
-                                    {item.format}
-                                  </span>
-                                  <span className="px-2.5 py-0.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-[10px] uppercase tracking-wider text-amber-200">
-                                    {item.perspectiveTag}
-                                  </span>
-                                </div>
-                                <ExternalLink className="w-3.5 h-3.5 text-stone-500 shrink-0" />
-                              </div>
-
-                              <div>
-                                <h4 className="text-sm font-medium text-stone-100 leading-snug">
-                                  {item.title}
-                                </h4>
-                                <span className="text-xs text-stone-400">
-                                  {item.authorOrChannel}
-                                </span>
-                              </div>
-
-                              <p className="text-xs text-stone-300 leading-relaxed">
-                                {item.takeaway}
-                              </p>
-                            </a>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Centered PDF & Markdown Export Buttons inside Dossier Drawer */}
-                <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    onClick={exportFullPdfDossier}
-                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs tracking-wide whitespace-nowrap hover:bg-amber-200 flex items-center justify-center gap-2 transition-colors"
-                  >
-                    <Printer className="w-4 h-4 shrink-0" />
-                    <span>Export PDF Dossier</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={copyReceipt}
-                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-stone-200 font-medium text-xs tracking-wide whitespace-nowrap flex items-center justify-center gap-2 transition-colors"
-                  >
-                    {copiedReceipt ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
-                        <span>Markdown Copied</span>
-                      </>
-                    ) : (
-                      <>
-                        <Share2 className="w-4 h-4 shrink-0" />
-                        <span>Copy Markdown</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+                            Center of
