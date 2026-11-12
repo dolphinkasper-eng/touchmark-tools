@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       history = []
     } = req.body || {};
 
-    // 1. STUDIO-GRADE HUMAN VOICE (Gemini 3.8 Flash-Lite TTS)
+    // 1. FAST STUDIO-GRADE HUMAN VOICE (Gemini 3.8 Flash-Lite TTS)
     if (action === 'speak') {
       if (!text || !text.trim()) {
         return res.status(400).json({ error: 'Text is required for speech.' });
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: text.slice(0, 1200) }] }],
+          contents: [{ parts: [{ text: text.slice(0, 900) }] }],
           generationConfig: {
             responseModalities: ['AUDIO'],
             speechConfig: {
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // 2. WARM COPILOT CHAT MODE
+    // 2. INSTANT WARM COPILOT CHAT (Gemini 3.5 Flash-Lite — sub-second first token)
     if (action === 'chat') {
       if (!prompt || !prompt.trim()) {
         return res.status(400).json({ error: 'Prompt is required.' });
@@ -73,36 +73,41 @@ export default async function handler(req, res) {
       const chatInstruction = `You are Touchmark, a warm, grounded, perceptive relational and epistemic copilot.
 The user is greeting you, checking their mic, or warming up before exploring a decision (Pulse) or auditing a public event/claim (Signal).
 - Speak like a thoughtful, unhurried human peer—warm, clear, and genuinely present.
-- Keep your reply to 1–3 concise, natural spoken sentences (no markdown, no bullet points, no robotic disclaimers).
+- Keep your reply to 1–2 concise, natural spoken sentences (no markdown, no bullet points).
 - Confirm you hear them clearly if they asked, and gently invite them to share what's on their mind.`;
 
       const contents = [
-        ...history.slice(-6).map((turn) => ({
+        ...history.slice(-4).map((turn) => ({
           role: turn.role === 'user' ? 'user' : 'model',
           parts: [{ text: turn.text }]
         })),
         { role: 'user', parts: [{ text: prompt }] }
       ];
 
-      const replyText = await callGeminiWithFallback(apiKey, {
-        contents,
-        systemInstruction: { parts: [{ text: chatInstruction }] },
-        generationConfig: {
-          temperature: 0.75,
-          maxOutputTokens: 200
-        }
-      });
+      const replyText = await callGeminiFast(
+        apiKey,
+        {
+          contents,
+          systemInstruction: { parts: [{ text: chatInstruction }] },
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 140
+          }
+        },
+        ['gemini-3.5-flash-lite', 'gemini-3.8-flash']
+      );
 
       return res.status(200).json({ reply: replyText });
     }
 
-    // 3. STRUCTURED PULSE / SIGNAL DISCERNMENT
+    // 3. LOW-LATENCY STRUCTURED PULSE / SIGNAL DISCERNMENT
     if (!prompt || !prompt.trim()) {
       return res.status(400).json({ error: 'Prompt is required.' });
     }
 
     const generationConfig = {
-      temperature: 0.45
+      temperature: 0.4,
+      thinkingConfig: { thinkingLevel: 'LOW' }
     };
 
     if (responseSchema) {
@@ -123,7 +128,12 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       payload.tools = [{ google_search: {} }];
     }
 
-    const rawText = await callGeminiWithFallback(apiKey, payload);
+    // Pulse uses Flash-Lite first for snappy 1-2s responses; Signal uses 3.8 Flash (LOW thinking) for grounded search
+    const modelOrder = useSearch
+      ? ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
+      : ['gemini-3.5-flash-lite', 'gemini-3.8-flash'];
+
+    const rawText = await callGeminiFast(apiKey, payload, modelOrder);
     return res.status(200).json({ text: rawText });
   } catch (err) {
     console.error('Touchmark /api/discern error:', err);
@@ -133,8 +143,7 @@ The user is greeting you, checking their mic, or warming up before exploring a d
   }
 }
 
-async function callGeminiWithFallback(apiKey, payload) {
-  const models = ['gemini-3.8-flash', 'gemini-3.5-flash-lite'];
+async function callGeminiFast(apiKey, payload, models) {
   let lastError = 'Gemini request failed.';
 
   for (const model of models) {
@@ -154,6 +163,28 @@ async function callGeminiWithFallback(apiKey, payload) {
       if (text) return text;
       lastError = `Empty response from ${model}.`;
       continue;
+    }
+
+    // Retry cleanly if a model doesn't support thinkingConfig
+    if (payload.generationConfig?.thinkingConfig) {
+      const fallbackPayload = {
+        ...payload,
+        generationConfig: { ...payload.generationConfig }
+      };
+      delete fallbackPayload.generationConfig.thinkingConfig;
+      const retryRes = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fallbackPayload)
+      });
+      const retryData = await retryRes.json();
+      if (retryRes.ok) {
+        const retryText = retryData?.candidates?.[0]?.content?.parts
+          ?.map((p) => p.text || '')
+          .join('')
+          .trim();
+        if (retryText) return retryText;
+      }
     }
 
     lastError = data?.error?.message || `HTTP ${response.status} from ${model}`;
