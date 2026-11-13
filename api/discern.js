@@ -67,6 +67,19 @@ const SIGNAL_DEEP_SCHEMA = {
         required: ['vector', 'finding', 'epistemicGrade']
       }
     },
+    relationshipMap: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          sourceEntity: { type: 'STRING' },
+          relationshipType: { type: 'STRING' },
+          targetEntity: { type: 'STRING' },
+          epistemicGrade: { type: 'STRING' }
+        },
+        required: ['sourceEntity', 'relationshipType', 'targetEntity', 'epistemicGrade']
+      }
+    },
     powerOperationBlueprint: { type: 'STRING' },
     scenarios: {
       type: 'ARRAY',
@@ -145,6 +158,7 @@ const SIGNAL_DEEP_SCHEMA = {
   },
   required: [
     'followThePower',
+    'relationshipMap',
     'powerOperationBlueprint',
     'scenarios',
     'uncomfortableQuestions',
@@ -156,6 +170,7 @@ const SIGNAL_DEEP_SCHEMA = {
   ]
 };
 
+// Ordered so compact arrays (shortFormPack, warnings, audit, visuals) populate BEFORE long-form scripts
 const STUDIO_SCHEMA = {
   type: 'OBJECT',
   properties: {
@@ -171,8 +186,27 @@ const STUDIO_SCHEMA = {
         required: ['angleTitle', 'framing']
       }
     },
-    substackEssayDraft: { type: 'STRING' },
-    youtubePodcastScript: { type: 'STRING' },
+    shortFormPack: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          platform: { type: 'STRING' },
+          hook: { type: 'STRING' },
+          coreBeat: { type: 'STRING' },
+          visualDirection: { type: 'STRING' }
+        },
+        required: ['platform', 'hook', 'coreBeat', 'visualDirection']
+      }
+    },
+    doNotCompressWarnings: {
+      type: 'ARRAY',
+      items: { type: 'STRING' }
+    },
+    evidenceIntegrityAudit: {
+      type: 'ARRAY',
+      items: { type: 'STRING' }
+    },
     visualAssetChecklist: {
       type: 'ARRAY',
       items: {
@@ -184,20 +218,65 @@ const STUDIO_SCHEMA = {
         required: ['timestampOrBeat', 'onScreenEvidence']
       }
     },
-    evidenceIntegrityAudit: {
-      type: 'ARRAY',
-      items: {
-        type: 'STRING'
-      }
-    }
+    substackEssayDraft: { type: 'STRING' },
+    youtubePodcastScript: { type: 'STRING' }
   },
   required: [
     'editorialHook',
     'alternativeAngles',
-    'substackEssayDraft',
-    'youtubePodcastScript',
+    'shortFormPack',
+    'doNotCompressWarnings',
+    'evidenceIntegrityAudit',
     'visualAssetChecklist',
-    'evidenceIntegrityAudit'
+    'substackEssayDraft',
+    'youtubePodcastScript'
+  ]
+};
+
+const REVISION_SCHEMA = {
+  type: 'OBJECT',
+  properties: {
+    revisionSummary: { type: 'STRING' },
+    constellationRarityScore: { type: 'INTEGER' },
+    constellationRarityLabel: { type: 'STRING' },
+    constellationRaritySummary: { type: 'STRING' },
+    narrativeCurationScore: { type: 'INTEGER' },
+    narrativeCurationLabel: { type: 'STRING' },
+    narrativeCurationSummary: { type: 'STRING' },
+    coordinationEvidenceScore: { type: 'INTEGER' },
+    coordinationEvidenceLabel: { type: 'STRING' },
+    coordinationEvidenceSummary: { type: 'STRING' },
+    centerOfGravityLikelihood: { type: 'INTEGER' },
+    centerOfGravityLabel: { type: 'STRING' },
+    centerOfGravitySummary: { type: 'STRING' },
+    updatedCenterOfGravity: { type: 'STRING' },
+    newTimelineEntry: {
+      type: 'OBJECT',
+      properties: {
+        date: { type: 'STRING' },
+        legalStatus: { type: 'STRING' },
+        epistemicGrade: { type: 'STRING' },
+        event: { type: 'STRING' }
+      },
+      required: ['date', 'legalStatus', 'epistemicGrade', 'event']
+    }
+  },
+  required: [
+    'revisionSummary',
+    'constellationRarityScore',
+    'constellationRarityLabel',
+    'constellationRaritySummary',
+    'narrativeCurationScore',
+    'narrativeCurationLabel',
+    'narrativeCurationSummary',
+    'coordinationEvidenceScore',
+    'coordinationEvidenceLabel',
+    'coordinationEvidenceSummary',
+    'centerOfGravityLikelihood',
+    'centerOfGravityLabel',
+    'centerOfGravitySummary',
+    'updatedCenterOfGravity',
+    'newTimelineEntry'
   ]
 };
 
@@ -224,7 +303,6 @@ export default async function handler(req, res) {
       history = []
     } = req.body || {};
 
-    // 1. STUDIO-GRADE HUMAN VOICE (Gemini 3.8 Flash-Lite TTS)
     if (action === 'speak') {
       if (!text || !text.trim()) {
         return res.status(400).json({ error: 'Text is required for speech.' });
@@ -268,7 +346,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // 2. WARM COPILOT CHAT MODE
     if (action === 'chat') {
       if (!prompt || !prompt.trim()) {
         return res.status(400).json({ error: 'Prompt is required.' });
@@ -304,7 +381,6 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       return res.status(200).json({ reply: replyText });
     }
 
-    // 2B. LIVE TRENDING INQUIRIES
     if (action === 'trending') {
       const trendingPrompt = `Identify 3 major current public controversies, legal/political developments, or institutional narratives people are actively debating right now. Frame each as a concise, single-sentence Touchmark Signal inquiry (under 14 words each) that invites looking beneath the mainstream framing. Return valid JSON ONLY as an array of 3 strings: ["...", "...", "..."]`;
 
@@ -333,7 +409,6 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       return res.status(200).json({ prompts: Array.isArray(prompts) ? prompts.slice(0, 3) : [] });
     }
 
-    // 3A. PROGRESSIVE SIGNAL STAGE 1 (4-Scalar Radar + Verified Chronology + Narrative Audit + Center of Gravity)
     if (action === 'signal_core') {
       if (!prompt || !prompt.trim()) {
         return res.status(400).json({ error: 'Prompt is required.' });
@@ -368,7 +443,6 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       });
     }
 
-    // 3B. PROGRESSIVE SIGNAL STAGE 2 (Follow the Power + Scenarios + Uncomfortable Questions + Investigation Gap + 6-Lens Spectrum + Library)
     if (action === 'signal_deep') {
       if (!prompt || !prompt.trim()) {
         return res.status(400).json({ error: 'Prompt is required.' });
@@ -398,10 +472,9 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       return res.status(200).json({ text: rawText });
     }
 
-    // 3C. TOUCHMARK STUDIO CONTENT PRODUCTION ENGINE (Inherits Signal Dossier)
     if (action === 'studio_create') {
       if (!prompt || !prompt.trim()) {
-        return res.status(400).json({ error: 'Dossier context is required.' });
+        return res.status(400).json({ error: 'Dossier or external research context is required.' });
       }
 
       const rawText = await callGeminiRobust(
@@ -413,7 +486,7 @@ The user is greeting you, checking their mic, or warming up before exploring a d
             : undefined,
           generationConfig: {
             temperature: 0.5,
-            maxOutputTokens: 6500,
+            maxOutputTokens: 8192,
             responseMimeType: 'application/json',
             responseSchema: STUDIO_SCHEMA
           }
@@ -424,7 +497,31 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       return res.status(200).json({ text: rawText });
     }
 
-    // 4. STANDARD PULSE / FALLBACK ANALYSIS
+    if (action === 'revise_investigation') {
+      if (!prompt || !prompt.trim()) {
+        return res.status(400).json({ error: 'New evidence or update text is required.' });
+      }
+
+      const rawText = await callGeminiRobust(
+        apiKey,
+        {
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          systemInstruction: systemInstruction
+            ? { parts: [{ text: systemInstruction }] }
+            : undefined,
+          generationConfig: {
+            temperature: 0.35,
+            maxOutputTokens: 3500,
+            responseMimeType: 'application/json',
+            responseSchema: REVISION_SCHEMA
+          }
+        },
+        ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
+      );
+
+      return res.status(200).json({ text: rawText });
+    }
+
     if (!prompt || !prompt.trim()) {
       return res.status(400).json({ error: 'Prompt is required.' });
     }
