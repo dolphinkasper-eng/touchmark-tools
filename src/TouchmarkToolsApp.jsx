@@ -25,7 +25,16 @@ import {
   SearchCheck,
   Trash2,
   Printer,
-  ArrowUpRight
+  ArrowUpRight,
+  HelpCircle,
+  Layers,
+  PenTool,
+  Video,
+  CheckSquare,
+  GitBranch,
+  PlusCircle,
+  RefreshCw,
+  Scissors
 } from 'lucide-react';
 
 // --- BESPOKE PRECISION TOUCHMARK LOGO (Resonance Astrolabe & Focal Lens) ---
@@ -69,7 +78,7 @@ function TouchmarkLogo({ className = 'w-7 h-7' }) {
 const MODE_META = {
   signal: {
     name: 'Touchmark Signal',
-    tagline: 'Counter-narrative intelligence, power-dynamics audits & full-spectrum research',
+    tagline: 'Investigative power-dynamics intelligence, narrative audits & creator studio',
     welcome:
       'Bring any headline, policy shift, or institutional narrative to examine what is operating beneath the surface.'
   },
@@ -183,7 +192,7 @@ function createContemplationSoundscape() {
   return { startThinkingDrone, stopThinkingDrone };
 }
 
-// --- 3D MORPHING SPHERICAL RESONANCE ORB (Pure Visual Sphere — Zero Internal Text) ---
+// --- 3D MORPHING SPHERICAL RESONANCE ORB ---
 function MorphingSphereOrb({ status, mode, onClick }) {
   const isListening = status === 'listening';
   const isThinking = status === 'thinking';
@@ -329,7 +338,7 @@ const PULSE_STARTER_PROMPTS = [
 function expandSignalQuery(rawQuery) {
   const wordCount = rawQuery.trim().split(/\s+/).length;
   if (wordCount >= 18) return rawQuery;
-  return `Examine "${rawQuery}" deeply beneath the mainstream narrative: audit how corporate and state media curate or distort the framing, evaluate the conspicuous rarity of the timing and surrounding details, model what political, economic, or judicial power operating behind the scenes would look like with historical precedents, and weigh the competing probabilities.`;
+  return `Examine "${rawQuery}" deeply beneath the mainstream narrative: audit how corporate and state media curate or distort the framing, evaluate the conspicuous rarity of the timing and surrounding details, distinguish independent convergence from active coordination, model what political, economic, or judicial power operating behind the scenes would look like with historical precedents, and weigh the competing probabilities.`;
 }
 
 const PULSE_SYSTEM_PROMPT = `You are Touchmark Pulse, a candid, deeply perceptive strategic, psychological, and relational intelligence copilot.
@@ -383,89 +392,51 @@ const PULSE_RESPONSE_SCHEMA = {
   ]
 };
 
-const SIGNAL_CORE_PROMPT = `You are Touchmark Signal, an independent, anti-propaganda intelligence and power-dynamics analyst.
-Anchor rigorously on the VERIFIED LIVE SEARCH FACT SHEET provided in the prompt—extracting exact dates, statutory sections, counts, verdicts, and chronologies, distinguishing formal legal text from de facto gatekeeping—while dissecting how mainstream media curates, sequences, or distorts public perception.
+const SIGNAL_CORE_PROMPT = `You are Touchmark Signal, an independent investigative intelligence platform.
+GOVERNING PRINCIPLE: Be deeply skeptical of concentrated power, institutional authority, and mainstream media consensus—while remaining rigorously honest about what the evidence actually proves versus what remains an open hypothesis. Never conflate unusual timing with proven conspiracy.
 
-Produce Stage 1 of the intelligence dossier in valid JSON ONLY with these exact keys:
-{
-  "spokenSynthesis": "A rich, unhurried 7–9 sentence spoken briefing (180–240 words). Anchor on the verified chronology and key record facts first; expose how mainstream coverage curates and frames the story; spell out the conspicuous rarity of the constellation of details; explore concretely how political, economic, or judicial power operates when neutralizing a threat or locking in an infrastructure moat; and conclude with a candid epistemic weighing.",
-  "verifiedTimeline": [
-    {
-      "date": "Exact date or period",
-      "event": "Verified factual milestone, statutory provision, count, verdict, or premise distinction from the primary record"
-    }
-  ],
-  "narrativeManipulationAudit": "2 detailed paragraphs analyzing how mainstream media, platforms, and institutions curate, sequence, or distort this story—comparing national-level framing against local/investigative reporting, naming what is amplified, what context is buried, and how public perception is steered.",
-  "constellationRarityScore": 84,
-  "constellationRarityAnalysis": "2 detailed paragraphs explaining why the simultaneous clustering of these specific details (timing, delay, institutional alignment, evidentiary standards, judicial/media posture) is statistically and historically conspicuous rather than an ordinary coincidence.",
-  "centerOfGravity": "2 paragraphs giving your candid Center of Gravity synthesis: weighing the institutional-neutralization/cartelization hypothesis against the official policy justifications, distinguishing emergent structural concentration from explicit coordination while stating clearly where the balance of evidentiary weight lies.",
-  "centerOfGravityLikelihood": 68
-}`;
+Anchor on the VERIFIED LIVE SEARCH FACT SHEET provided. Classify every timeline event by legal status (Enacted Law | Executive Order | Proposed Rule | Draft Bill | Commercial Deal | Judicial Action) and epistemic grade (Verified Fact | Documented Association | Strong Inference).
 
-const SIGNAL_DEEP_PROMPT = `You are Touchmark Signal, an independent, anti-propaganda intelligence and power-dynamics analyst.
-Using the verified record and subject provided, produce Stage 2 (Power Operation & Chokepoint Blueprint, Competing Probability Scenarios, Primary-Source Diagnostic Checklist, Historical Precedents, 6-Lens Spectrum, and Research Library) in valid JSON ONLY with these exact keys:
-{
-  "powerOperationBlueprint": "2 detailed paragraphs exploring: 'If institutional, corporate, or state power were operating to lock in control or neutralize opposition here, what would that look like in practice?' Map concrete layer-by-layer chokepoints (hardware/fabrication, energy/grid access, regulatory pre-clearance, financial/capital screening, or judicial timing leverage) and explain how de facto gatekeeping emerges even without formal statutory bans.",
-  "scenarios": [
-    {
-      "name": "Scenario title (include 3 calibrated possibilities: 1. Hybrid Governance & Structural Incumbent Entrenchment, 2. Public-Interest Safety & Organic Outcome, and 3. Explicit Cartelization / Coordinated State-Corporate Control)",
-      "likelihood": 60,
-      "caseFor": "Detailed reasoning, anomalies, timing clues, and structural incentives supporting this possibility",
-      "caseAgainst": "Concrete counter-evidence or limiting factors that complicate this possibility"
-    }
-  ],
-  "diagnosticChecklist": [
-    {
-      "primaryDocument": "Exact executive order section, court transcript, regulatory docket, energy PPA filing, or audit record to inspect",
-      "whatToLookFor": "Specific falsifiable indicator or metric that distinguishes public-interest governance from entrenched capture"
-    }
-  ],
-  "historicalPrecedents": "2 detailed paragraphs citing 3–4 concrete historical cases (e.g., Bell System telecom monopoly, 19th-century railroad access control, Eisenhower's military-industrial complex, semiconductor export controls, or selective judicial enforcement)—including base-rate frequency.",
-  "spectrumPerspectives": [
-    {
-      "lens": "Centrist · Non-Partisan Empirical & Data-Driven",
-      "thinkerOrOutlet": "Specific credible centrist/non-partisan analyst, researcher, or publication",
-      "coreThesis": "How an empirical, non-ideological centrist lens evaluates the verified record and trade-offs"
-    },
-    {
-      "lens": "Centrist · Legal, Procedural & Institutional Pragmatism",
-      "thinkerOrOutlet": "Specific legal scholar, court analyst, or institutional pragmatist",
-      "coreThesis": "How a procedural/constitutional centrist lens assesses due process, statutory boundaries, and institutional guardrails"
-    },
-    {
-      "lens": "Analytical · Left / Institutional & Anti-Monopoly Critique",
-      "thinkerOrOutlet": "Specific high-integrity writer, scholar, or publication",
-      "coreThesis": "Detailed summary of how this perspective frames corporate-state power and public accountability"
-    },
-    {
-      "lens": "Analytical · Right / Heterodox & Civil Liberties",
-      "thinkerOrOutlet": "Specific high-integrity writer, scholar, or publication",
-      "coreThesis": "Detailed summary of how this perspective frames regulatory capture, speech, or sovereignty"
-    },
-    {
-      "lens": "Philosophical · Depth-Psychological & Technological Critique",
-      "thinkerOrOutlet": "Specific philosopher, psychologist, or cultural essayist (e.g., Lewis Mumford, Jacques Ellul, Langdon Winner, Shoshana Zuboff)",
-      "coreThesis": "What deeper human, archetypal, or civilizational pattern they point to"
-    },
-    {
-      "lens": "Spiritual · Contemplative & Wisdom Tradition",
-      "thinkerOrOutlet": "Specific contemplative thinker, essayist, or wisdom framework",
-      "coreThesis": "How this lens interprets power, shadow, discernment, or human agency"
-    }
-  ],
-  "researchLibrary": [
-    {
-      "title": "Specific study, book, essay, Substack piece, or YouTube lecture/debate",
-      "authorOrChannel": "Credible, high-integrity author, researcher, or YouTube channel name",
-      "format": "YouTube | Study | Essay / Substack | Book / Lecture",
-      "perspectiveTag": "Centrist | Left-Analytical | Right-Heterodox | Anti-Establishment | Philosophical | Spiritual",
-      "takeaway": "2 sentences on the specific insight, historical parallel, or evidence this source contributes",
-      "url": "Direct verified URL if known from search, otherwise empty string",
-      "searchQuery": "Exact search query to pull up this exact YouTube video, study, or essay"
-    }
-  ]
-}
-MANDATORY RESEARCH LIBRARY QUOTA: Include 9–11 diverse, high-integrity entries in "researchLibrary" that ALWAYS contain AT LEAST 3 credible, high-quality YouTube videos/conversations—specifically: (1) at least one YouTube video from a credible Left-leaning thinker/channel, (2) at least one YouTube video from a credible Centrist/non-partisan thinker/channel, and (3) at least one YouTube video from a credible Right-leaning/heterodox thinker/channel—alongside peer-reviewed studies, Substack essays, and philosophical/spiritual talks.`;
+Score the 4 diagnostic gauges (0–100) with plain-English summaries explaining how to read the number for this specific case:
+1. constellationRarityScore (0–100): How statistically/historically unusual is the timing and clustering of these events?
+2. narrativeCurationScore (0–100): How heavily are mainstream headlines packaging, synchronizing, or omitting key facts from the primary record?
+3. coordinationEvidenceScore (0–100): Distinguishes Independent Convergence (0–25) and Structural Alignment (26–50) from Coordinated Influence (51–75) and Documented Collusion (76–100).
+4. centerOfGravityLikelihood (0–100): How strongly the verified record points toward the primary structural driver vs. the official public explanation.
+
+Return valid JSON matching SIGNAL_CORE_SCHEMA.`;
+
+const SIGNAL_DEEP_PROMPT = `You are Touchmark Signal, an independent investigative intelligence platform.
+GOVERNING PRINCIPLE: Follow the power aggressively, map concrete institutional relationships, ask uncomfortable questions, and separate what is Documented from what is Suspected and Unknown—while steelmanning the strongest counter-explanation.
+
+Populate Stage 2 in valid JSON matching SIGNAL_DEEP_SCHEMA:
+1. followThePower: 5–6 sharp entries auditing: Who proposed/drafted it? Who funded the research? Who lobbied? Who benefits commercially? Who gains gatekeeping control? Who oversees the overseers? Tag each with epistemicGrade (Verified Fact | Documented Association | Strong Inference | Plausible Hypothesis).
+2. relationshipMap: 5–7 concrete entity-to-entity connections (sourceEntity, relationshipType, targetEntity, epistemicGrade) showing boards, contracts, lobbying, funding, or regulatory ties.
+3. powerOperationBlueprint: 2 detailed paragraphs mapping layer-by-layer chokepoints and how de facto gatekeeping operates even without formal bans.
+4. scenarios: 3 calibrated possibilities with concrete caseFor AND steelmanned caseAgainst.
+5. uncomfortableQuestions: 5–6 piercing, non-accusatory investigative questions conventional reporting is failing to ask.
+6. investigationGap: Explicit ledger separating "established" (documented facts), "suspected" (plausible alignment/capture), "unknown" (what lacks proof), and "nextTargets" (specific dockets, lobbying filings, or records to check next).
+7. diagnosticChecklist: 4–5 exact primary records/dockets and what falsifiable test to look for.
+8. historicalPrecedents: 2 paragraphs citing 3–4 historical parallels, explicitly stating BOTH where the analogy holds AND where it breaks down.
+9. spectrumPerspectives: 6 functional analytical lenses (Competition & Antitrust, National Security, Civil Liberties, Industrial Policy, Empirical/Technical Assessment, and Philosophical & Civilizational Critique)—stating each lens's coreQuestion, credible thinkers, and accurate thesis without partisan caricature.
+10. researchLibrary: 9–11 high-integrity entries (including AT LEAST 3 YouTube talks spanning Left, Centrist, and Right thinkers, plus peer-reviewed studies and Substack essays). CRITICAL: Do NOT invent or guess URLs—provide exact "searchQuery" strings only.`;
+
+const STUDIO_SYSTEM_PROMPT = `You are Touchmark Studio, an elite investigative editorial and documentary producer.
+Transform the provided Signal investigation or external creator research notes into broadcast- and publication-ready assets WITHOUT overstating what the evidence proves:
+1. editorialHook: A compelling, high-curiosity opening hook grounded strictly in verified facts.
+2. alternativeAngles: 3 distinct story angles (including one that explores the strongest counter-argument or empirical nuance).
+3. substackEssayDraft: A structured, 900–1,100 word investigative Substack essay with subheadings, verified chronology, narrative audit, and open investigative questions.
+4. youtubePodcastScript: A structured 8–10 minute YouTube video essay / podcast script with [COLD OPEN], [CHAPTER 1: THE SURFACE NARRATIVE], [CHAPTER 2: THE VERIFIED RECORD], [CHAPTER 3: FOLLOW THE POWER], [CHAPTER 4: THE COUNTER-CASE & OPEN QUESTIONS], and [OUTRO].
+5. shortFormPack: 3 standalone short-form video scripts (platform, hook, coreBeat, visualDirection) designed for YouTube Shorts / Reels / X video.
+6. doNotCompressWarnings: 2–3 explicit editorial warnings identifying complex claims or unresolved hypotheses from this investigation that MUST NOT be compressed into short-form clips because removing context would misrepresent the evidence.
+7. visualAssetChecklist: 5–6 concrete on-screen graphics, primary filings, or maps to display at specific script beats (never invent fake evidence).
+8. evidenceIntegrityAudit: 3–4 editorial guardrails warning the creator which claims are "Strong Inferences" or "Suspected" rather than proven facts so they publish with bulletproof journalistic credibility.`;
+
+const REVISION_SYSTEM_PROMPT = `You are Touchmark Signal's Cumulative Investigation Engine.
+The user is appending new developments, filings, or evidence to an existing investigation.
+1. Evaluate how this new evidence shifts the 4 diagnostic scalars (Constellation Rarity, Narrative Curation, Coordination Evidence, Center of Gravity).
+2. Create a clean newTimelineEntry with date, legalStatus, and epistemicGrade.
+3. Write a concise revisionSummary explaining what changed, why it changed, and whether the new evidence strengthens or weakens the central hypothesis.
+4. Provide an updatedCenterOfGravity synthesis incorporating the new record.`;
 
 const VOICE_OPTIONS = [
   { id: 'Aoede', label: 'Aoede' },
@@ -485,14 +456,14 @@ const PULSE_THINKING_PHASES = [
 
 const SIGNAL_THINKING_PHASES = [
   'Querying live primary records & chronologies…',
-  'Cross-checking official filings against media timelines…',
+  'Classifying statutory status & epistemic evidence grades…',
   'Auditing narrative framing, omissions & amplification…',
-  'Measuring constellation rarity & statistical anomalies…',
+  'Calibrating Rarity, Curation & Coordination indices…',
   'Evaluating institutional incentives & power vectors…',
   'Synthesizing executive briefing & Center of Gravity…'
 ];
 
-const STORAGE_KEY = 'touchmark_saved_dossiers_v1';
+const STORAGE_KEY = 'touchmark_saved_dossiers_v2';
 
 function pcmBase64ToWavUrl(base64, sampleRate = 24000) {
   const binary = atob(base64);
@@ -569,9 +540,6 @@ function extractJsonObject(raw) {
 }
 
 function buildSmartResearchUrl(item) {
-  if (item.url && item.url.startsWith('http') && !item.url.includes('vertexaisearch')) {
-    return item.url;
-  }
   const q = encodeURIComponent(item.searchQuery || `${item.title} ${item.authorOrChannel || ''}`);
   const fmt = (item.format || '').toLowerCase();
   if (fmt.includes('youtube') || fmt.includes('video')) {
@@ -581,6 +549,15 @@ function buildSmartResearchUrl(item) {
     return `https://scholar.google.com/scholar?q=${q}`;
   }
   return `https://www.google.com/search?q=${q}`;
+}
+
+function gradeBadgeStyle(grade = '') {
+  const g = grade.toLowerCase();
+  if (g.includes('verified')) return 'bg-emerald-400/15 text-emerald-200 border-emerald-400/30';
+  if (g.includes('documented') || g.includes('corroborated'))
+    return 'bg-sky-400/15 text-sky-200 border-sky-400/30';
+  if (g.includes('inference')) return 'bg-amber-400/15 text-amber-200 border-amber-400/30';
+  return 'bg-purple-400/15 text-purple-200 border-purple-400/30';
 }
 
 export default function TouchmarkToolsApp() {
@@ -596,13 +573,22 @@ export default function TouchmarkToolsApp() {
   const [history, setHistory] = useState([]);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerTab, setDrawerTab] = useState('analysis'); // 'analysis' | 'power' | 'spectrum'
+  const [drawerTab, setDrawerTab] = useState('analysis'); // 'analysis' | 'power' | 'spectrum' | 'studio'
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [savedDossiers, setSavedDossiers] = useState([]);
   const [liveSignalPrompts, setLiveSignalPrompts] = useState(SIGNAL_STARTER_PROMPTS);
 
   const [hasArtifact, setHasArtifact] = useState(false);
   const [isHydratingDeep, setIsHydratingDeep] = useState(false);
+  const [isGeneratingStudio, setIsGeneratingStudio] = useState(false);
+  const [studioFormatView, setStudioFormatView] = useState('substack'); // 'substack' | 'script' | 'shortform' | 'audit'
+  const [externalResearchNotes, setExternalResearchNotes] = useState('');
+  const [showExternalImporter, setShowExternalImporter] = useState(false);
+  const [copiedStudioText, setCopiedStudioText] = useState(false);
+
+  const [revisionInput, setRevisionInput] = useState('');
+  const [isRevising, setIsRevising] = useState(false);
+
   const [pulseLedger, setPulseLedger] = useState(null);
   const [signalReport, setSignalReport] = useState(null);
   const [copiedReceipt, setCopiedReceipt] = useState(false);
@@ -836,7 +822,7 @@ export default function TouchmarkToolsApp() {
   };
 
   const fetchStage2DeepModules = async (expandedQuery, factSheet) => {
-    const stage2Prompt = `Deliver Stage 2 (Institutional Power Operation & Chokepoint Blueprint, Competing Probability Scenarios, Primary-Source Diagnostic Checklist, Historical Precedents, 6-Lens Spectrum including two Centrist viewpoints, and 9–11 Research Library items with at least 3 YouTube talks spanning Left, Centrist, and Right perspectives) on: "${expandedQuery}"`;
+    const stage2Prompt = `Deliver Stage 2 (Follow the Power audit, Institutional Relationship Map edges, Power Chokepoint Blueprint, 3 Competing Probability Scenarios, Uncomfortable Questions, Investigation Gap ledger, Primary-Source Diagnostic Checklist, Historical Precedents with breakdown conditions, 6-Lens Functional Spectrum, and 9–11 Research Library items with at least 3 YouTube talks spanning Left, Centrist, and Right perspectives) on: "${expandedQuery}"`;
 
     try {
       const r = await fetch('/api/discern', {
@@ -871,6 +857,174 @@ export default function TouchmarkToolsApp() {
       throw new Error(fallbackData?.error || 'Stage 2 enrichment failed.');
     }
     return extractJsonObject(fallbackData.text);
+  };
+
+  const generateStudioPackage = async (customNotes = '') => {
+    if (isGeneratingStudio) return;
+    if (!signalReport && !customNotes.trim()) return;
+
+    setIsGeneratingStudio(true);
+    try {
+      const sourceMaterial = customNotes.trim()
+        ? `EXTERNAL CREATOR RESEARCH NOTES / TRANSCRIPT:\n${customNotes.trim()}`
+        : JSON.stringify({
+            subject: signalReport.subject,
+            scalars: {
+              rarity: `${signalReport.constellationRarityScore}/100 (${signalReport.constellationRarityLabel})`,
+              curation: `${signalReport.narrativeCurationScore}/100 (${signalReport.narrativeCurationLabel})`,
+              coordination: `${signalReport.coordinationEvidenceScore}/100 (${signalReport.coordinationEvidenceLabel})`,
+              centerOfGravity: `${signalReport.centerOfGravityLikelihood}% (${signalReport.centerOfGravityLabel})`
+            },
+            verifiedTimeline: signalReport.verifiedTimeline,
+            narrativeAudit: signalReport.narrativeManipulationAudit,
+            followThePower: signalReport.followThePower,
+            uncomfortableQuestions: signalReport.uncomfortableQuestions,
+            investigationGap: signalReport.investigationGap,
+            scenarios: signalReport.scenarios
+          });
+
+      const res = await fetch('/api/discern', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'studio_create',
+          prompt: `Transform this investigation into a creator editorial & broadcast production package (Substack essay, YouTube/podcast script, short-form scripts with nuance warnings, visual shot list, and integrity audit):\n\n${sourceMaterial}`,
+          systemInstruction: STUDIO_SYSTEM_PROMPT
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.text) throw new Error(data?.error || 'Studio generation failed.');
+      const studioParsed = extractJsonObject(data.text);
+
+      if (signalReport) {
+        setSignalReport((prev) => {
+          const updated = { ...prev, studioAssets: studioParsed };
+          if (prev?.id) {
+            persistDossier({
+              id: prev.id,
+              mode: 'signal',
+              title: prev.subject.slice(0, 80),
+              createdAt: new Date().toLocaleDateString(),
+              data: updated
+            });
+          }
+          return updated;
+        });
+      } else {
+        const standaloneId = Date.now().toString();
+        const standaloneReport = {
+          id: standaloneId,
+          subject: customNotes.trim().slice(0, 80),
+          spokenSynthesis: 'Studio editorial package generated from your external research notes.',
+          constellationRarityScore: 0,
+          constellationRarityLabel: 'External Source',
+          constellationRaritySummary: 'Imported directly into Touchmark Studio.',
+          narrativeCurationScore: 0,
+          narrativeCurationLabel: 'External Source',
+          narrativeCurationSummary: 'Imported directly into Touchmark Studio.',
+          coordinationEvidenceScore: 0,
+          coordinationEvidenceLabel: 'External Source',
+          coordinationEvidenceSummary: 'Imported directly into Touchmark Studio.',
+          centerOfGravityLikelihood: 0,
+          centerOfGravityLabel: 'External Source',
+          centerOfGravitySummary: 'Imported directly into Touchmark Studio.',
+          verifiedTimeline: [],
+          narrativeManipulationAudit: '',
+          constellationRarityAnalysis: '',
+          centerOfGravity: '',
+          followThePower: [],
+          relationshipMap: [],
+          powerOperationBlueprint: '',
+          scenarios: [],
+          uncomfortableQuestions: [],
+          investigationGap: null,
+          diagnosticChecklist: [],
+          historicalPrecedents: '',
+          spectrumPerspectives: [],
+          researchLibrary: [],
+          groundingSources: [],
+          revisionLog: [],
+          studioAssets: studioParsed
+        };
+        setSignalReport(standaloneReport);
+        setHasArtifact(true);
+      }
+      setShowExternalImporter(false);
+    } catch (err) {
+      setErrorBanner(err.message || 'Could not generate Studio package.');
+    } finally {
+      setIsGeneratingStudio(false);
+    }
+  };
+
+  const handleReviseInvestigation = async (e) => {
+    e.preventDefault();
+    if (!signalReport || !revisionInput.trim() || isRevising) return;
+    setIsRevising(true);
+    try {
+      const res = await fetch('/api/discern', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'revise_investigation',
+          prompt: `EXISTING INVESTIGATION SUBJECT: "${signalReport.subject}"
+CURRENT SCALARS: Rarity ${signalReport.constellationRarityScore}/100, Curation ${signalReport.narrativeCurationScore}/100, Coordination ${signalReport.coordinationEvidenceScore}/100, Center of Gravity ${signalReport.centerOfGravityLikelihood}%
+CURRENT CENTER OF GRAVITY: ${signalReport.centerOfGravity}
+
+NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
+"${revisionInput.trim()}"`,
+          systemInstruction: REVISION_SYSTEM_PROMPT
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.text) throw new Error(data?.error || 'Could not update investigation.');
+      const rev = extractJsonObject(data.text);
+
+      setSignalReport((prev) => {
+        const updated = {
+          ...prev,
+          constellationRarityScore: rev.constellationRarityScore ?? prev.constellationRarityScore,
+          constellationRarityLabel: rev.constellationRarityLabel || prev.constellationRarityLabel,
+          constellationRaritySummary: rev.constellationRaritySummary || prev.constellationRaritySummary,
+          narrativeCurationScore: rev.narrativeCurationScore ?? prev.narrativeCurationScore,
+          narrativeCurationLabel: rev.narrativeCurationLabel || prev.narrativeCurationLabel,
+          narrativeCurationSummary: rev.narrativeCurationSummary || prev.narrativeCurationSummary,
+          coordinationEvidenceScore: rev.coordinationEvidenceScore ?? prev.coordinationEvidenceScore,
+          coordinationEvidenceLabel: rev.coordinationEvidenceLabel || prev.coordinationEvidenceLabel,
+          coordinationEvidenceSummary: rev.coordinationEvidenceSummary || prev.coordinationEvidenceSummary,
+          centerOfGravityLikelihood: rev.centerOfGravityLikelihood ?? prev.centerOfGravityLikelihood,
+          centerOfGravityLabel: rev.centerOfGravityLabel || prev.centerOfGravityLabel,
+          centerOfGravitySummary: rev.centerOfGravitySummary || prev.centerOfGravitySummary,
+          centerOfGravity: rev.updatedCenterOfGravity || prev.centerOfGravity,
+          verifiedTimeline: rev.newTimelineEntry
+            ? [...(prev.verifiedTimeline || []), rev.newTimelineEntry]
+            : prev.verifiedTimeline,
+          revisionLog: [
+            {
+              timestamp: new Date().toLocaleString(),
+              evidenceAdded: revisionInput.trim(),
+              summary: rev.revisionSummary
+            },
+            ...(prev.revisionLog || [])
+          ]
+        };
+        if (prev?.id) {
+          persistDossier({
+            id: prev.id,
+            mode: 'signal',
+            title: prev.subject.slice(0, 80),
+            createdAt: new Date().toLocaleDateString(),
+            data: updated
+          });
+        }
+        return updated;
+      });
+      setRevisionInput('');
+    } catch (err) {
+      setErrorBanner(err.message || 'Revision failed.');
+    } finally {
+      setIsRevising(false);
+    }
   };
 
   const handleSubmission = async (rawQuery) => {
@@ -957,7 +1111,7 @@ export default function TouchmarkToolsApp() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'signal_core',
-          prompt: `Deliver Stage 1 (Spoken Briefing, Verified Chronology, Narrative Manipulation Audit, Constellation Rarity, and Center of Gravity) on: "${expandedQuery}"`,
+          prompt: `Deliver Stage 1 (Spoken Briefing, 4-Scalar Diagnostic Radar with plain-English readings, Verified Chronology with legal status & epistemic grades, Narrative Manipulation Audit, Constellation Rarity, and Center of Gravity) on: "${expandedQuery}"`,
           systemInstruction: SIGNAL_CORE_PROMPT
         })
       });
@@ -967,23 +1121,48 @@ export default function TouchmarkToolsApp() {
 
       const coreParsed = extractJsonObject(coreData.text);
       const initialReport = {
+        id: dossierId,
         subject: query,
         spokenSynthesis:
           coreParsed.spokenSynthesis ||
-          'Intelligence brief ready. Open the dossier to inspect the verified timeline, narrative audit, and full-spectrum analysis.',
+          'Intelligence brief ready. Open the dossier to inspect the 4-scalar radar, verified timeline, and full-spectrum analysis.',
+        constellationRarityScore: coreParsed.constellationRarityScore ?? 82,
+        constellationRarityLabel: coreParsed.constellationRarityLabel || 'Anomalous Clustering',
+        constellationRaritySummary:
+          coreParsed.constellationRaritySummary ||
+          'Measures how unusual this timing and alignment is relative to historical norms—not proof of coordination.',
+        narrativeCurationScore: coreParsed.narrativeCurationScore ?? 76,
+        narrativeCurationLabel: coreParsed.narrativeCurationLabel || 'Heavy Framing & Omission',
+        narrativeCurationSummary:
+          coreParsed.narrativeCurationSummary ||
+          'Measures how strongly mainstream headlines package or omit key context from the primary record.',
+        coordinationEvidenceScore: coreParsed.coordinationEvidenceScore ?? 52,
+        coordinationEvidenceLabel: coreParsed.coordinationEvidenceLabel || 'Structural Alignment',
+        coordinationEvidenceSummary:
+          coreParsed.coordinationEvidenceSummary ||
+          'Separates parallel self-interest (0–50) from documented evidence of active collaboration or collusion (51–100).',
+        centerOfGravityLikelihood: coreParsed.centerOfGravityLikelihood ?? 68,
+        centerOfGravityLabel: coreParsed.centerOfGravityLabel || 'Structural Consolidation',
+        centerOfGravitySummary:
+          coreParsed.centerOfGravitySummary ||
+          'Indicates how strongly the verified record points toward the underlying structural driver vs. the official narrative.',
         verifiedTimeline: Array.isArray(coreParsed.verifiedTimeline) ? coreParsed.verifiedTimeline : [],
         narrativeManipulationAudit: coreParsed.narrativeManipulationAudit || '',
-        constellationRarityScore: coreParsed.constellationRarityScore ?? 82,
         constellationRarityAnalysis: coreParsed.constellationRarityAnalysis || '',
         centerOfGravity: coreParsed.centerOfGravity || '',
-        centerOfGravityLikelihood: coreParsed.centerOfGravityLikelihood ?? 55,
+        followThePower: [],
+        relationshipMap: [],
         powerOperationBlueprint: '',
         scenarios: [],
+        uncomfortableQuestions: [],
+        investigationGap: null,
         diagnosticChecklist: [],
         historicalPrecedents: '',
         spectrumPerspectives: [],
         researchLibrary: [],
-        groundingSources: Array.isArray(coreData.groundingSources) ? coreData.groundingSources : []
+        groundingSources: Array.isArray(coreData.groundingSources) ? coreData.groundingSources : [],
+        revisionLog: [],
+        studioAssets: null
       };
 
       setSignalReport(initialReport);
@@ -998,8 +1177,16 @@ export default function TouchmarkToolsApp() {
         .then((deepParsed) => {
           const fullReport = {
             ...initialReport,
+            followThePower: Array.isArray(deepParsed.followThePower) ? deepParsed.followThePower : [],
+            relationshipMap: Array.isArray(deepParsed.relationshipMap)
+              ? deepParsed.relationshipMap
+              : [],
             powerOperationBlueprint: deepParsed.powerOperationBlueprint || '',
             scenarios: Array.isArray(deepParsed.scenarios) ? deepParsed.scenarios : [],
+            uncomfortableQuestions: Array.isArray(deepParsed.uncomfortableQuestions)
+              ? deepParsed.uncomfortableQuestions
+              : [],
+            investigationGap: deepParsed.investigationGap || null,
             diagnosticChecklist: Array.isArray(deepParsed.diagnosticChecklist)
               ? deepParsed.diagnosticChecklist
               : [],
@@ -1055,19 +1242,23 @@ export default function TouchmarkToolsApp() {
 
     if (!signalReport) return;
     const timelineLines = signalReport.verifiedTimeline
-      .map((t) => `- ${t.date}: ${t.event}`)
+      .map((t) => `- [${t.legalStatus} · ${t.epistemicGrade}] ${t.date}: ${t.event}`)
+      .join('\n');
+    const ftpLines = (signalReport.followThePower || [])
+      .map((f) => `- **${f.vector}** [${f.epistemicGrade}]: ${f.finding}`)
+      .join('\n');
+    const relLines = (signalReport.relationshipMap || [])
+      .map((r) => `- ${r.sourceEntity} ──[${r.relationshipType} · ${r.epistemicGrade}]──► ${r.targetEntity}`)
       .join('\n');
     const scenarioLines = signalReport.scenarios
-      .map((s) => `- ${s.name} (${s.likelihood}%): ${s.caseFor}`)
+      .map((s) => `- ${s.name} (${s.likelihood}%): ${s.caseFor} | Counter: ${s.caseAgainst}`)
       .join('\n');
-    const diagnosticLines = signalReport.diagnosticChecklist
-      .map((d) => `- ${d.primaryDocument}: ${d.whatToLookFor}`)
-      .join('\n');
+    const qLines = (signalReport.uncomfortableQuestions || []).map((q) => `- ${q}`).join('\n');
     const refLines = signalReport.researchLibrary
       .map((r) => `- [${r.perspectiveTag} · ${r.format}] ${r.title} (${r.authorOrChannel})`)
       .join('\n');
 
-    const text = `# Touchmark Signal Intelligence Dossier\n**Subject:** ${signalReport.subject}\n**Constellation Rarity Index:** ${signalReport.constellationRarityScore}/100 | **Center of Gravity Weight:** ${signalReport.centerOfGravityLikelihood}%\n\n## Verified Record & Chronology\n${timelineLines}\n\n## Narrative Manipulation Audit\n${signalReport.narrativeManipulationAudit}\n\n## If Institutional Power Is Operating Behind the Scenes\n${signalReport.powerOperationBlueprint}\n\n## Competing Scenarios\n${scenarioLines}\n\n## Primary Documents & Falsifiable Tests\n${diagnosticLines}\n\n## Historical Precedents\n${signalReport.historicalPrecedents}\n\n## Full-Spectrum Research Library\n${refLines}`;
+    const text = `# Touchmark Signal Intelligence Dossier\n**Subject:** ${signalReport.subject}\n\n## 4-Scalar Diagnostic Radar\n- **Constellation Rarity:** ${signalReport.constellationRarityScore}/100 (${signalReport.constellationRarityLabel}) — ${signalReport.constellationRaritySummary}\n- **Narrative Curation:** ${signalReport.narrativeCurationScore}/100 (${signalReport.narrativeCurationLabel}) — ${signalReport.narrativeCurationSummary}\n- **Coordination Evidence:** ${signalReport.coordinationEvidenceScore}/100 (${signalReport.coordinationEvidenceLabel}) — ${signalReport.coordinationEvidenceSummary}\n- **Center of Gravity:** ${signalReport.centerOfGravityLikelihood}% (${signalReport.centerOfGravityLabel}) — ${signalReport.centerOfGravitySummary}\n\n## Verified Record & Chronology\n${timelineLines}\n\n## Narrative Manipulation Audit\n${signalReport.narrativeManipulationAudit}\n\n## Follow the Power\n${ftpLines}\n\n## Institutional Relationship Map\n${relLines}\n\n## Competing Scenarios\n${scenarioLines}\n\n## Uncomfortable Questions\n${qLines}\n\n## Historical Precedents\n${signalReport.historicalPrecedents}\n\n## Full-Spectrum Research Library\n${refLines}`;
 
     navigator.clipboard?.writeText(text);
     setCopiedReceipt(true);
@@ -1140,16 +1331,28 @@ export default function TouchmarkToolsApp() {
       `;
     } else if (signalReport) {
       bodyHtml = `
-        <div class="meta">TOUCHMARK SIGNAL · COUNTER-NARRATIVE & POWER INTELLIGENCE DOSSIER · ${dateStr}</div>
+        <div class="meta">TOUCHMARK SIGNAL · INVESTIGATIVE INTELLIGENCE DOSSIER · ${dateStr}</div>
         <h1>“${esc(signalReport.subject)}”</h1>
-        <div class="metrics">
+        <div class="metrics-grid">
           <div class="metric-box">
-            <span class="label">CONSTELLATION RARITY INDEX</span>
-            <span class="score">${signalReport.constellationRarityScore}/100</span>
+            <span class="label">1. CONSTELLATION RARITY</span>
+            <span class="score">${signalReport.constellationRarityScore}/100 · ${esc(signalReport.constellationRarityLabel)}</span>
+            <span class="explain">${esc(signalReport.constellationRaritySummary)}</span>
           </div>
           <div class="metric-box">
-            <span class="label">CENTER OF GRAVITY WEIGHT</span>
-            <span class="score">${signalReport.centerOfGravityLikelihood}%</span>
+            <span class="label">2. NARRATIVE CURATION</span>
+            <span class="score">${signalReport.narrativeCurationScore}/100 · ${esc(signalReport.narrativeCurationLabel)}</span>
+            <span class="explain">${esc(signalReport.narrativeCurationSummary)}</span>
+          </div>
+          <div class="metric-box">
+            <span class="label">3. COORDINATION EVIDENCE</span>
+            <span class="score">${signalReport.coordinationEvidenceScore}/100 · ${esc(signalReport.coordinationEvidenceLabel)}</span>
+            <span class="explain">${esc(signalReport.coordinationEvidenceSummary)}</span>
+          </div>
+          <div class="metric-box">
+            <span class="label">4. CENTER OF GRAVITY</span>
+            <span class="score">${signalReport.centerOfGravityLikelihood}% · ${esc(signalReport.centerOfGravityLabel)}</span>
+            <span class="explain">${esc(signalReport.centerOfGravitySummary)}</span>
           </div>
         </div>
 
@@ -1163,7 +1366,10 @@ export default function TouchmarkToolsApp() {
             ? `<h2>1. Verified Record & Chronology</h2>
               <ul>
                 ${signalReport.verifiedTimeline
-                  .map((t) => `<li><strong>${esc(t.date)}:</strong> ${esc(t.event)}</li>`)
+                  .map(
+                    (t) =>
+                      `<li><strong>${esc(t.date)}</strong> [${esc(t.legalStatus)} · ${esc(t.epistemicGrade)}]: ${esc(t.event)}</li>`
+                  )
                   .join('')}
               </ul>`
             : ''
@@ -1177,35 +1383,50 @@ export default function TouchmarkToolsApp() {
         }
 
         ${
-          signalReport.constellationRarityAnalysis
-            ? `<h2>3. Constellation Rarity & Conspicuous Anomalies (${signalReport.constellationRarityScore}/100)</h2>
-              <p>${esc(signalReport.constellationRarityAnalysis)}</p>`
+          signalReport.followThePower?.length
+            ? `<h2>3. Follow the Power Audit</h2>
+              ${signalReport.followThePower
+                .map(
+                  (f) => `
+                <div class="card">
+                  <div class="tag">${esc(f.vector)} · ${esc(f.epistemicGrade)}</div>
+                  <p>${esc(f.finding)}</p>
+                </div>`
+                )
+                .join('')}`
+            : ''
+        }
+
+        ${
+          signalReport.relationshipMap?.length
+            ? `<h2>4. Institutional Relationship Map</h2>
+              <ul>
+                ${signalReport.relationshipMap
+                  .map(
+                    (r) =>
+                      `<li><strong>${esc(r.sourceEntity)}</strong> &rarr; <em>${esc(r.relationshipType)}</em> (${esc(r.epistemicGrade)}) &rarr; <strong>${esc(r.targetEntity)}</strong></li>`
+                  )
+                  .join('')}
+              </ul>`
             : ''
         }
 
         ${
           signalReport.centerOfGravity
-            ? `<h2>4. Center of Gravity & Epistemic Weighing (${signalReport.centerOfGravityLikelihood}%)</h2>
+            ? `<h2>5. Center of Gravity & Epistemic Weighing</h2>
               <p>${esc(signalReport.centerOfGravity)}</p>`
             : ''
         }
 
         ${
-          signalReport.powerOperationBlueprint
-            ? `<h2>5. If Institutional or Corporate Power Is Operating Behind the Scenes</h2>
-              <p>${esc(signalReport.powerOperationBlueprint)}</p>`
-            : ''
-        }
-
-        ${
           signalReport.scenarios?.length
-            ? `<h2>6. Competing Possibilities & Probability Weights</h2>
+            ? `<h2>6. Competing Possibilities & Steelmanned Counter-Weights</h2>
               ${signalReport.scenarios
                 .map(
                   (sc) => `
                 <div class="card">
                   <h3>${esc(sc.name)} — ${sc.likelihood}% Likelihood</h3>
-                  <p><strong>What points here:</strong> ${esc(sc.caseFor)}</p>
+                  <p><strong>Supporting evidence:</strong> ${esc(sc.caseFor)}</p>
                   ${sc.caseAgainst ? `<p class="muted"><strong>Counter-weight:</strong> ${esc(sc.caseAgainst)}</p>` : ''}
                 </div>`
                 )
@@ -1214,8 +1435,29 @@ export default function TouchmarkToolsApp() {
         }
 
         ${
+          signalReport.uncomfortableQuestions?.length
+            ? `<h2>7. Uncomfortable Questions Conventional Reporting Overlooks</h2>
+              <ul>
+                ${signalReport.uncomfortableQuestions.map((q) => `<li>${esc(q)}</li>`).join('')}
+              </ul>`
+            : ''
+        }
+
+        ${
+          signalReport.investigationGap
+            ? `<h2>8. The Investigation Gap (Established vs. Suspected vs. Unknown)</h2>
+              <div class="card">
+                <p><strong>Established (Documented):</strong> ${esc((signalReport.investigationGap.established || []).join(' • '))}</p>
+                <p><strong>Suspected (Unconfirmed):</strong> ${esc((signalReport.investigationGap.suspected || []).join(' • '))}</p>
+                <p><strong>Unknown (Requires Primary Proof):</strong> ${esc((signalReport.investigationGap.unknown || []).join(' • '))}</p>
+                <p class="muted"><strong>Next Primary Targets:</strong> ${esc((signalReport.investigationGap.nextTargets || []).join(' • '))}</p>
+              </div>`
+            : ''
+        }
+
+        ${
           signalReport.diagnosticChecklist?.length
-            ? `<h2>7. Primary Records & Falsifiable Diagnostic Tests</h2>
+            ? `<h2>9. Primary Records & Falsifiable Diagnostic Tests</h2>
               ${signalReport.diagnosticChecklist
                 .map(
                   (d) => `
@@ -1230,19 +1472,19 @@ export default function TouchmarkToolsApp() {
 
         ${
           signalReport.historicalPrecedents
-            ? `<h2>8. Historical Precedents & Base-Rate Frequency</h2>
+            ? `<h2>10. Historical Precedents & Where Analogies Break Down</h2>
               <p>${esc(signalReport.historicalPrecedents)}</p>`
             : ''
         }
 
         ${
           signalReport.spectrumPerspectives?.length
-            ? `<h2>9. Perspectives Across the Intellectual Spectrum (Centrist, Left, Right, Philosophical & Spiritual)</h2>
+            ? `<h2>11. Perspectives Across Six Analytical Lenses</h2>
               ${signalReport.spectrumPerspectives
                 .map(
                   (sp) => `
                 <div class="card">
-                  <div class="tag">${esc(sp.lens)}</div>
+                  <div class="tag">${esc(sp.lens)} — ${esc(sp.coreQuestion)}</div>
                   <h3>${esc(sp.thinkerOrOutlet)}</h3>
                   <p>${esc(sp.coreThesis)}</p>
                 </div>`
@@ -1253,7 +1495,7 @@ export default function TouchmarkToolsApp() {
 
         ${
           signalReport.researchLibrary?.length
-            ? `<h2>10. Curated Research Library (YouTube Talks Across Spectrum, Studies & Essays)</h2>
+            ? `<h2>12. Verified Search & Research Library</h2>
               ${signalReport.researchLibrary
                 .map(
                   (r) => `
@@ -1311,16 +1553,17 @@ export default function TouchmarkToolsApp() {
             p { margin: 0 0 10px; }
             ul { margin: 0 0 12px; padding-left: 18px; }
             li { margin-bottom: 6px; }
-            .metrics { display: flex; gap: 14px; margin-bottom: 18px; }
+            .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
             .metric-box {
-              flex: 1;
               border: 1px solid #d6d3d1;
               border-radius: 10px;
-              padding: 12px 14px;
+              padding: 10px 12px;
               background: #fafaf9;
+              page-break-inside: avoid;
             }
-            .label { display: block; font-size: 9.5px; letter-spacing: 0.14em; color: #78716c; text-transform: uppercase; }
-            .score { display: block; font-size: 20px; font-weight: 700; color: #0c0a09; margin-top: 2px; }
+            .label { display: block; font-size: 9px; letter-spacing: 0.14em; color: #78716c; text-transform: uppercase; }
+            .score { display: block; font-size: 15px; font-weight: 700; color: #0c0a09; margin: 3px 0; }
+            .explain { display: block; font-size: 11px; color: #57534e; line-height: 1.4; }
             .callout {
               background: #fffbeb;
               border-left: 3px solid #d97706;
@@ -1376,7 +1619,7 @@ export default function TouchmarkToolsApp() {
           </div>
         </div>
 
-        {/* Dead-Center Workspace Switcher (Updates direct bookmarkable URL) */}
+        {/* Dead-Center Workspace Switcher */}
         <div className="flex items-center bg-white/[0.04] p-1 rounded-full border border-white/10 justify-self-center">
           <button
             type="button"
@@ -1398,8 +1641,23 @@ export default function TouchmarkToolsApp() {
           </button>
         </div>
 
-        {/* Voice, Archive & Dossier Controls — hidden until first output */}
+        {/* Voice, Studio Import, Archive & Dossier Controls */}
         <div className="flex items-center justify-end gap-2 justify-self-end">
+          {mode === 'signal' && !hasArtifact && (
+            <button
+              type="button"
+              onClick={() => {
+                setShowExternalImporter(true);
+                setDrawerTab('studio');
+                setDrawerOpen(true);
+              }}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 hover:bg-emerald-400/20 border border-emerald-400/25 text-xs text-emerald-200 transition-all"
+            >
+              <PenTool className="w-3.5 h-3.5" />
+              <span>Studio</span>
+            </button>
+          )}
+
           {hasArtifact && (
             <>
               <select
@@ -1476,7 +1734,6 @@ export default function TouchmarkToolsApp() {
           onClick={toggleListening}
         />
 
-        {/* Single Unified Readout — switches cleanly between Listening, Thinking telemetry, and Spoken Synthesis */}
         {status === 'listening' ? (
           <span className="mt-3 text-[11px] uppercase tracking-[0.26em] text-amber-300 animate-pulse">
             Listening…
@@ -1505,7 +1762,7 @@ export default function TouchmarkToolsApp() {
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-300/15 hover:bg-amber-300/25 border border-amber-300/35 text-xs font-medium tracking-[0.14em] uppercase text-amber-200 transition-all shadow-lg shadow-amber-950/20"
             >
               <FileText className="w-3.5 h-3.5" />
-              <span>{isHydratingDeep ? 'Open Dossier · Enriching Sources…' : 'Open Dossier'}</span>
+              <span>{isHydratingDeep ? 'Open Dossier · Enriching Power & Sources…' : 'Open Dossier'}</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -1619,10 +1876,10 @@ export default function TouchmarkToolsApp() {
         </div>
       )}
 
-      {/* Slide-Over Intelligence & Multi-Perspective Dossier Drawer */}
+      {/* Slide-Over Intelligence & Studio Dossier Drawer */}
       {drawerOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-2xl bg-[#11100e] border-l border-white/10 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto">
+          <div className="w-full max-w-3xl bg-[#11100e] border-l border-white/10 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto">
             {mode === 'pulse' && pulseLedger ? (
               <div className="space-y-6">
                 <div className="flex items-center justify-between border-b border-white/10 pb-4">
@@ -1732,61 +1989,83 @@ export default function TouchmarkToolsApp() {
                   </button>
                 </div>
               </div>
-            ) : mode === 'signal' && signalReport ? (
+            ) : mode === 'signal' && (signalReport || showExternalImporter) ? (
               <div className="space-y-6">
-                {/* Drawer Header + 3-Tab Switcher */}
+                {/* Drawer Header + 4-Tab Switcher */}
                 <div className="space-y-4 border-b border-white/10 pb-4">
                   <div className="flex items-center justify-between">
                     <span className="text-xs uppercase tracking-[0.2em] text-amber-300">
-                      Signal Counter-Narrative & Power Dossier
+                      Signal Investigative Intelligence & Studio
                     </span>
                     <button
                       type="button"
-                      onClick={() => setDrawerOpen(false)}
+                      onClick={() => {
+                        setDrawerOpen(false);
+                        setShowExternalImporter(false);
+                      }}
                       className="p-1.5 rounded-full bg-white/5 text-stone-400 hover:text-white"
                     >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-1.5 bg-white/[0.04] p-1 rounded-full border border-white/10 w-fit">
-                    <button
-                      type="button"
-                      onClick={() => setDrawerTab('analysis')}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                        drawerTab === 'analysis'
-                          ? 'bg-amber-400/20 text-amber-200'
-                          : 'text-stone-400 hover:text-stone-200'
-                      }`}
-                    >
-                      Record, Rarity & Framing
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDrawerTab('power')}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                        drawerTab === 'power'
-                          ? 'bg-amber-400/20 text-amber-200'
-                          : 'text-stone-400 hover:text-stone-200'
-                      }`}
-                    >
-                      Power Blueprint & Tests {isHydratingDeep && '· …'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDrawerTab('spectrum')}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                        drawerTab === 'spectrum'
-                          ? 'bg-amber-400/20 text-amber-200'
-                          : 'text-stone-400 hover:text-stone-200'
-                      }`}
-                    >
-                      Spectrum & Sources ({signalReport.researchLibrary?.length || 0})
-                    </button>
-                  </div>
+                  {signalReport && (
+                    <div className="flex flex-wrap items-center gap-1.5 bg-white/[0.04] p-1 rounded-full border border-white/10 w-fit">
+                      <button
+                        type="button"
+                        onClick={() => setDrawerTab('analysis')}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                          drawerTab === 'analysis'
+                            ? 'bg-amber-400/20 text-amber-200'
+                            : 'text-stone-400 hover:text-stone-200'
+                        }`}
+                      >
+                        4-Scalar Radar & Record
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDrawerTab('power')}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                          drawerTab === 'power'
+                            ? 'bg-amber-400/20 text-amber-200'
+                            : 'text-stone-400 hover:text-stone-200'
+                        }`}
+                      >
+                        Follow the Power & Gap {isHydratingDeep && '· …'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDrawerTab('spectrum')}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                          drawerTab === 'spectrum'
+                            ? 'bg-amber-400/20 text-amber-200'
+                            : 'text-stone-400 hover:text-stone-200'
+                        }`}
+                      >
+                        6 Lenses & Sources ({signalReport.researchLibrary?.length || 0})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDrawerTab('studio');
+                          if (!signalReport.studioAssets && !isHydratingDeep) {
+                            generateStudioPackage();
+                          }
+                        }}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all inline-flex items-center gap-1 ${
+                          drawerTab === 'studio'
+                            ? 'bg-emerald-400/20 text-emerald-200'
+                            : 'text-emerald-300/80 hover:text-emerald-200'
+                        }`}
+                      >
+                        <PenTool className="w-3 h-3" />
+                        <span>Studio</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
 
-                {drawerTab === 'analysis' ? (
+                {drawerTab === 'analysis' && signalReport ? (
                   <>
                     <div>
                       <span className="text-[11px] uppercase tracking-wider text-stone-500 block mb-1">
@@ -1797,25 +2076,114 @@ export default function TouchmarkToolsApp() {
                       </h2>
                     </div>
 
+                    {/* 4-SCALAR DIAGNOSTIC RADAR WITH PLAIN-ENGLISH INTERPRETATIONS */}
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] uppercase tracking-wider text-stone-400">
+                            1. Constellation Rarity
+                          </span>
+                          <span className="text-xs font-mono font-semibold text-emerald-300">
+                            {signalReport.constellationRarityScore}/100
+                          </span>
+                        </div>
+                        <div className="text-xs font-medium text-stone-100">
+                          {signalReport.constellationRarityLabel}
+                        </div>
+                        <p className="text-[11px] text-stone-400 leading-relaxed">
+                          {signalReport.constellationRaritySummary}
+                        </p>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] uppercase tracking-wider text-stone-400">
+                            2. Narrative Curation
+                          </span>
+                          <span className="text-xs font-mono font-semibold text-amber-300">
+                            {signalReport.narrativeCurationScore}/100
+                          </span>
+                        </div>
+                        <div className="text-xs font-medium text-stone-100">
+                          {signalReport.narrativeCurationLabel}
+                        </div>
+                        <p className="text-[11px] text-stone-400 leading-relaxed">
+                          {signalReport.narrativeCurationSummary}
+                        </p>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] uppercase tracking-wider text-stone-400">
+                            3. Coordination Evidence
+                          </span>
+                          <span className="text-xs font-mono font-semibold text-sky-300">
+                            {signalReport.coordinationEvidenceScore}/100
+                          </span>
+                        </div>
+                        <div className="text-xs font-medium text-stone-100">
+                          {signalReport.coordinationEvidenceLabel}
+                        </div>
+                        <p className="text-[11px] text-stone-400 leading-relaxed">
+                          {signalReport.coordinationEvidenceSummary}
+                        </p>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] uppercase tracking-wider text-stone-400">
+                            4. Center of Gravity
+                          </span>
+                          <span className="text-xs font-mono font-semibold text-amber-200">
+                            {signalReport.centerOfGravityLikelihood}%
+                          </span>
+                        </div>
+                        <div className="text-xs font-medium text-stone-100">
+                          {signalReport.centerOfGravityLabel}
+                        </div>
+                        <p className="text-[11px] text-stone-400 leading-relaxed">
+                          {signalReport.centerOfGravitySummary}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* VERIFIED RECORD & CHRONOLOGY WITH LEGAL STATUS & EPISTEMIC GRADES */}
                     {signalReport.verifiedTimeline?.length > 0 && (
                       <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
                         <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-stone-200 font-medium">
                           <Clock className="w-4 h-4 text-emerald-300" />
-                          Verified Record & Chronology
+                          Verified Record & Legal Status Chronology
                         </div>
-                        <div className="space-y-2 border-l border-emerald-400/30 pl-3.5">
+                        <div className="space-y-2.5 border-l border-emerald-400/30 pl-3.5">
                           {signalReport.verifiedTimeline.map((item, idx) => (
-                            <div key={idx} className="text-xs leading-relaxed">
-                              <span className="font-mono text-emerald-300 font-medium mr-2">
-                                {item.date}
-                              </span>
-                              <span className="text-stone-300">{item.event}</span>
+                            <div key={idx} className="text-xs leading-relaxed space-y-1">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <span className="font-mono text-emerald-300 font-medium">
+                                  {item.date}
+                                </span>
+                                {item.legalStatus && (
+                                  <span className="px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[10px] uppercase tracking-wider text-stone-300">
+                                    {item.legalStatus}
+                                  </span>
+                                )}
+                                {item.epistemicGrade && (
+                                  <span
+                                    className={`px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-wider ${gradeBadgeStyle(
+                                      item.epistemicGrade
+                                    )}`}
+                                  >
+                                    {item.epistemicGrade}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-stone-300">{item.event}</p>
                             </div>
                           ))}
                         </div>
                       </div>
                     )}
 
+                    {/* NARRATIVE MANIPULATION & CURATION AUDIT */}
                     {signalReport.narrativeManipulationAudit && (
                       <div className="p-5 rounded-2xl bg-amber-400/[0.06] border border-amber-400/25 space-y-2.5">
                         <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
@@ -1828,45 +2196,62 @@ export default function TouchmarkToolsApp() {
                       </div>
                     )}
 
-                    {signalReport.constellationRarityAnalysis && (
-                      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-emerald-300 font-medium">
-                            <Eye className="w-4 h-4" />
-                            Constellation Rarity & Conspicuous Anomalies
-                          </div>
-                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-400/15 text-xs font-semibold text-emerald-200">
-                            Rarity: {signalReport.constellationRarityScore}/100
-                          </span>
-                        </div>
-                        <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
-                          {signalReport.constellationRarityAnalysis}
-                        </p>
-                      </div>
-                    )}
-
+                    {/* CENTER OF GRAVITY */}
                     {signalReport.centerOfGravity && (
                       <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-200 font-medium">
-                            <Compass className="w-4 h-4" />
-                            Center of Gravity & Epistemic Weighing
-                          </div>
-                          <span className="px-2.5 py-0.5 rounded-full bg-white/[0.07] text-xs font-mono text-stone-200">
-                            {signalReport.centerOfGravityLikelihood}% Weight
-                          </span>
+                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-200 font-medium">
+                          <Compass className="w-4 h-4" />
+                          Center of Gravity & Epistemic Weighing
                         </div>
                         <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
                           {signalReport.centerOfGravity}
                         </p>
                       </div>
                     )}
+
+                    {/* CUMULATIVE INVESTIGATION UPDATE & REVISION LOG */}
+                    <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                      <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-sky-300 font-medium">
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        Cumulative Investigation · Append New Evidence
+                      </div>
+                      <form onSubmit={handleReviseInvestigation} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={revisionInput}
+                          onChange={(e) => setRevisionInput(e.target.value)}
+                          placeholder="Paste a new filing, date, or development to update scores & conclusions…"
+                          className="flex-1 bg-black/40 border border-white/10 rounded-full px-3.5 py-2 text-xs text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-sky-400/40"
+                        />
+                        <button
+                          type="submit"
+                          disabled={isRevising || !revisionInput.trim()}
+                          className="px-4 py-2 rounded-full bg-sky-400/20 border border-sky-400/30 text-xs text-sky-200 hover:bg-sky-400/30 disabled:opacity-40 whitespace-nowrap"
+                        >
+                          {isRevising ? 'Updating…' : 'Update Dossier'}
+                        </button>
+                      </form>
+
+                      {signalReport.revisionLog?.length > 0 && (
+                        <div className="space-y-2 pt-2 border-t border-white/5">
+                          <span className="text-[10px] uppercase tracking-wider text-stone-500 block">
+                            Revision Log
+                          </span>
+                          {signalReport.revisionLog.map((rev, i) => (
+                            <div key={i} className="p-3 rounded-xl bg-black/30 text-xs space-y-1">
+                              <span className="text-[10px] font-mono text-sky-300">{rev.timestamp}</span>
+                              <p className="text-stone-300">{rev.summary}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </>
-                ) : drawerTab === 'power' ? (
+                ) : drawerTab === 'power' && signalReport ? (
                   isHydratingDeep && !signalReport.powerOperationBlueprint ? (
                     <div className="py-16 text-center space-y-2">
                       <p className="text-xs uppercase tracking-[0.22em] text-amber-300 animate-pulse">
-                        Modeling Power Vectors, Scenarios & Historical Precedents…
+                        Mapping Follow-the-Power Vectors, Relationship Graph & Investigation Gaps…
                       </p>
                       <p className="text-xs text-stone-500">
                         Completing deep institutional audit in the background.
@@ -1874,22 +2259,150 @@ export default function TouchmarkToolsApp() {
                     </div>
                   ) : (
                     <>
-                      {signalReport.powerOperationBlueprint && (
-                        <div className="p-5 rounded-2xl bg-amber-400/[0.06] border border-amber-300/25 space-y-2.5">
-                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
-                            <ShieldAlert className="w-4 h-4" />
-                            If Institutional or Corporate Power Is Operating Behind the Scenes
+                      {/* VISUAL INSTITUTIONAL RELATIONSHIP MAP */}
+                      {signalReport.relationshipMap?.length > 0 && (
+                        <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
+                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-sky-300 font-medium">
+                            <GitBranch className="w-4 h-4" />
+                            Institutional Relationship & Influence Map
                           </div>
-                          <p className="text-xs sm:text-sm text-stone-200 leading-relaxed whitespace-pre-line">
-                            {signalReport.powerOperationBlueprint}
-                          </p>
+                          <div className="space-y-2">
+                            {signalReport.relationshipMap.map((edge, idx) => (
+                              <div
+                                key={idx}
+                                className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-black/35 border border-white/5 text-xs"
+                              >
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className="font-semibold text-stone-100">
+                                    {edge.sourceEntity}
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded bg-white/[0.06] text-[11px] text-amber-200/90">
+                                    ── {edge.relationshipType} ──►
+                                  </span>
+                                  <span className="font-semibold text-stone-100">
+                                    {edge.targetEntity}
+                                  </span>
+                                </div>
+                                <span
+                                  className={`px-2 py-0.5 rounded-full border text-[9px] uppercase tracking-wider ${gradeBadgeStyle(
+                                    edge.epistemicGrade
+                                  )}`}
+                                >
+                                  {edge.epistemicGrade}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
 
+                      {/* FOLLOW THE POWER */}
+                      {signalReport.followThePower?.length > 0 && (
+                        <div className="p-5 rounded-2xl bg-amber-400/[0.06] border border-amber-300/25 space-y-3">
+                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-300 font-medium">
+                            <ShieldAlert className="w-4 h-4" />
+                            Follow the Power Audit
+                          </div>
+                          <div className="space-y-2.5">
+                            {signalReport.followThePower.map((fp, idx) => (
+                              <div
+                                key={idx}
+                                className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1"
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="text-xs font-semibold text-stone-100">
+                                    {fp.vector}
+                                  </span>
+                                  <span
+                                    className={`px-2 py-0.5 rounded-full border text-[9px] uppercase tracking-wider ${gradeBadgeStyle(
+                                      fp.epistemicGrade
+                                    )}`}
+                                  >
+                                    {fp.epistemicGrade}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-stone-300 leading-relaxed">{fp.finding}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* INVESTIGATION GAP */}
+                      {signalReport.investigationGap && (
+                        <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
+                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-sky-300 font-medium">
+                            <Layers className="w-4 h-4" />
+                            The Investigation Gap: Established vs. Suspected vs. Unknown
+                          </div>
+                          <div className="grid sm:grid-cols-2 gap-3 text-xs">
+                            <div className="p-3 rounded-xl bg-emerald-400/[0.04] border border-emerald-400/20 space-y-1.5">
+                              <span className="text-[10px] uppercase tracking-wider text-emerald-300 font-semibold block">
+                                Established (Documented)
+                              </span>
+                              <ul className="list-disc pl-4 space-y-1 text-stone-300">
+                                {(signalReport.investigationGap.established || []).map((x, i) => (
+                                  <li key={i}>{x}</li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            <div className="p-3 rounded-xl bg-amber-400/[0.04] border border-amber-400/20 space-y-1.5">
+                              <span className="text-[10px] uppercase tracking-wider text-amber-300 font-semibold block">
+                                Suspected (Structural Inference)
+                              </span>
+                              <ul className="list-disc pl-4 space-y-1 text-stone-300">
+                                {(signalReport.investigationGap.suspected || []).map((x, i) => (
+                                  <li key={i}>{x}</li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            <div className="p-3 rounded-xl bg-purple-400/[0.04] border border-purple-400/20 space-y-1.5">
+                              <span className="text-[10px] uppercase tracking-wider text-purple-300 font-semibold block">
+                                Unknown (Lacks Direct Proof)
+                              </span>
+                              <ul className="list-disc pl-4 space-y-1 text-stone-300">
+                                {(signalReport.investigationGap.unknown || []).map((x, i) => (
+                                  <li key={i}>{x}</li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            <div className="p-3 rounded-xl bg-sky-400/[0.04] border border-sky-400/20 space-y-1.5">
+                              <span className="text-[10px] uppercase tracking-wider text-sky-300 font-semibold block">
+                                Next Primary Targets to Check
+                              </span>
+                              <ul className="list-disc pl-4 space-y-1 text-stone-300">
+                                {(signalReport.investigationGap.nextTargets || []).map((x, i) => (
+                                  <li key={i}>{x}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* UNCOMFORTABLE QUESTIONS */}
+                      {signalReport.uncomfortableQuestions?.length > 0 && (
+                        <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
+                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-200 font-medium">
+                            <HelpCircle className="w-4 h-4" />
+                            Uncomfortable Questions Conventional Coverage Overlooks
+                          </div>
+                          <ul className="list-disc pl-4 space-y-1.5 text-xs text-stone-300 leading-relaxed">
+                            {signalReport.uncomfortableQuestions.map((q, idx) => (
+                              <li key={idx}>{q}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* COMPETING SCENARIOS */}
                       {signalReport.scenarios?.length > 0 && (
                         <div className="space-y-3">
                           <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400 block">
-                            Competing Possibilities & Probability Weights
+                            Competing Possibilities & Steelmanned Counter-Weights
                           </span>
                           {signalReport.scenarios.map((sc, idx) => (
                             <div
@@ -1903,7 +2416,7 @@ export default function TouchmarkToolsApp() {
                                 </span>
                               </div>
                               <p className="text-xs text-stone-300 leading-relaxed">
-                                <span className="text-emerald-300/90 font-medium">What points here: </span>
+                                <span className="text-emerald-300/90 font-medium">Supporting evidence: </span>
                                 {sc.caseFor}
                               </p>
                               {sc.caseAgainst && (
@@ -1945,7 +2458,7 @@ export default function TouchmarkToolsApp() {
                         <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5">
                           <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-stone-200 font-medium">
                             <History className="w-4 h-4 text-amber-300" />
-                            Historical Precedents & Base-Rate Frequency
+                            Historical Precedents & Where Analogies Break Down
                           </div>
                           <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
                             {signalReport.historicalPrecedents}
@@ -1954,41 +2467,30 @@ export default function TouchmarkToolsApp() {
                       )}
                     </>
                   )
-                ) : isHydratingDeep && signalReport.researchLibrary?.length === 0 ? (
-                  <div className="py-16 text-center space-y-2">
-                    <p className="text-xs uppercase tracking-[0.22em] text-amber-300 animate-pulse">
-                      Assembling Centrist, Left & Right Perspectives & YouTube Sources…
-                    </p>
-                    <p className="text-xs text-stone-500">
-                      Curating multi-lens talks, studies & Substack essays.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {signalReport.spectrumPerspectives?.length > 0 && (
-                      <div className="space-y-3">
-                        <span className="text-[11px] uppercase tracking-[0.18em] text-amber-300/90 block">
-                          How High-Integrity Thinkers Frame This Across Lenses
-                        </span>
-                        <div className="grid sm:grid-cols-2 gap-3">
-                          {signalReport.spectrumPerspectives.map((sp, idx) => {
-                            const isCentrist = (sp.lens || '').toLowerCase().includes('centrist');
-                            return (
+                ) : drawerTab === 'spectrum' && signalReport ? (
+                  isHydratingDeep && signalReport.researchLibrary?.length === 0 ? (
+                    <div className="py-16 text-center space-y-2">
+                      <p className="text-xs uppercase tracking-[0.22em] text-amber-300 animate-pulse">
+                        Assembling 6 Analytical Lenses & Verified Search Sources…
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {signalReport.spectrumPerspectives?.length > 0 && (
+                        <div className="space-y-3">
+                          <span className="text-[11px] uppercase tracking-[0.18em] text-amber-300/90 block">
+                            Perspectives Across Six Functional Analytical Lenses
+                          </span>
+                          <div className="grid sm:grid-cols-2 gap-3">
+                            {signalReport.spectrumPerspectives.map((sp, idx) => (
                               <div
                                 key={idx}
-                                className={`p-4 rounded-2xl border space-y-1.5 ${
-                                  isCentrist
-                                    ? 'bg-sky-400/[0.04] border-sky-400/20'
-                                    : 'bg-white/[0.03] border-white/10'
-                                }`}
+                                className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5"
                               >
-                                <span
-                                  className={`text-[10px] uppercase tracking-wider block ${
-                                    isCentrist ? 'text-sky-300' : 'text-amber-300'
-                                  }`}
-                                >
+                                <span className="text-[10px] uppercase tracking-wider text-amber-300 block">
                                   {sp.lens}
                                 </span>
+                                <p className="text-[11px] italic text-stone-400">{sp.coreQuestion}</p>
                                 <h4 className="text-xs font-semibold text-stone-100">
                                   {sp.thinkerOrOutlet}
                                 </h4>
@@ -1996,132 +2498,372 @@ export default function TouchmarkToolsApp() {
                                   {sp.coreThesis}
                                 </p>
                               </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {signalReport.groundingSources?.length > 0 && (
+                        <div className="space-y-2">
+                          <span className="text-[11px] uppercase tracking-[0.18em] text-emerald-300/90 block">
+                            Verified Live Google Search Grounding Sources
+                          </span>
+                          {signalReport.groundingSources.map((src, idx) => (
+                            <a
+                              key={idx}
+                              href={src.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:border-emerald-300/35 text-xs text-stone-200"
+                            >
+                              <span className="truncate pr-2">{src.title}</span>
+                              <ExternalLink className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+                            </a>
+                          ))}
+                        </div>
+                      )}
+
+                      {signalReport.researchLibrary?.length > 0 && (
+                        <div className="space-y-3">
+                          <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400 block">
+                            Curated YouTube Talks (Left, Centrist & Right), Studies & Essays (Direct Search Links)
+                          </span>
+                          {signalReport.researchLibrary.map((item, idx) => {
+                            const fmt = (item.format || '').toLowerCase();
+                            const tag = (item.perspectiveTag || '').toLowerCase();
+                            const Icon = fmt.includes('youtube')
+                              ? Youtube
+                              : fmt.includes('study')
+                              ? GraduationCap
+                              : BookOpen;
+
+                            const badgeStyle = tag.includes('centrist')
+                              ? 'bg-sky-400/10 border-sky-400/25 text-sky-200'
+                              : tag.includes('left')
+                              ? 'bg-indigo-400/10 border-indigo-400/25 text-indigo-200'
+                              : tag.includes('right')
+                              ? 'bg-rose-400/10 border-rose-400/25 text-rose-200'
+                              : 'bg-amber-400/10 border-amber-400/20 text-amber-200';
+
+                            return (
+                              <a
+                                key={idx}
+                                href={buildSmartResearchUrl(item)}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="block p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-300/35 transition-all space-y-2"
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex flex-wrap items-center gap-1.5">
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/[0.07] text-[10px] uppercase tracking-wider text-stone-200">
+                                      <Icon
+                                        className={`w-3 h-3 ${
+                                          fmt.includes('youtube') ? 'text-red-400' : 'text-amber-300'
+                                        }`}
+                                      />
+                                      {item.format}
+                                    </span>
+                                    <span
+                                      className={`px-2.5 py-0.5 rounded-full border text-[10px] uppercase tracking-wider ${badgeStyle}`}
+                                    >
+                                      {item.perspectiveTag}
+                                    </span>
+                                  </div>
+                                  <ExternalLink className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+                                </div>
+
+                                <div>
+                                  <h4 className="text-sm font-medium text-stone-100 leading-snug">
+                                    {item.title}
+                                  </h4>
+                                  <span className="text-xs text-stone-400">
+                                    {item.authorOrChannel}
+                                  </span>
+                                </div>
+
+                                <p className="text-xs text-stone-300 leading-relaxed">
+                                  {item.takeaway}
+                                </p>
+                              </a>
                             );
                           })}
+                        </div>
+                      )}
+                    </div>
+                  )
+                ) : (
+                  /* TAB 4: TOUCHMARK STUDIO — EVIDENCE-LINKED CREATOR CONTENT ENGINE + EXTERNAL IMPORTER */
+                  <div className="space-y-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <span className="text-[11px] uppercase tracking-[0.2em] text-emerald-300 block">
+                          Touchmark Studio · Research-to-Broadcast Engine
+                        </span>
+                        <p className="text-xs text-stone-400 mt-0.5">
+                          Inherits your verified Signal record—or your own pasted research notes—to draft scripts & essays.
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setShowExternalImporter(!showExternalImporter)}
+                          className="px-3 py-1.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs text-stone-300 inline-flex items-center gap-1"
+                        >
+                          <PlusCircle className="w-3.5 h-3.5 text-emerald-300" />
+                          <span>Import Notes</span>
+                        </button>
+                        {signalReport && !signalReport.studioAssets && !isGeneratingStudio && (
+                          <button
+                            type="button"
+                            onClick={() => generateStudioPackage()}
+                            className="px-4 py-1.5 rounded-full bg-emerald-400/20 border border-emerald-400/35 text-xs text-emerald-200 hover:bg-emerald-400/30"
+                          >
+                            Generate Suite
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {showExternalImporter && (
+                      <div className="p-4 rounded-2xl bg-white/[0.03] border border-emerald-400/25 space-y-3">
+                        <span className="text-[10px] uppercase tracking-wider text-emerald-300 block">
+                          Paste External Research Notes, Transcripts or Articles
+                        </span>
+                        <textarea
+                          rows={5}
+                          value={externalResearchNotes}
+                          onChange={(e) => setExternalResearchNotes(e.target.value)}
+                          placeholder="Paste your own research notes, interview transcript, or document excerpts here to produce a Substack essay, YouTube script, and short-form pack…"
+                          className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-xs text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-emerald-400/40"
+                        />
+                        <div className="flex justify-end">
+                          <button
+                            type="button"
+                            disabled={isGeneratingStudio || !externalResearchNotes.trim()}
+                            onClick={() => generateStudioPackage(externalResearchNotes)}
+                            className="px-4 py-2 rounded-full bg-emerald-300 text-stone-950 font-medium text-xs hover:bg-emerald-200 disabled:opacity-40"
+                          >
+                            {isGeneratingStudio ? 'Building Studio Package…' : 'Build From Imported Research'}
+                          </button>
                         </div>
                       </div>
                     )}
 
-                    {signalReport.groundingSources?.length > 0 && (
-                      <div className="space-y-2">
-                        <span className="text-[11px] uppercase tracking-[0.18em] text-emerald-300/90 block">
-                          Live Primary Record Sources
-                        </span>
-                        {signalReport.groundingSources.map((src, idx) => (
-                          <a
-                            key={idx}
-                            href={src.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:border-emerald-300/35 text-xs text-stone-200"
-                          >
-                            <span className="truncate pr-2">{src.title}</span>
-                            <ExternalLink className="w-3.5 h-3.5 text-stone-500 shrink-0" />
-                          </a>
-                        ))}
+                    {isGeneratingStudio ? (
+                      <div className="py-16 text-center space-y-2">
+                        <p className="text-xs uppercase tracking-[0.22em] text-emerald-300 animate-pulse">
+                          Structuring Substack Essay, YouTube Script, Short-Form Pack & Integrity Audit…
+                        </p>
+                        <p className="text-xs text-stone-500">
+                          Cross-checking every draft claim against your Signal evidence grades.
+                        </p>
                       </div>
-                    )}
+                    ) : signalReport?.studioAssets ? (
+                      <>
+                        {/* Editorial Hook & Alternative Angles */}
+                        <div className="p-4 rounded-2xl bg-emerald-400/[0.05] border border-emerald-400/20 space-y-2">
+                          <span className="text-[10px] uppercase tracking-wider text-emerald-300 font-semibold block">
+                            Lead Editorial Hook
+                          </span>
+                          <p className="text-xs sm:text-sm text-stone-100 leading-relaxed">
+                            {signalReport.studioAssets.editorialHook}
+                          </p>
+                          {signalReport.studioAssets.alternativeAngles?.length > 0 && (
+                            <div className="pt-2 border-t border-white/10 space-y-1">
+                              <span className="text-[10px] uppercase tracking-wider text-stone-400 block">
+                                Alternative Editorial Angles
+                              </span>
+                              {signalReport.studioAssets.alternativeAngles.map((ang, i) => (
+                                <p key={i} className="text-xs text-stone-300">
+                                  <strong className="text-stone-100">{ang.angleTitle}:</strong> {ang.framing}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
 
-                    {signalReport.researchLibrary?.length > 0 && (
-                      <div className="space-y-3">
-                        <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400 block">
-                          Curated YouTube Talks (Left, Centrist & Right), Studies & Essays
-                        </span>
-                        {signalReport.researchLibrary.map((item, idx) => {
-                          const fmt = (item.format || '').toLowerCase();
-                          const tag = (item.perspectiveTag || '').toLowerCase();
-                          const Icon = fmt.includes('youtube')
-                            ? Youtube
-                            : fmt.includes('study')
-                            ? GraduationCap
-                            : BookOpen;
-
-                          const badgeStyle = tag.includes('centrist')
-                            ? 'bg-sky-400/10 border-sky-400/25 text-sky-200'
-                            : tag.includes('left')
-                            ? 'bg-indigo-400/10 border-indigo-400/25 text-indigo-200'
-                            : tag.includes('right')
-                            ? 'bg-rose-400/10 border-rose-400/25 text-rose-200'
-                            : 'bg-amber-400/10 border-amber-400/20 text-amber-200';
-
-                          return (
-                            <a
-                              key={idx}
-                              href={buildSmartResearchUrl(item)}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="block p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-300/35 transition-all space-y-2"
+                        {/* Format Switcher */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setStudioFormatView('substack')}
+                              className={`px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 ${
+                                studioFormatView === 'substack'
+                                  ? 'bg-white/15 text-white'
+                                  : 'text-stone-400 hover:text-stone-200'
+                              }`}
                             >
-                              <div className="flex items-center justify-between gap-2">
-                                <div className="flex flex-wrap items-center gap-1.5">
-                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/[0.07] text-[10px] uppercase tracking-wider text-stone-200">
-                                    <Icon
-                                      className={`w-3 h-3 ${
-                                        fmt.includes('youtube') ? 'text-red-400' : 'text-amber-300'
-                                      }`}
-                                    />
-                                    {item.format}
-                                  </span>
-                                  <span
-                                    className={`px-2.5 py-0.5 rounded-full border text-[10px] uppercase tracking-wider ${badgeStyle}`}
-                                  >
-                                    {item.perspectiveTag}
-                                  </span>
-                                </div>
-                                <ExternalLink className="w-3.5 h-3.5 text-stone-500 shrink-0" />
-                              </div>
+                              <BookOpen className="w-3.5 h-3.5" />
+                              Substack
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setStudioFormatView('script')}
+                              className={`px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 ${
+                                studioFormatView === 'script'
+                                  ? 'bg-white/15 text-white'
+                                  : 'text-stone-400 hover:text-stone-200'
+                              }`}
+                            >
+                              <Video className="w-3.5 h-3.5" />
+                              YouTube Script
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setStudioFormatView('shortform')}
+                              className={`px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 ${
+                                studioFormatView === 'shortform'
+                                  ? 'bg-white/15 text-white'
+                                  : 'text-stone-400 hover:text-stone-200'
+                              }`}
+                            >
+                              <Scissors className="w-3.5 h-3.5" />
+                              Short-Form Pack
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setStudioFormatView('audit')}
+                              className={`px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 ${
+                                studioFormatView === 'audit'
+                                  ? 'bg-white/15 text-white'
+                                  : 'text-stone-400 hover:text-stone-200'
+                              }`}
+                            >
+                              <CheckSquare className="w-3.5 h-3.5" />
+                              Audit & Visuals
+                            </button>
+                          </div>
 
-                              <div>
-                                <h4 className="text-sm font-medium text-stone-100 leading-snug">
-                                  {item.title}
-                                </h4>
-                                <span className="text-xs text-stone-400">
-                                  {item.authorOrChannel}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const payload =
+                                studioFormatView === 'substack'
+                                  ? signalReport.studioAssets.substackEssayDraft
+                                  : studioFormatView === 'script'
+                                  ? signalReport.studioAssets.youtubePodcastScript
+                                  : studioFormatView === 'shortform'
+                                  ? (signalReport.studioAssets.shortFormPack || [])
+                                      .map(
+                                        (s) =>
+                                          `[${s.platform}]\nHOOK: ${s.hook}\nBEAT: ${s.coreBeat}\nVISUAL: ${s.visualDirection}`
+                                      )
+                                      .join('\n\n')
+                                  : (signalReport.studioAssets.evidenceIntegrityAudit || []).join('\n');
+                              navigator.clipboard?.writeText(payload || '');
+                              setCopiedStudioText(true);
+                              setTimeout(() => setCopiedStudioText(false), 2000);
+                            }}
+                            className="px-3 py-1.5 rounded-full bg-white/[0.07] hover:bg-white/[0.12] text-xs text-stone-200"
+                          >
+                            {copiedStudioText ? 'Copied!' : 'Copy Draft'}
+                          </button>
+                        </div>
+
+                        {studioFormatView === 'substack' ? (
+                          <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 text-xs sm:text-sm text-stone-200 leading-relaxed whitespace-pre-line">
+                            {signalReport.studioAssets.substackEssayDraft}
+                          </div>
+                        ) : studioFormatView === 'script' ? (
+                          <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 text-xs sm:text-sm text-stone-200 leading-relaxed whitespace-pre-line font-mono">
+                            {signalReport.studioAssets.youtubePodcastScript}
+                          </div>
+                        ) : studioFormatView === 'shortform' ? (
+                          <div className="space-y-4">
+                            {(signalReport.studioAssets.shortFormPack || []).map((clip, i) => (
+                              <div
+                                key={i}
+                                className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5 text-xs"
+                              >
+                                <span className="text-[10px] uppercase tracking-wider text-emerald-300 font-semibold block">
+                                  Clip 0{i + 1} · {clip.platform}
                                 </span>
+                                <p className="text-stone-100 font-medium">Hook: “{clip.hook}”</p>
+                                <p className="text-stone-300 leading-relaxed">{clip.coreBeat}</p>
+                                <p className="text-stone-400">
+                                  <strong>Visual Direction:</strong> {clip.visualDirection}
+                                </p>
                               </div>
+                            ))}
 
-                              <p className="text-xs text-stone-300 leading-relaxed">
-                                {item.takeaway}
-                              </p>
-                            </a>
-                          );
-                        })}
-                      </div>
-                    )}
+                            {signalReport.studioAssets.doNotCompressWarnings?.length > 0 && (
+                              <div className="p-4 rounded-2xl bg-red-950/30 border border-red-400/25 space-y-2">
+                                <span className="text-[10px] uppercase tracking-wider text-red-300 font-semibold block">
+                                  Editorial Safeguard · Do Not Compress Into Short-Form
+                                </span>
+                                <ul className="list-disc pl-4 space-y-1 text-xs text-stone-300">
+                                  {signalReport.studioAssets.doNotCompressWarnings.map((w, i) => (
+                                    <li key={i}>{w}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="space-y-4">
+                            <div className="p-4 rounded-2xl bg-amber-400/[0.06] border border-amber-400/25 space-y-2">
+                              <span className="text-[11px] uppercase tracking-wider text-amber-300 font-semibold block">
+                                Journalistic Integrity & Overstatement Guardrails
+                              </span>
+                              <ul className="list-disc pl-4 space-y-1.5 text-xs text-stone-300">
+                                {(signalReport.studioAssets.evidenceIntegrityAudit || []).map((flag, i) => (
+                                  <li key={i}>{flag}</li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
+                              <span className="text-[11px] uppercase tracking-wider text-sky-300 font-semibold block">
+                                On-Screen Primary Evidence & B-Roll Shot List
+                              </span>
+                              {(signalReport.studioAssets.visualAssetChecklist || []).map((v, i) => (
+                                <div key={i} className="text-xs text-stone-300 border-b border-white/5 pb-2">
+                                  <strong className="text-stone-100">{v.timestampOrBeat}:</strong>{' '}
+                                  {v.onScreenEvidence}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : null}
                   </div>
                 )}
 
                 {/* Centered PDF & Markdown Export Buttons inside Dossier Drawer */}
-                <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    onClick={exportFullPdfDossier}
-                    disabled={isHydratingDeep}
-                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs tracking-wide whitespace-nowrap hover:bg-amber-200 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
-                  >
-                    <Printer className="w-4 h-4 shrink-0" />
-                    <span>{isHydratingDeep ? 'Finalizing Full PDF…' : 'Export PDF Dossier'}</span>
-                  </button>
+                {signalReport && (
+                  <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={exportFullPdfDossier}
+                      disabled={isHydratingDeep}
+                      className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-amber-300 text-stone-950 font-medium text-xs tracking-wide whitespace-nowrap hover:bg-amber-200 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+                    >
+                      <Printer className="w-4 h-4 shrink-0" />
+                      <span>{isHydratingDeep ? 'Finalizing Full PDF…' : 'Export PDF Dossier'}</span>
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={copyReceipt}
-                    disabled={isHydratingDeep}
-                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-stone-200 font-medium text-xs tracking-wide whitespace-nowrap disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
-                  >
-                    {copiedReceipt ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
-                        <span>Markdown Copied</span>
-                      </>
-                    ) : (
-                      <>
-                        <Share2 className="w-4 h-4 shrink-0" />
-                        <span>Copy Markdown</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      onClick={copyReceipt}
+                      disabled={isHydratingDeep}
+                      className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-stone-200 font-medium text-xs tracking-wide whitespace-nowrap disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+                    >
+                      {copiedReceipt ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                          <span>Markdown Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Share2 className="w-4 h-4 shrink-0" />
+                          <span>Copy Markdown</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
             ) : null}
           </div>
