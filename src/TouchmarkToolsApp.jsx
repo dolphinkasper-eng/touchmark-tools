@@ -37,6 +37,12 @@ import {
   Scissors
 } from 'lucide-react';
 import FoundingMemberModal from './FoundingMemberModal';
+import {
+  TIER_RULES,
+  getLocalMonthlyUsage,
+  getTotalUsedForTier,
+  checkAndConsumeAllowance
+} from './tierGuard';
 
 // --- BESPOKE PRECISION TOUCHMARK LOGO (Resonance Astrolabe & Focal Lens) ---
 function TouchmarkLogo({ className = 'w-7 h-7' }) {
@@ -594,13 +600,15 @@ export default function TouchmarkToolsApp() {
   const [signalReport, setSignalReport] = useState(null);
   const [copiedReceipt, setCopiedReceipt] = useState(false);
 
-  // Founding Member & Stripe Subscription State
+  // Founding Member, Stripe Subscription & Monthly Allowance State
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
   const [activeTier, setActiveTier] = useState(() => {
     if (typeof window === 'undefined') return 'free';
     return localStorage.getItem('tm_tier') || 'free';
   });
   const [checkoutBanner, setCheckoutBanner] = useState('');
+  const [usageState, setUsageState] = useState(() => getLocalMonthlyUsage());
+  const [upgradeReason, setUpgradeReason] = useState('');
 
   const recognitionRef = useRef(null);
   const audioRef = useRef(null);
@@ -907,6 +915,17 @@ export default function TouchmarkToolsApp() {
     if (isGeneratingStudio) return;
     if (!signalReport && !customNotes.trim()) return;
 
+    const gate = await checkAndConsumeAllowance({
+      tier: activeTier,
+      action: 'studio'
+    });
+    if (!gate.allowed) {
+      setUpgradeReason(gate.message);
+      setIsUpgradeOpen(true);
+      return;
+    }
+    if (gate.nextUsage) setUsageState(gate.nextUsage);
+
     setIsGeneratingStudio(true);
     try {
       const sourceMaterial = customNotes.trim()
@@ -1089,7 +1108,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
     setHistory(updatedHistory);
 
     try {
-      // 1. Warm Copilot Chat Turn
+      // 1. Warm Copilot Chat Turn (free — does not consume monthly investigation credits)
       if (isConversationalCheckIn(query)) {
         const res = await fetch('/api/discern', {
           method: 'POST',
@@ -1110,6 +1129,20 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         speakResponse(reply);
         return;
       }
+
+      // Check monthly tier allowance before running Pulse or Signal
+      const gate = await checkAndConsumeAllowance({
+        tier: activeTier,
+        action: mode === 'pulse' ? 'pulse' : 'signal'
+      });
+      if (!gate.allowed) {
+        soundscapeRef.current?.stopThinkingDrone(false);
+        setStatus('idle');
+        setUpgradeReason(gate.message);
+        setIsUpgradeOpen(true);
+        return;
+      }
+      if (gate.nextUsage) setUsageState(gate.nextUsage);
 
       // 2. Pulse Deep Discernment
       if (mode === 'pulse') {
@@ -1645,6 +1678,9 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
       ? SIGNAL_THINKING_PHASES[thinkingPhaseIndex]
       : PULSE_THINKING_PHASES[thinkingPhaseIndex];
 
+  const activeTierRules = TIER_RULES[activeTier] || TIER_RULES.free;
+  const activeTierUsed = getTotalUsedForTier(activeTier, usageState);
+
   return (
     <div className="min-h-screen bg-[#090807] text-stone-100 flex flex-col justify-between selection:bg-amber-400/30">
       {/* Ultra-minimal Top Bar — 3-column grid keeps Pulse | Signal dead-center */}
@@ -1685,17 +1721,22 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
           </button>
         </div>
 
-        {/* Founding Member, Voice, Studio Import, Archive & Dossier Controls */}
+        {/* Founding Member Allowance Pill, Voice, Studio Import, Archive & Dossier Controls */}
         <div className="flex items-center justify-end gap-2 justify-self-end">
           <button
             type="button"
-            onClick={() => setIsUpgradeOpen(true)}
+            onClick={() => {
+              setUpgradeReason('');
+              setIsUpgradeOpen(true);
+            }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-400/15 hover:bg-amber-400/25 border border-amber-300/35 text-xs text-amber-200 transition-all cursor-pointer"
-            title="Founding Member Access & Subscription Tiers"
+            title="Founding Member Access & Monthly Allowance"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
             <span className="hidden sm:inline">
-              {activeTier === 'free' ? 'Founding Member' : `Plan: ${activeTier.toUpperCase()}`}
+              {activeTier === 'free'
+                ? `Preview · ${Math.max(0, activeTierRules.monthlyLimit - activeTierUsed)}/${activeTierRules.monthlyLimit} Left`
+                : `${activeTier.toUpperCase()} · ${activeTierUsed}/${activeTierRules.monthlyLimit}`}
             </span>
           </button>
 
@@ -2938,6 +2979,13 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
           >
             <X className="w-3.5 h-3.5" />
           </button>
+        </div>
+      )}
+
+      {/* Contextual Allowance / Tier Upgrade Notice */}
+      {isUpgradeOpen && upgradeReason && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[60] max-w-lg w-[92%] rounded-xl border border-amber-400/50 bg-zinc-950/95 px-4 py-3 text-center text-xs text-amber-200 shadow-2xl">
+          {upgradeReason}
         </div>
       )}
 
