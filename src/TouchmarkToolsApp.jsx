@@ -36,6 +36,7 @@ import {
   RefreshCw,
   Scissors
 } from 'lucide-react';
+import FoundingMemberModal from './FoundingMemberModal';
 
 // --- BESPOKE PRECISION TOUCHMARK LOGO (Resonance Astrolabe & Focal Lens) ---
 function TouchmarkLogo({ className = 'w-7 h-7' }) {
@@ -593,6 +594,14 @@ export default function TouchmarkToolsApp() {
   const [signalReport, setSignalReport] = useState(null);
   const [copiedReceipt, setCopiedReceipt] = useState(false);
 
+  // Founding Member & Stripe Subscription State
+  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+  const [activeTier, setActiveTier] = useState(() => {
+    if (typeof window === 'undefined') return 'free';
+    return localStorage.getItem('tm_tier') || 'free';
+  });
+  const [checkoutBanner, setCheckoutBanner] = useState('');
+
   const recognitionRef = useRef(null);
   const audioRef = useRef(null);
   const soundscapeRef = useRef(null);
@@ -622,6 +631,41 @@ export default function TouchmarkToolsApp() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setSavedDossiers(JSON.parse(raw));
     } catch {}
+
+    // Listen for Stripe Checkout redirect (?checkout=success | canceled)
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const checkoutStatus = params.get('checkout');
+      const returnedTier = params.get('tier');
+
+      if (checkoutStatus === 'success' && returnedTier) {
+        setActiveTier(returnedTier);
+        try {
+          localStorage.setItem('tm_tier', returnedTier);
+        } catch {}
+        setCheckoutBanner(
+          `Welcome to Touchmark (${returnedTier.toUpperCase()}). Your Founding Member access is active.`
+        );
+        params.delete('checkout');
+        params.delete('tier');
+        params.delete('session_id');
+        const cleanSearch = params.toString();
+        window.history.replaceState(
+          {},
+          '',
+          `${window.location.pathname}${cleanSearch ? `?${cleanSearch}` : ''}`
+        );
+      } else if (checkoutStatus === 'canceled') {
+        setCheckoutBanner('Checkout canceled — no charges were made.');
+        params.delete('checkout');
+        const cleanSearch = params.toString();
+        window.history.replaceState(
+          {},
+          '',
+          `${window.location.pathname}${cleanSearch ? `?${cleanSearch}` : ''}`
+        );
+      }
+    }
 
     fetch('/api/discern', {
       method: 'POST',
@@ -1641,8 +1685,20 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
           </button>
         </div>
 
-        {/* Voice, Studio Import, Archive & Dossier Controls */}
+        {/* Founding Member, Voice, Studio Import, Archive & Dossier Controls */}
         <div className="flex items-center justify-end gap-2 justify-self-end">
+          <button
+            type="button"
+            onClick={() => setIsUpgradeOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-400/15 hover:bg-amber-400/25 border border-amber-300/35 text-xs text-amber-200 transition-all cursor-pointer"
+            title="Founding Member Access & Subscription Tiers"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+            <span className="hidden sm:inline">
+              {activeTier === 'free' ? 'Founding Member' : `Plan: ${activeTier.toUpperCase()}`}
+            </span>
+          </button>
+
           {mode === 'signal' && !hasArtifact && (
             <button
               type="button"
@@ -2869,6 +2925,28 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
           </div>
         </div>
       )}
+
+      {/* Stripe Checkout Confirmation Toast */}
+      {checkoutBanner && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl border border-amber-300/40 bg-[#11100e]/95 px-4 py-3 text-xs text-stone-100 shadow-2xl backdrop-blur">
+          <span>{checkoutBanner}</span>
+          <button
+            type="button"
+            onClick={() => setCheckoutBanner('')}
+            className="text-stone-400 hover:text-white cursor-pointer"
+            aria-label="Dismiss notification"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* Founding Member Pricing & Stripe Checkout Modal */}
+      <FoundingMemberModal
+        isOpen={isUpgradeOpen}
+        onClose={() => setIsUpgradeOpen(false)}
+        currentTier={activeTier}
+      />
     </div>
   );
 }
