@@ -126,7 +126,6 @@ export default function SignalVisualBrief({ visualBrief }) {
               src={web_image.url}
               alt={web_image.title || chart_title}
               onError={() => setImgFailed(true)}
-              crossOrigin="anonymous"
               className="h-36 w-full object-cover"
             />
             <figcaption className="px-3 py-2 text-[11px] leading-snug text-slate-400 print:text-slate-600">
