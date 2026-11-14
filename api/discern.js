@@ -14,6 +14,28 @@ const SIGNAL_CORE_SCHEMA = {
     centerOfGravityLikelihood: { type: 'INTEGER' },
     centerOfGravityLabel: { type: 'STRING' },
     centerOfGravitySummary: { type: 'STRING' },
+    visual_brief: {
+      type: 'OBJECT',
+      properties: {
+        chart_type: { type: 'STRING' },
+        chart_title: { type: 'STRING' },
+        chart_subtitle: { type: 'STRING' },
+        metrics: {
+          type: 'ARRAY',
+          items: {
+            type: 'OBJECT',
+            properties: {
+              label: { type: 'STRING' },
+              value: { type: 'INTEGER' },
+              note: { type: 'STRING' }
+            },
+            required: ['label', 'value', 'note']
+          }
+        },
+        image_query: { type: 'STRING' }
+      },
+      required: ['chart_type', 'chart_title', 'chart_subtitle', 'metrics', 'image_query']
+    },
     verifiedTimeline: {
       type: 'ARRAY',
       items: {
@@ -45,6 +67,7 @@ const SIGNAL_CORE_SCHEMA = {
     'centerOfGravityLikelihood',
     'centerOfGravityLabel',
     'centerOfGravitySummary',
+    'visual_brief',
     'verifiedTimeline',
     'narrativeManipulationAudit',
     'constellationRarityAnalysis',
@@ -436,8 +459,10 @@ The user is greeting you, checking their mic, or warming up before exploring a d
         ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
       );
 
+      const finalText = await attachVerifiedEditorialImage(rawText);
+
       return res.status(200).json({
-        text: rawText,
+        text: finalText,
         factSheet: searchResult.factSheet,
         groundingSources: searchResult.sources
       });
@@ -571,6 +596,79 @@ The user is greeting you, checking their mic, or warming up before exploring a d
       error: err.message || 'Unexpected server error in /api/discern.'
     });
   }
+}
+
+async function attachVerifiedEditorialImage(rawJsonText) {
+  try {
+    const parsed = JSON.parse(rawJsonText);
+    const query = parsed?.visual_brief?.image_query?.trim();
+    if (!query) return rawJsonText;
+
+    // 1. Prefer Brave Image Search if BRAVE_SEARCH_API_KEY is configured in Vercel
+    if (process.env.BRAVE_SEARCH_API_KEY) {
+      const braveUrl = `https://api.search.brave.com/res/v1/images/search?q=${encodeURIComponent(query)}&count=3&safesearch=strict`;
+      const imgRes = await fetch(braveUrl, {
+        headers: {
+          Accept: 'application/json',
+          'X-Subscription-Token': process.env.BRAVE_SEARCH_API_KEY
+        }
+      });
+
+      if (imgRes.ok) {
+        const data = await imgRes.json();
+        const hit = (data.results || []).find(
+          (item) => item?.properties?.url && item.properties.url.startsWith('https://')
+        );
+        if (hit) {
+          parsed.visual_brief.web_image = {
+            url: hit.properties.url,
+            thumbnail: hit.thumbnail?.src || hit.properties.url,
+            source: hit.source || new URL(hit.url).hostname.replace(/^www\./, ''),
+            title: hit.title || query
+          };
+          return JSON.stringify(parsed);
+        }
+      }
+    }
+
+    // 2. Zero-key fallback: Wikimedia Commons API for verified public-domain / CC editorial photos
+    const wikiUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(
+      `filetype:bitmap ${query}`
+    )}&gsrnamespace=6&gsrlimit=3&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=800&format=json&origin=*`;
+
+    const wikiRes = await fetch(wikiUrl, {
+      headers: { 'User-Agent': 'TouchmarkSignal/1.0 (https://touchmarktools.com)' }
+    });
+
+    if (wikiRes.ok) {
+      const wikiData = await wikiRes.json();
+      const pages = Object.values(wikiData?.query?.pages || {});
+      const validPage = pages.find((p) => {
+        const info = p?.imageinfo?.[0];
+        const url = info?.thumburl || info?.url || '';
+        return url.startsWith('https://') && /\.(jpg|jpeg|png|webp)(\?|$)/i.test(url);
+      });
+
+      if (validPage) {
+        const info = validPage.imageinfo[0];
+        const cleanTitle = (validPage.title || query)
+          .replace(/^File:/i, '')
+          .replace(/\.[a-z0-9]+$/i, '')
+          .replace(/_/g, ' ');
+        parsed.visual_brief.web_image = {
+          url: info.thumburl || info.url,
+          thumbnail: info.thumburl || info.url,
+          source: 'Wikimedia Commons',
+          title: cleanTitle
+        };
+        return JSON.stringify(parsed);
+      }
+    }
+  } catch (err) {
+    console.error('Editorial image lookup skipped:', err);
+  }
+
+  return rawJsonText;
 }
 
 async function runLiveFactRetrieval(apiKey, query) {
