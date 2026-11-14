@@ -32,7 +32,11 @@ const SIGNAL_CORE_SCHEMA = {
             required: ['label', 'value', 'note']
           }
         },
-        image_query: { type: 'STRING' }
+        image_query: {
+          type: 'STRING',
+          description:
+            'A concise 2-to-3 word encyclopedic noun phrase for a concrete physical landmark, institution headquarters, public figure, or historical artifact (e.g., "European Central Bank", "Federal Reserve Building", "United States Capitol"). Never use abstract sentences.'
+        }
       },
       required: ['chart_type', 'chart_title', 'chart_subtitle', 'metrics', 'image_query']
     },
@@ -491,7 +495,7 @@ The user is greeting you, checking their mic, or warming up before exploring a d
             responseSchema: SIGNAL_DEEP_SCHEMA
           }
         },
-        ['gemini-3.8-flash', 'gemini-3.5-flash-lite']
+        ['gemini-3.5-flash-lite', 'gemini-3.8-flash']
       );
 
       return res.status(200).json({ text: rawText });
@@ -601,12 +605,12 @@ The user is greeting you, checking their mic, or warming up before exploring a d
 async function attachVerifiedEditorialImage(rawJsonText) {
   try {
     const parsed = JSON.parse(rawJsonText);
-    const query = parsed?.visual_brief?.image_query?.trim();
-    if (!query) return rawJsonText;
+    const rawQuery = parsed?.visual_brief?.image_query?.trim();
+    if (!rawQuery) return rawJsonText;
 
     // 1. Prefer Brave Image Search if BRAVE_SEARCH_API_KEY is configured in Vercel
     if (process.env.BRAVE_SEARCH_API_KEY) {
-      const braveUrl = `https://api.search.brave.com/res/v1/images/search?q=${encodeURIComponent(query)}&count=3&safesearch=strict`;
+      const braveUrl = `https://api.search.brave.com/res/v1/images/search?q=${encodeURIComponent(rawQuery)}&count=3&safesearch=strict`;
       const imgRes = await fetch(braveUrl, {
         headers: {
           Accept: 'application/json',
@@ -624,25 +628,45 @@ async function attachVerifiedEditorialImage(rawJsonText) {
             url: hit.properties.url,
             thumbnail: hit.thumbnail?.src || hit.properties.url,
             source: hit.source || new URL(hit.url).hostname.replace(/^www\./, ''),
-            title: hit.title || query
+            title: hit.title || rawQuery
           };
           return JSON.stringify(parsed);
         }
       }
     }
 
-    // 2. Zero-key fallback: Wikimedia Commons API for verified public-domain / CC editorial photos
-    const wikiUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(
-      `filetype:bitmap ${query}`
-    )}&gsrnamespace=6&gsrlimit=3&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=800&format=json&origin=*`;
+    // 2. Wikimedia Commons lookup: try full query first, then a simplified 3-word subject query
+    const simplifiedQuery = rawQuery
+      .replace(/[^\w\s-]/g, ' ')
+      .split(/\s+/)
+      .filter((w) => w.length > 2)
+      .slice(0, 3)
+      .join(' ');
 
-    const wikiRes = await fetch(wikiUrl, {
-      headers: { 'User-Agent': 'TouchmarkSignal/1.0 (https://touchmarktools.com)' }
-    });
+    const candidateQueries =
+      simplifiedQuery && simplifiedQuery.toLowerCase() !== rawQuery.toLowerCase()
+        ? [rawQuery, simplifiedQuery]
+        : [rawQuery];
 
-    if (wikiRes.ok) {
+    for (const q of candidateQueries) {
+      const wikiUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(
+        `filetype:bitmap ${q}`
+      )}&gsrnamespace=6&gsrlimit=5&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=800&format=json&origin=*`;
+
+      const wikiRes = await fetch(wikiUrl, {
+        headers: {
+          'User-Agent': 'TouchmarkSignalBot/1.0 (https://touchmarktools.com; support@touchmarktools.com)',
+          'Api-User-Agent': 'TouchmarkSignalBot/1.0 (https://touchmarktools.com; support@touchmarktools.com)'
+        }
+      });
+
+      if (!wikiRes.ok) continue;
+
       const wikiData = await wikiRes.json();
-      const pages = Object.values(wikiData?.query?.pages || {});
+      const pages = Object.values(wikiData?.query?.pages || {}).sort(
+        (a, b) => (a.index || 99) - (b.index || 99)
+      );
+
       const validPage = pages.find((p) => {
         const info = p?.imageinfo?.[0];
         const url = info?.thumburl || info?.url || '';
@@ -651,7 +675,7 @@ async function attachVerifiedEditorialImage(rawJsonText) {
 
       if (validPage) {
         const info = validPage.imageinfo[0];
-        const cleanTitle = (validPage.title || query)
+        const cleanTitle = (validPage.title || q)
           .replace(/^File:/i, '')
           .replace(/\.[a-z0-9]+$/i, '')
           .replace(/_/g, ' ');
