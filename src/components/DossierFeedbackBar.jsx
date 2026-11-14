@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { supabase } from '../lib/supabaseClient';
 
 export default function DossierFeedbackBar({
   tool = 'signal',
@@ -16,23 +15,31 @@ export default function DossierFeedbackBar({
     if (!selectedRating) return;
     setStatus('submitting');
 
-    const { error } = await supabase.from('feedback').insert({
-      user_id: userId || null,
-      user_email: userEmail || null,
-      tier: tier || 'free',
-      tool: tool || 'signal',
-      rating: selectedRating,
-      note: note.trim() || null,
-      prompt_preview: (promptPreview || '').slice(0, 180),
-    });
+    try {
+      const res = await fetch('/api/feedback-notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: 'client_bar',
+          user_id: userId || null,
+          user_email: userEmail || null,
+          tier: tier || 'free',
+          tool: tool || 'signal',
+          rating: selectedRating,
+          note: note.trim() || null,
+          prompt_preview: (promptPreview || '').slice(0, 180),
+        }),
+      });
 
-    if (error) {
-      console.error('Feedback insert error:', error);
+      if (!res.ok) {
+        throw new Error('Failed to submit feedback');
+      }
+
+      setStatus('sent');
+    } catch (err) {
+      console.error('Feedback submit error:', err);
       setStatus('error');
-      return;
     }
-
-    setStatus('sent');
   }
 
   if (status === 'sent') {
