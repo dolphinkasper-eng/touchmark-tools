@@ -307,6 +307,44 @@ const REVISION_SCHEMA = {
   ]
 };
 
+const PERSPECTIVE_SYNTHESIS_SCHEMA = {
+  type: 'OBJECT',
+  properties: {
+    nineLensMatrix: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          alignment: { type: 'STRING' }, // "Left" | "Center" | "Right"
+          framework: { type: 'STRING' },
+          representativeVoice: { type: 'STRING' },
+          coreFraming: { type: 'STRING' },
+          blindSpot: { type: 'STRING' }
+        },
+        required: ['alignment', 'framework', 'representativeVoice', 'coreFraming', 'blindSpot']
+      }
+    },
+    customLensSynthesis: {
+      type: 'OBJECT',
+      properties: {
+        targetLens: { type: 'STRING' },
+        lensCategory: { type: 'STRING' },
+        coreThesis: { type: 'STRING' },
+        whatItSpotlights: { type: 'STRING' },
+        structuralBlindSpot: { type: 'STRING' }
+      },
+      required: [
+        'targetLens',
+        'lensCategory',
+        'coreThesis',
+        'whatItSpotlights',
+        'structuralBlindSpot'
+      ]
+    }
+  },
+  required: ['nineLensMatrix']
+};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
