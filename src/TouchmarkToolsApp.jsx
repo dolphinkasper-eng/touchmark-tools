@@ -43,6 +43,8 @@ import {
   getTotalUsedForTier,
   checkAndConsumeAllowance
 } from './tierGuard';
+import SignalVisualBrief from './components/SignalVisualBrief';
+import DossierFeedbackBar from './components/DossierFeedbackBar';
 
 // --- BESPOKE PRECISION TOUCHMARK LOGO (Resonance Astrolabe & Focal Lens) ---
 function TouchmarkLogo({ className = 'w-7 h-7' }) {
@@ -410,6 +412,21 @@ Score the 4 diagnostic gauges (0–100) with plain-English summaries explaining 
 3. coordinationEvidenceScore (0–100): Distinguishes Independent Convergence (0–25) and Structural Alignment (26–50) from Coordinated Influence (51–75) and Documented Collusion (76–100).
 4. centerOfGravityLikelihood (0–100): How strongly the verified record points toward the primary structural driver vs. the official public explanation.
 
+Also include a top-level "visual_brief" object in your JSON response for the executive vector graphic and PDF dossier:
+{
+  "visual_brief": {
+    "chart_type": "horizontal_bar",
+    "chart_title": "4–7 word analytical chart title",
+    "chart_subtitle": "Scale explanation (e.g., 'Signal & Evidence Weight Index, 0–100')",
+    "metrics": [
+      { "label": "Primary Record Weight", "value": 82, "note": "Verified public filings" },
+      { "label": "Narrative Curation Intensity", "value": 74, "note": "Synchronized framing" },
+      { "label": "Institutional Alignment", "value": 58, "note": "Shared funding vector" }
+    ],
+    "image_query": "2–4 word neutral editorial search phrase"
+  }
+}
+
 Return valid JSON matching SIGNAL_CORE_SCHEMA.`;
 
 const SIGNAL_DEEP_PROMPT = `You are Touchmark Signal, an independent investigative intelligence platform.
@@ -471,6 +488,45 @@ const SIGNAL_THINKING_PHASES = [
 ];
 
 const STORAGE_KEY = 'touchmark_saved_dossiers_v2';
+
+function buildVisualBriefFromReport(report) {
+  if (!report) return null;
+  if (
+    report.visual_brief &&
+    Array.isArray(report.visual_brief.metrics) &&
+    report.visual_brief.metrics.length > 0
+  ) {
+    return report.visual_brief;
+  }
+  return {
+    chart_type: 'horizontal_bar',
+    chart_title: '4-Scalar Forensic Signal Profile',
+    chart_subtitle: 'Diagnostic index across rarity, curation, coordination & center of gravity (0–100)',
+    metrics: [
+      {
+        label: 'Constellation Rarity',
+        value: Number(report.constellationRarityScore) || 0,
+        note: report.constellationRarityLabel || 'Timing & clustering'
+      },
+      {
+        label: 'Narrative Curation',
+        value: Number(report.narrativeCurationScore) || 0,
+        note: report.narrativeCurationLabel || 'Media framing intensity'
+      },
+      {
+        label: 'Coordination Evidence',
+        value: Number(report.coordinationEvidenceScore) || 0,
+        note: report.coordinationEvidenceLabel || 'Alignment vs. collusion'
+      },
+      {
+        label: 'Center of Gravity',
+        value: Number(report.centerOfGravityLikelihood) || 0,
+        note: report.centerOfGravityLabel || 'Structural driver weight'
+      }
+    ],
+    web_image: report.visual_brief?.web_image || null
+  };
+}
 
 function pcmBase64ToWavUrl(base64, sampleRate = 24000) {
   const binary = atob(base64);
@@ -995,6 +1051,7 @@ export default function TouchmarkToolsApp() {
           narrativeManipulationAudit: '',
           constellationRarityAnalysis: '',
           centerOfGravity: '',
+          visual_brief: null,
           followThePower: [],
           relationshipMap: [],
           powerOperationBlueprint: '',
@@ -1161,7 +1218,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         if (!res.ok) throw new Error(data.error || 'Pulse discernment failed.');
 
         const parsed = extractJsonObject(data.text);
-        setPulseLedger(parsed);
+        setPulseLedger({ ...parsed, subject: query });
         setHasArtifact(true);
         setDrawerTab('analysis');
         persistDossier({
@@ -1169,7 +1226,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
           mode: 'pulse',
           title: parsed.title || query.slice(0, 70),
           createdAt: new Date().toLocaleDateString(),
-          data: parsed
+          data: { ...parsed, subject: query }
         });
 
         const reflection = parsed.spokenReflection || 'Here is what stands out beneath the surface.';
@@ -1188,7 +1245,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'signal_core',
-          prompt: `Deliver Stage 1 (Spoken Briefing, 4-Scalar Diagnostic Radar with plain-English readings, Verified Chronology with legal status & epistemic grades, Narrative Manipulation Audit, Constellation Rarity, and Center of Gravity) on: "${expandedQuery}"`,
+          prompt: `Deliver Stage 1 (Spoken Briefing, 4-Scalar Diagnostic Radar with plain-English readings, visual_brief chart & image_query, Verified Chronology with legal status & epistemic grades, Narrative Manipulation Audit, Constellation Rarity, and Center of Gravity) on: "${expandedQuery}"`,
           systemInstruction: SIGNAL_CORE_PROMPT
         })
       });
@@ -1223,6 +1280,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         centerOfGravitySummary:
           coreParsed.centerOfGravitySummary ||
           'Indicates how strongly the verified record points toward the underlying structural driver vs. the official narrative.',
+        visual_brief: coreParsed.visual_brief || null,
         verifiedTimeline: Array.isArray(coreParsed.verifiedTimeline) ? coreParsed.verifiedTimeline : [],
         narrativeManipulationAudit: coreParsed.narrativeManipulationAudit || '',
         constellationRarityAnalysis: coreParsed.constellationRarityAnalysis || '',
@@ -1407,6 +1465,52 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         }
       `;
     } else if (signalReport) {
+      const pdfVisualBrief = buildVisualBriefFromReport(signalReport);
+      const visualMetrics = Array.isArray(pdfVisualBrief?.metrics) ? pdfVisualBrief.metrics.slice(0, 5) : [];
+      const svgHeight = visualMetrics.length * 42 + 12;
+
+      const visualChartHtml = visualMetrics.length
+        ? `
+          <div class="visual-box">
+            <div class="tag">VISUAL INTELLIGENCE BRIEF</div>
+            <h3>${esc(pdfVisualBrief.chart_title || 'Signal & Incentive Breakdown')}</h3>
+            <p class="muted">${esc(pdfVisualBrief.chart_subtitle || 'Forensic evidence & alignment index (0–100)')}</p>
+            <div class="visual-grid ${pdfVisualBrief.web_image?.url ? 'has-img' : ''}">
+              <div>
+                <svg viewBox="0 0 500 ${svgHeight}" width="100%" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
+                  ${visualMetrics
+                    .map((m, idx) => {
+                      const y = idx * 42 + 6;
+                      const val = Math.max(0, Math.min(100, Number(m.value) || 0));
+                      const barW = Math.max(6, Math.round((val / 100) * 320));
+                      return `
+                        <g transform="translate(0, ${y})">
+                          <text x="0" y="12" fill="#1c1917" font-size="11.5" font-weight="600">${esc(m.label)}</text>
+                          <text x="500" y="12" text-anchor="end" fill="#78716c" font-size="10">${esc(m.note || '')}</text>
+                          <rect x="0" y="18" width="320" height="9" rx="4.5" fill="#e7e5e4" />
+                          <rect x="0" y="18" width="${barW}" height="9" rx="4.5" fill="#d97706" />
+                          <text x="332" y="26" fill="#92400e" font-size="11.5" font-weight="700">${val}%</text>
+                        </g>
+                      `;
+                    })
+                    .join('')}
+                </svg>
+              </div>
+              ${
+                pdfVisualBrief.web_image?.url
+                  ? `<div class="visual-img">
+                      <img src="${esc(pdfVisualBrief.web_image.url)}" alt="${esc(pdfVisualBrief.web_image.title || '')}" />
+                      <div class="caption">${esc(pdfVisualBrief.web_image.title || '')} ${
+                        pdfVisualBrief.web_image.source ? `(${esc(pdfVisualBrief.web_image.source)})` : ''
+                      }</div>
+                    </div>`
+                  : ''
+              }
+            </div>
+          </div>
+        `
+        : '';
+
       bodyHtml = `
         <div class="meta">TOUCHMARK SIGNAL · INVESTIGATIVE INTELLIGENCE DOSSIER · ${dateStr}</div>
         <h1>“${esc(signalReport.subject)}”</h1>
@@ -1432,6 +1536,8 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
             <span class="explain">${esc(signalReport.centerOfGravitySummary)}</span>
           </div>
         </div>
+
+        ${visualChartHtml}
 
         <div class="callout">
           <div class="label">EXECUTIVE BRIEFING</div>
@@ -1605,6 +1711,8 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
               margin: 0 auto;
               padding: 24px;
               font-size: 13.5px;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
             }
             .meta {
               font-size: 10px;
@@ -1637,6 +1745,32 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
               padding: 10px 12px;
               background: #fafaf9;
               page-break-inside: avoid;
+            }
+            .visual-box {
+              border: 1px solid #d6d3d1;
+              border-radius: 10px;
+              padding: 14px 16px;
+              background: #fafaf9;
+              margin-bottom: 18px;
+              page-break-inside: avoid;
+            }
+            .visual-grid.has-img {
+              display: grid;
+              grid-template-columns: 1.4fr 1fr;
+              gap: 14px;
+              align-items: center;
+            }
+            .visual-img img {
+              width: 100%;
+              height: 120px;
+              object-fit: cover;
+              border-radius: 6px;
+              border: 1px solid #e7e5e4;
+            }
+            .visual-img .caption {
+              font-size: 10px;
+              color: #57534e;
+              margin-top: 4px;
             }
             .label { display: block; font-size: 9px; letter-spacing: 0.14em; color: #78716c; text-transform: uppercase; }
             .score { display: block; font-size: 15px; font-weight: 700; color: #0c0a09; margin: 3px 0; }
@@ -2057,6 +2191,13 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                   </div>
                 )}
 
+                {/* Contextual Founding Member Feedback Bar for Pulse */}
+                <DossierFeedbackBar
+                  tool="pulse"
+                  tier={activeTier}
+                  promptPreview={pulseLedger.subject || pulseLedger.title}
+                />
+
                 <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <button
                     type="button"
@@ -2243,6 +2384,9 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                         </p>
                       </div>
                     </div>
+
+                    {/* VECTOR SVG VISUAL INTELLIGENCE BRIEF & OPTIONAL VERIFIED CONTEXT IMAGE */}
+                    <SignalVisualBrief visualBrief={buildVisualBriefFromReport(signalReport)} />
 
                     {/* VERIFIED RECORD & CHRONOLOGY WITH LEGAL STATUS & EPISTEMIC GRADES */}
                     {signalReport.verifiedTimeline?.length > 0 && (
@@ -2926,6 +3070,15 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                       </>
                     ) : null}
                   </div>
+                )}
+
+                {/* Contextual Founding Member Feedback Bar for Signal */}
+                {signalReport && (
+                  <DossierFeedbackBar
+                    tool="signal"
+                    tier={activeTier}
+                    promptPreview={signalReport.subject}
+                  />
                 )}
 
                 {/* Centered PDF & Markdown Export Buttons inside Dossier Drawer */}
