@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PerspectiveTogglesPanel from './components/PerspectiveTogglesPanel';
 import {
   Mic,
   Send,
@@ -15,7 +14,6 @@ import {
   Scale,
   Compass,
   History,
-  Eye,
   BookOpen,
   Youtube,
   GraduationCap,
@@ -46,6 +44,9 @@ import {
 } from './tierGuard';
 import SignalVisualBrief from './components/SignalVisualBrief';
 import DossierFeedbackBar from './components/DossierFeedbackBar';
+import PerspectiveTogglesPanel from './components/PerspectiveTogglesPanel';
+import DailyBriefAndCalibration from './components/DailyBriefAndCalibration';
+import EntityAuditDossier from './components/EntityAuditDossier';
 
 // --- BESPOKE PRECISION TOUCHMARK LOGO (Resonance Astrolabe & Focal Lens) ---
 function TouchmarkLogo({ className = 'w-7 h-7' }) {
@@ -88,9 +89,9 @@ function TouchmarkLogo({ className = 'w-7 h-7' }) {
 const MODE_META = {
   signal: {
     name: 'Touchmark Signal',
-    tagline: 'Investigative power-dynamics intelligence, narrative audits & creator studio',
+    tagline: 'Investigative power-dynamics intelligence, entity track-record audits & creator studio',
     welcome:
-      'Bring any headline, policy shift, or institutional narrative to examine what is operating beneath the surface.'
+      'Bring any headline, policy shift, or entity track record to examine what is operating beneath the surface.'
   },
   pulse: {
     name: 'Touchmark Pulse',
@@ -312,19 +313,6 @@ function MorphingSphereOrb({ status, mode, onClick }) {
 
           <div className="relative z-10 flex flex-col items-center text-stone-100/85">
             {isListening && <Mic className="w-6 h-6 text-amber-200 animate-pulse" />}
-            {isThinking && (
-              <div className="flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full ${palette.dot} animate-bounce`} />
-                <span
-                  className={`w-2 h-2 rounded-full ${palette.dot} animate-bounce`}
-                  style={{ animationDelay: '150ms' }}
-                />
-                <span
-                  className={`w-2 h-2 rounded-full ${palette.dot} animate-bounce`}
-                  style={{ animationDelay: '300ms' }}
-                />
-              </div>
-            )}
             {isSpeaking && <Volume2 className="w-6 h-6 text-amber-100 animate-pulse" />}
           </div>
         </div>
@@ -335,7 +323,7 @@ function MorphingSphereOrb({ status, mode, onClick }) {
 
 // --- PROMPTS, STARTERS & PROGRESSIVE SCHEMAS ---
 const SIGNAL_STARTER_PROMPTS = [
-  "Examine the timing, media curation & power dynamics behind Russell Brand's 2026 conviction",
+  "Audit the multi-year claim accuracy & correction integrity of The Economist",
   "Look beneath the mainstream framing of digital IDs and central bank programmable currency",
   "Dissect the narrative curation and competing probabilities around the latest geopolitical escalation"
 ];
@@ -424,7 +412,7 @@ Also include a top-level "visual_brief" object in your JSON response for the exe
       { "label": "Narrative Curation Intensity", "value": 74, "note": "Synchronized framing" },
       { "label": "Institutional Alignment", "value": 58, "note": "Shared funding vector" }
     ],
-    "image_query": "2–4 word neutral editorial search phrase"
+    "image_query": "2–3 word concrete encyclopedic noun phrase (e.g., 'European Central Bank', 'United States Capitol')"
   }
 }
 
@@ -657,6 +645,15 @@ export default function TouchmarkToolsApp() {
   const [signalReport, setSignalReport] = useState(null);
   const [copiedReceipt, setCopiedReceipt] = useState(false);
 
+  // Phase 2 & Phase 3 State: Opt-In Perspective Toggles + Multi-Year Entity Integrity Audits
+  const [perspectiveData, setPerspectiveData] = useState({
+    nineLensMatrix: [],
+    customLensSynthesis: null
+  });
+  const [entityAuditReport, setEntityAuditReport] = useState(null);
+  const [entityAuditSources, setEntityAuditSources] = useState([]);
+  const [entityAuditSubject, setEntityAuditSubject] = useState('');
+
   // Founding Member, Stripe Subscription & Monthly Allowance State
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
   const [activeTier, setActiveTier] = useState(() => {
@@ -678,6 +675,9 @@ export default function TouchmarkToolsApp() {
     setHasArtifact(false);
     setPulseLedger(null);
     setSignalReport(null);
+    setEntityAuditReport(null);
+    setEntityAuditSources([]);
+    setPerspectiveData({ nineLensMatrix: [], customLensSynthesis: null });
     setErrorBanner('');
     setActiveCaption(MODE_META[nextMode].welcome);
     if (typeof window !== 'undefined') {
@@ -773,15 +773,31 @@ export default function TouchmarkToolsApp() {
 
   const loadSavedDossier = (item) => {
     setArchiveOpen(false);
-    setMode(item.mode);
+    setMode(item.mode === 'entity_audit' ? 'signal' : item.mode);
     if (typeof window !== 'undefined') {
-      window.history.replaceState({}, '', `${window.location.pathname}?mode=${item.mode}`);
+      window.history.replaceState(
+        {},
+        '',
+        `${window.location.pathname}?mode=${item.mode === 'entity_audit' ? 'signal' : item.mode}`
+      );
     }
     if (item.mode === 'pulse') {
+      setEntityAuditReport(null);
+      setSignalReport(null);
       setPulseLedger(item.data);
       setActiveCaption(item.data.spokenReflection || item.title);
+    } else if (item.mode === 'entity_audit') {
+      setPulseLedger(null);
+      setSignalReport(null);
+      setEntityAuditReport(item.data);
+      setEntityAuditSources(item.sources || []);
+      setEntityAuditSubject(item.title);
+      setActiveCaption(item.data.spokenSynthesis || item.title);
     } else {
+      setPulseLedger(null);
+      setEntityAuditReport(null);
       setSignalReport(item.data);
+      setPerspectiveData({ nineLensMatrix: [], customLensSynthesis: null });
       setActiveCaption(item.data.spokenSynthesis || item.title);
     }
     setIsHydratingDeep(false);
@@ -928,6 +944,15 @@ export default function TouchmarkToolsApp() {
     } catch {
       setStatus('idle');
     }
+  };
+
+  const launchEntityAudit = (entityName) => {
+    if (!entityName || !entityName.trim()) return;
+    const cleanName = entityName.trim();
+    const auditPrompt = `Audit the multi-year track record, claim accuracy, and correction integrity of ${cleanName}`;
+    setMode('signal');
+    setInputText('');
+    handleSubmission(auditPrompt, { forceEntityAudit: true });
   };
 
   const fetchStage2DeepModules = async (expandedQuery, factSheet) => {
@@ -1148,7 +1173,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
     }
   };
 
-  const handleSubmission = async (rawQuery) => {
+  const handleSubmission = async (rawQuery, options = {}) => {
     const query = (rawQuery ?? inputText).trim();
     if (!query) return;
 
@@ -1167,7 +1192,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
 
     try {
       // 1. Warm Copilot Chat Turn (free — does not consume monthly investigation credits)
-      if (isConversationalCheckIn(query)) {
+      if (!options.forceEntityAudit && isConversationalCheckIn(query)) {
         const res = await fetch('/api/discern', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1219,6 +1244,8 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         if (!res.ok) throw new Error(data.error || 'Pulse discernment failed.');
 
         const parsed = extractJsonObject(data.text);
+        setEntityAuditReport(null);
+        setSignalReport(null);
         setPulseLedger({ ...parsed, subject: query });
         setHasArtifact(true);
         setDrawerTab('analysis');
@@ -1237,7 +1264,67 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         return;
       }
 
-      // 3. Progressive Signal Delivery
+      // 3. Signal Orb Auto-Intent Routing: Entity Track-Record Audit vs. Event Investigation
+      let routeDecision = { route: options.forceEntityAudit ? 'entity_audit' : 'signal_event' };
+      if (!options.forceEntityAudit) {
+        try {
+          const classifyRes = await fetch('/api/discern', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'classify_intent', prompt: query })
+          });
+          if (classifyRes.ok) {
+            routeDecision = await classifyRes.json();
+          }
+        } catch {}
+      }
+
+      if (routeDecision.route === 'entity_audit') {
+        const auditRes = await fetch('/api/discern', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'entity_audit', prompt: query })
+        });
+        const auditData = await auditRes.json();
+        soundscapeRef.current?.stopThinkingDrone(voiceEnabled);
+        if (!auditRes.ok || !auditData?.text) {
+          throw new Error(auditData?.error || 'Entity track-record audit failed.');
+        }
+
+        const parsedAudit = extractJsonObject(auditData.text);
+        const sources = Array.isArray(auditData.groundingSources) ? auditData.groundingSources : [];
+        setSignalReport(null);
+        setPulseLedger(null);
+        setEntityAuditReport(parsedAudit);
+        setEntityAuditSources(sources);
+        setEntityAuditSubject(query);
+        setHasArtifact(true);
+        setDrawerTab('analysis');
+        setDrawerOpen(true);
+
+        persistDossier({
+          id: Date.now().toString(),
+          mode: 'entity_audit',
+          title: `${parsedAudit.entityName || query.slice(0, 60)} (Track-Record Audit)`,
+          createdAt: new Date().toLocaleDateString(),
+          data: parsedAudit,
+          sources
+        });
+
+        const spoken =
+          parsedAudit.spokenSynthesis ||
+          `Multi-year track-record and integrity audit complete for ${parsedAudit.entityName}.`;
+        setActiveCaption(spoken);
+        setHistory((prev) => [...prev, { role: 'assistant', text: spoken }]);
+        speakResponse(spoken);
+        return;
+      }
+
+      // 4. Standard Progressive Signal Delivery (Event / Policy / Narrative)
+      setEntityAuditReport(null);
+      setEntityAuditSources([]);
+      setPerspectiveData({ nineLensMatrix: [], customLensSynthesis: null });
+
       const expandedQuery = expandSignalQuery(query);
       const dossierId = Date.now().toString();
 
@@ -1994,21 +2081,27 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-300/15 hover:bg-amber-300/25 border border-amber-300/35 text-xs font-medium tracking-[0.14em] uppercase text-amber-200 transition-all shadow-lg shadow-amber-950/20"
             >
               <FileText className="w-3.5 h-3.5" />
-              <span>{isHydratingDeep ? 'Open Dossier · Enriching Power & Sources…' : 'Open Dossier'}</span>
+              <span>
+                {entityAuditReport
+                  ? 'Open Track-Record Audit'
+                  : isHydratingDeep
+                  ? 'Open Dossier · Enriching Power & Sources…'
+                  : 'Open Dossier'}
+              </span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
       </main>
 
-      {/* Bottom Input Bar & Live Currents */}
-      <footer className="px-4 sm:px-8 pb-6 pt-2 max-w-xl mx-auto w-full">
+      {/* Bottom Input Bar, Live Currents & Phase 3 Daily Brief / Calibration Scoreboard */}
+      <footer className="px-4 sm:px-8 pb-8 pt-2 max-w-4xl mx-auto w-full">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSubmission();
           }}
-          className="flex items-center gap-2 bg-white/[0.03] border border-white/10 rounded-full px-4 py-2 focus-within:border-white/25 transition-colors"
+          className="mx-auto max-w-xl flex items-center gap-2 bg-white/[0.03] border border-white/10 rounded-full px-4 py-2 focus-within:border-white/25 transition-colors"
         >
           <input
             type="text"
@@ -2017,7 +2110,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
             placeholder={
               mode === 'pulse'
                 ? 'Speak to the orb, or unpack a tension…'
-                : 'Speak to the orb, or test any narrative…'
+                : 'Audit any narrative, outlet, think tank, or institution…'
             }
             className="flex-1 bg-transparent text-sm text-stone-200 placeholder:text-stone-600 focus:outline-none"
           />
@@ -2032,10 +2125,10 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         </form>
 
         {!hasArtifact && status === 'idle' && (
-          <div className="mt-4 space-y-2 text-center">
+          <div className="mx-auto max-w-2xl mt-4 space-y-2 text-center">
             <span className="block text-[10px] uppercase tracking-[0.22em] text-stone-500">
               {mode === 'signal'
-                ? 'Live currents to probe — or ask your own above'
+                ? 'Live currents & entity audits — or ask your own above'
                 : 'Starting tensions — or speak your own above'}
             </span>
             <div className="flex flex-wrap items-center justify-center gap-1.5">
@@ -2053,6 +2146,15 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
               )}
             </div>
           </div>
+        )}
+
+        {/* Phase 3: Daily Top-5 Signal Brief & Longitudinal Calibration Scoreboard */}
+        {mode === 'signal' && status === 'idle' && (
+          <DailyBriefAndCalibration
+            onLaunchPrompt={(selectedPrompt) => {
+              handleSubmission(selectedPrompt);
+            }}
+          />
         )}
       </footer>
 
@@ -2086,10 +2188,15 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                   >
                     <span
                       className={`text-[10px] uppercase tracking-wider ${
-                        item.mode === 'signal' ? 'text-amber-300' : 'text-emerald-300'
+                        item.mode === 'signal'
+                          ? 'text-amber-300'
+                          : item.mode === 'entity_audit'
+                          ? 'text-sky-300'
+                          : 'text-emerald-300'
                       }`}
                     >
-                      {item.mode} · {item.createdAt}
+                      {item.mode === 'entity_audit' ? 'Track-Record Audit' : item.mode} ·{' '}
+                      {item.createdAt}
                     </span>
                     <p className="text-sm text-stone-100 truncate mt-0.5">{item.title}</p>
                   </button>
@@ -2108,7 +2215,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         </div>
       )}
 
-      {/* Slide-Over Intelligence & Studio Dossier Drawer */}
+      {/* Slide-Over Intelligence, Track-Record Audit & Studio Dossier Drawer */}
       {drawerOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/80 backdrop-blur-sm">
           <div className="w-full max-w-3xl bg-[#11100e] border-l border-white/10 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto">
@@ -2192,7 +2299,6 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                   </div>
                 )}
 
-                {/* Contextual Founding Member Feedback Bar for Pulse */}
                 <DossierFeedbackBar
                   tool="pulse"
                   tier={activeTier}
@@ -2227,6 +2333,28 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                     )}
                   </button>
                 </div>
+              </div>
+            ) : mode === 'signal' && entityAuditReport ? (
+              /* MULTI-YEAR ENTITY TRACK-RECORD & EPISTEMIC INTEGRITY DOSSIER */
+              <div className="space-y-6">
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <span className="text-xs uppercase tracking-[0.2em] text-emerald-300">
+                    Signal Calibration & Integrity Ledger
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setDrawerOpen(false)}
+                    className="p-1.5 rounded-full bg-white/5 text-stone-400 hover:text-white"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <EntityAuditDossier
+                  audit={entityAuditReport}
+                  sources={entityAuditSources}
+                  promptPreview={entityAuditSubject}
+                />
               </div>
             ) : mode === 'signal' && (signalReport || showExternalImporter) ? (
               <div className="space-y-6">
@@ -2386,8 +2514,17 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                       </div>
                     </div>
 
-                    {/* VECTOR SVG VISUAL INTELLIGENCE BRIEF & OPTIONAL VERIFIED CONTEXT IMAGE */}
+                    {/* PHASE 1: VECTOR SVG VISUAL INTELLIGENCE BRIEF & VERIFIED CONTEXT IMAGE */}
                     <SignalVisualBrief visualBrief={buildVisualBriefFromReport(signalReport)} />
+
+                    {/* PHASE 2: TWO OPT-IN PERSPECTIVE TOGGLES (9-LENS SPECTRUM + CUSTOM LENS + INLINE AUDIT LINKS) */}
+                    <PerspectiveTogglesPanel
+                      inquiry={signalReport.subject}
+                      dossierContext={`${signalReport.centerOfGravity || ''}\n${signalReport.narrativeManipulationAudit || ''}`}
+                      perspectiveData={perspectiveData}
+                      onPerspectiveDataChange={setPerspectiveData}
+                      onAuditEntity={launchEntityAudit}
+                    />
 
                     {/* VERIFIED RECORD & CHRONOLOGY WITH LEGAL STATUS & EPISTEMIC GRADES */}
                     {signalReport.verifiedTimeline?.length > 0 && (
@@ -2501,12 +2638,17 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                     </div>
                   ) : (
                     <>
-                      {/* VISUAL INSTITUTIONAL RELATIONSHIP MAP */}
+                      {/* VISUAL INSTITUTIONAL RELATIONSHIP MAP WITH CLICKABLE ENTITY AUDITS */}
                       {signalReport.relationshipMap?.length > 0 && (
                         <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
-                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-sky-300 font-medium">
-                            <GitBranch className="w-4 h-4" />
-                            Institutional Relationship & Influence Map
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-sky-300 font-medium">
+                              <GitBranch className="w-4 h-4" />
+                              Institutional Relationship & Influence Map
+                            </div>
+                            <span className="text-[10px] text-stone-500">
+                              Click any entity to audit its multi-year track record
+                            </span>
                           </div>
                           <div className="space-y-2">
                             {signalReport.relationshipMap.map((edge, idx) => (
@@ -2515,15 +2657,25 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                                 className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-black/35 border border-white/5 text-xs"
                               >
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <span className="font-semibold text-stone-100">
-                                    {edge.sourceEntity}
-                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => launchEntityAudit(edge.sourceEntity)}
+                                    title={`Audit multi-year track record of ${edge.sourceEntity}`}
+                                    className="font-semibold text-stone-100 underline decoration-amber-400/40 hover:text-amber-200 cursor-pointer"
+                                  >
+                                    {edge.sourceEntity} ↗
+                                  </button>
                                   <span className="px-2 py-0.5 rounded bg-white/[0.06] text-[11px] text-amber-200/90">
                                     ── {edge.relationshipType} ──►
                                   </span>
-                                  <span className="font-semibold text-stone-100">
-                                    {edge.targetEntity}
-                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => launchEntityAudit(edge.targetEntity)}
+                                    title={`Audit multi-year track record of ${edge.targetEntity}`}
+                                    className="font-semibold text-stone-100 underline decoration-amber-400/40 hover:text-amber-200 cursor-pointer"
+                                  >
+                                    {edge.targetEntity} ↗
+                                  </button>
                                 </div>
                                 <span
                                   className={`px-2 py-0.5 rounded-full border text-[9px] uppercase tracking-wider ${gradeBadgeStyle(
@@ -2733,9 +2885,20 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                                   {sp.lens}
                                 </span>
                                 <p className="text-[11px] italic text-stone-400">{sp.coreQuestion}</p>
-                                <h4 className="text-xs font-semibold text-stone-100">
-                                  {sp.thinkerOrOutlet}
-                                </h4>
+                                <div className="flex items-center justify-between gap-2">
+                                  <h4 className="text-xs font-semibold text-stone-100">
+                                    {sp.thinkerOrOutlet}
+                                  </h4>
+                                  {sp.thinkerOrOutlet && (
+                                    <button
+                                      type="button"
+                                      onClick={() => launchEntityAudit(sp.thinkerOrOutlet)}
+                                      className="text-[10px] text-amber-300 underline decoration-amber-400/40 hover:text-amber-200 shrink-0 cursor-pointer"
+                                    >
+                                      Audit ↗
+                                    </button>
+                                  )}
+                                </div>
                                 <p className="text-xs text-stone-300 leading-relaxed">
                                   {sp.coreThesis}
                                 </p>
@@ -2902,7 +3065,6 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                       </div>
                     ) : signalReport?.studioAssets ? (
                       <>
-                        {/* Editorial Hook & Alternative Angles */}
                         <div className="p-4 rounded-2xl bg-emerald-400/[0.05] border border-emerald-400/20 space-y-2">
                           <span className="text-[10px] uppercase tracking-wider text-emerald-300 font-semibold block">
                             Lead Editorial Hook
@@ -2924,7 +3086,6 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                           )}
                         </div>
 
-                        {/* Format Switcher */}
                         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
                           <div className="flex flex-wrap items-center gap-1.5">
                             <button
