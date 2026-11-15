@@ -31,7 +31,8 @@ export default function PerspectiveTogglesPanel({
   inquiry,
   dossierContext,
   perspectiveData,
-  onPerspectiveDataChange
+  onPerspectiveDataChange,
+  onAuditEntity
 }) {
   const [nineLensEnabled, setNineLensEnabled] = useState(
     Boolean(perspectiveData?.nineLensMatrix?.length)
@@ -118,9 +119,7 @@ export default function PerspectiveTogglesPanel({
         </div>
       </div>
 
-      {/* Two Opt-In Toggle Switches */}
       <div className="grid gap-3 md:grid-cols-2">
-        {/* Toggle 1: 9 Left/Center/Right Analytical Frameworks */}
         <div
           className={`flex items-center justify-between gap-3 rounded-xl border p-3.5 transition ${
             nineLensEnabled
@@ -154,7 +153,6 @@ export default function PerspectiveTogglesPanel({
           </button>
         </div>
 
-        {/* Toggle 2: Any Person, Outlet, or Institution */}
         <div
           className={`flex items-center justify-between gap-3 rounded-xl border p-3.5 transition ${
             customLensEnabled
@@ -189,7 +187,6 @@ export default function PerspectiveTogglesPanel({
         </div>
       </div>
 
-      {/* Toggle 2 Input Bar (Shown when Custom Lens is toggled ON) */}
       {customLensEnabled && (
         <div className="rounded-xl border border-emerald-400/25 bg-black/40 p-3.5 space-y-2.5">
           <div className="flex flex-col sm:flex-row gap-2">
@@ -261,7 +258,6 @@ export default function PerspectiveTogglesPanel({
         </div>
       )}
 
-      {/* Custom Lens Output Card */}
       {customLensEnabled && customResult && (
         <div className="rounded-2xl border border-emerald-400/30 bg-emerald-950/15 p-4 space-y-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -271,9 +267,20 @@ export default function PerspectiveTogglesPanel({
                 Synthesis Through: {customResult.targetLens}
               </h4>
             </div>
-            <span className="rounded-full border border-emerald-400/30 bg-emerald-500/15 px-2.5 py-0.5 text-[10px] uppercase tracking-wider text-emerald-300">
-              {customResult.lensCategory}
-            </span>
+            <div className="flex items-center gap-2">
+              {onAuditEntity && customResult.targetLens && (
+                <button
+                  type="button"
+                  onClick={() => onAuditEntity(customResult.targetLens)}
+                  className="rounded-full border border-amber-400/35 bg-amber-400/15 px-2.5 py-0.5 text-[10px] font-medium text-amber-200 hover:bg-amber-400/25"
+                >
+                  Audit Track Record ↗
+                </button>
+              )}
+              <span className="rounded-full border border-emerald-400/30 bg-emerald-500/15 px-2.5 py-0.5 text-[10px] uppercase tracking-wider text-emerald-300">
+                {customResult.lensCategory}
+              </span>
+            </div>
           </div>
           <p className="text-xs text-stone-200 leading-relaxed">{customResult.coreThesis}</p>
           <div className="grid gap-2 pt-2 border-t border-white/10 sm:grid-cols-2 text-[11px]">
@@ -289,7 +296,6 @@ export default function PerspectiveTogglesPanel({
         </div>
       )}
 
-      {/* 9-Lens Spectrum Output Grid (3 Left · 3 Center · 3 Right) */}
       {nineLensEnabled && matrix.length > 0 && (
         <div className="grid gap-3 md:grid-cols-3 pt-1">
           {(['Left', 'Center', 'Right']).map((lane) => {
@@ -312,9 +318,20 @@ export default function PerspectiveTogglesPanel({
                     <div className="text-[11px] font-semibold text-amber-200/90">
                       {item.framework}
                     </div>
-                    <div className="text-[11px] font-medium text-stone-400">
-                      Representative Voice:{' '}
-                      <span className="text-stone-200">{item.representativeVoice}</span>
+                    <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] font-medium text-stone-400">
+                      <span>
+                        Representative Voice:{' '}
+                        <span className="text-stone-200">{item.representativeVoice}</span>
+                      </span>
+                      {onAuditEntity && item.representativeVoice && (
+                        <button
+                          type="button"
+                          onClick={() => onAuditEntity(item.representativeVoice)}
+                          className="text-[10px] text-amber-300 underline decoration-amber-400/40 hover:text-amber-200"
+                        >
+                          Audit ↗
+                        </button>
+                      )}
                     </div>
                     <p className="text-xs text-stone-300 leading-relaxed">{item.coreFraming}</p>
                     <p className="text-[11px] text-stone-500 border-t border-white/5 pt-1.5">
@@ -328,7 +345,6 @@ export default function PerspectiveTogglesPanel({
         </div>
       )}
 
-      {/* Anti-Pay-to-Play / Neutrality Safeguard Footer */}
       <div className="flex items-center gap-2 border-t border-white/5 pt-2.5 text-[11px] text-stone-500">
         <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-stone-400" />
         <span>
