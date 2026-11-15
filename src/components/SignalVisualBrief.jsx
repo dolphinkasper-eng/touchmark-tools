@@ -38,7 +38,6 @@ export default function SignalVisualBrief({ visualBrief }) {
       </div>
 
       <div className={`grid gap-5 ${showImage ? 'md:grid-cols-12' : 'grid-cols-1'}`}>
-        {/* Pure Vector SVG Horizontal Bar Chart */}
         <div className={showImage ? 'md:col-span-7' : 'col-span-1'}>
           <svg
             viewBox={`0 0 520 ${svgHeight}`}
@@ -82,7 +81,6 @@ export default function SignalVisualBrief({ visualBrief }) {
                     </text>
                   )}
 
-                  {/* Track */}
                   <rect
                     x="0"
                     y="19"
@@ -93,7 +91,6 @@ export default function SignalVisualBrief({ visualBrief }) {
                     className="print:fill-slate-200"
                   />
 
-                  {/* Value Bar */}
                   <rect
                     x="0"
                     y="19"
@@ -103,7 +100,6 @@ export default function SignalVisualBrief({ visualBrief }) {
                     fill="url(#touchmarkAmberBar)"
                   />
 
-                  {/* Numeric Readout */}
                   <text
                     x={barMaxWidth + 12}
                     y="28"
@@ -119,7 +115,6 @@ export default function SignalVisualBrief({ visualBrief }) {
           </svg>
         </div>
 
-        {/* Optional Verified Context Image */}
         {showImage && (
           <figure className="flex flex-col justify-between overflow-hidden rounded-lg border border-slate-800 bg-slate-950/60 print:border-slate-200 print:bg-slate-50 md:col-span-5">
             <img
