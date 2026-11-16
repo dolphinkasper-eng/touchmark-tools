@@ -9,7 +9,8 @@ import {
   AlertCircle,
   ChevronUp,
   ChevronDown,
-  Lock
+  Lock,
+  Building2
 } from 'lucide-react';
 
 function laneBadgeClass(lane = '') {
@@ -80,7 +81,6 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
       if (!res.ok || data.error) {
         throw new Error(data?.error || data?.message || 'Failed to generate brief.');
       }
-      // Reload feed after successful generation
       await loadFeed();
       setActiveTab('brief');
     } catch (err) {
@@ -314,27 +314,38 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
                       }}
                       className="w-full text-left p-3.5 rounded-2xl bg-white/[0.025] hover:bg-white/[0.06] border border-white/[0.08] hover:border-emerald-300/35 transition-all flex items-center justify-between gap-3 cursor-pointer"
                     >
-                      <div className="min-w-0 space-y-1">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          <span className="text-xs font-medium text-stone-100">
-                            {ent.entity_name}
-                          </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-stone-400">
-                            {ent.entity_type}
-                          </span>
-                          <span
-                            className={`text-[10px] px-2 py-0.5 rounded-full border ${laneBadgeClass(
-                              ent.alignment_lane
-                            )}`}
-                          >
-                            {ent.alignment_lane}
-                          </span>
+                      <div className="flex items-center gap-3 min-w-0">
+                        {/* Entity Thumbnail or Fallback Icon */}
+                        <div className="w-10 h-10 rounded-xl bg-stone-800/80 border border-white/10 shrink-0 overflow-hidden flex items-center justify-center">
+                          {ent.image_url ? (
+                            <img src={ent.image_url} alt={ent.entity_name} className="w-full h-full object-cover" />
+                          ) : (
+                            <Building2 className="w-4 h-4 text-emerald-400/70" />
+                          )}
                         </div>
-                        {ent.notable_audit_note && (
-                          <p className="text-[11px] text-stone-400 truncate">
-                            {ent.notable_audit_note}
-                          </p>
-                        )}
+
+                        <div className="min-w-0 space-y-1">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="text-xs font-medium text-stone-100">
+                              {ent.entity_name}
+                            </span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-stone-400">
+                              {ent.entity_type}
+                            </span>
+                            <span
+                              className={`text-[10px] px-2 py-0.5 rounded-full border ${laneBadgeClass(
+                                ent.alignment_lane
+                              )}`}
+                            >
+                              {ent.alignment_lane}
+                            </span>
+                          </div>
+                          {ent.notable_audit_note && (
+                            <p className="text-[11px] text-stone-400 truncate">
+                              {ent.notable_audit_note}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
                       <div className="shrink-0 text-right">
