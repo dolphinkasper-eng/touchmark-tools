@@ -26,8 +26,8 @@ function scoreColorClass(score = 50) {
 }
 
 export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
-  const [isOpen, setIsOpen] = useState(false); // Controls bottom-drawer expansion
-  const [activeTab, setActiveTab] = useState('brief'); // 'brief' | 'scoreboard'
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('brief');
   const [briefs, setBriefs] = useState([]);
   const [briefDate, setBriefDate] = useState('');
   const [entities, setEntities] = useState([]);
@@ -40,8 +40,16 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
     setFeedError('');
     try {
       const res = await fetch('/api/intelligence-feed');
-      const data = await res.json();
-      if (!res.ok) {
+      const text = await res.text();
+      
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error(`Server returned invalid response: ${text.slice(0, 80)}...`);
+      }
+
+      if (!res.ok || data.error) {
         throw new Error(data?.error || 'Could not load live intelligence feed.');
       }
       setBriefs(Array.isArray(data.briefs) ? data.briefs : []);
@@ -69,7 +77,7 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center pointer-events-none px-4 pb-4">
-      {/* Collapsible Bottom Anchor Bar (Keeps Hero Clean) */}
+      {/* Collapsible Bottom Anchor Bar */}
       <div className="pointer-events-auto w-full max-w-2xl">
         <button
           type="button"
@@ -99,7 +107,6 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
       {isOpen && (
         <div className="pointer-events-auto w-full max-w-3xl mt-2 max-h-[72vh] overflow-y-auto p-5 rounded-3xl bg-[#0f0f12]/95 border border-white/12 shadow-2xl backdrop-blur-2xl text-left transition-all animate-in fade-in slide-in-from-bottom-4 duration-300">
           
-          {/* Header + Tab Switcher */}
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-white/10">
             <div className="flex items-center gap-2">
               <span className="text-[11px] uppercase tracking-[0.2em] text-stone-400 font-medium">
@@ -155,7 +162,6 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
             </div>
           )}
 
-          {/* TAB 1: DAILY TOP-5 SIGNAL BRIEF */}
           {activeTab === 'brief' ? (
             loading ? (
               <div className="p-8 text-center text-xs text-stone-500 animate-pulse">
@@ -165,17 +171,16 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
               <div className="p-6 text-center text-xs text-stone-400 space-y-2">
                 <p>No briefs available for today yet.</p>
                 <p className="text-[11px] text-stone-500">
-                  Trigger your daily cron endpoint or check back after morning synthesis.
+                  Run your daily cron endpoint or check back after morning synthesis.
                 </p>
               </div>
             ) : (
               <div className="space-y-3">
-                {briefs.map((item, idx) => (
+                {briefs.map((item) => (
                   <div
                     key={item.id || item.rank}
                     className="flex flex-col sm:flex-row gap-4 p-4 rounded-2xl bg-white/[0.025] hover:bg-white/[0.05] border border-white/[0.08] hover:border-amber-300/30 transition-all"
                   >
-                    {/* Simulated Editorial Thumbnail (or Unsplash contextual preview) */}
                     <div className="sm:w-36 h-24 rounded-xl bg-stone-800/80 overflow-hidden shrink-0 relative border border-white/10 flex items-center justify-center">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10" />
                       <span className="text-[10px] font-mono text-amber-300 z-20 px-2 text-center">
@@ -224,13 +229,11 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
               </div>
             )
           ) : (
-            /* TAB 2: TRACK-RECORD SCOREBOARD */
             <div className="space-y-3">
               <p className="text-xs text-stone-400 leading-relaxed">
                 Multi-year accuracy &amp; omission audits of major news outlets, public agencies, and think tanks—click any row to inspect its full claim-by-claim record.
               </p>
 
-              {/* Direct Entity Audit Search Bar */}
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
