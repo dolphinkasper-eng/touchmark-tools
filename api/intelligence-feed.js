@@ -25,20 +25,20 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Direct REST API fetch to Supabase (bypasses any SDK version mismatch or module crash)
     const headers = {
       'apikey': supabaseKey,
       'Authorization': `Bearer ${supabaseKey}`,
       'Content-Type': 'application/json'
     };
 
-    // 1. Fetch briefs sorted by date desc, rank asc
+    // 1. Fetch the 5 most recent briefs across all dates (descending by date, ascending by rank)
     const briefRes = await fetch(`${supabaseUrl}/rest/v1/daily_signal_briefs?select=*&order=date.desc,rank.asc&limit=5`, { headers });
     const rawBriefs = briefRes.ok ? await briefRes.json() : [];
 
     let briefDate = '';
     let briefs = [];
     if (Array.isArray(rawBriefs) && rawBriefs.length > 0) {
+      // Automatically use the latest date present in the table
       const latestDateStr = rawBriefs[0].date;
       briefs = rawBriefs.filter(b => b.date === latestDateStr);
       briefDate = latestDateStr;
