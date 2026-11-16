@@ -1,5 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -13,61 +11,52 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.SUPABASE_URL?.trim().replace(/\/+$/, '');
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
-  if (!supabaseUrl || !supabaseServiceKey) {
+  if (!supabaseUrl || !supabaseKey) {
     return res.status(200).json({
       ok: true,
       briefDate: new Date().toISOString().split('T')[0],
       briefs: [],
       calibration: [],
-      warning: 'Missing Supabase environment credentials.'
+      warning: 'Missing Supabase credentials.'
     });
   }
 
   try {
-    const supabase = createClient(supabaseUrl.trim(), supabaseServiceKey.trim());
+    // Direct REST API fetch to Supabase (bypasses any SDK version mismatch or module crash)
+    const headers = {
+      'apikey': supabaseKey,
+      'Authorization': `Bearer ${supabaseKey}`,
+      'Content-Type': 'application/json'
+    };
 
-    // 1. Fetch most recent briefs
-    const { data: rawBriefs, error: briefError } = await supabase
-      .from('daily_signal_briefs')
-      .select('*')
-      .order('date', { ascending: false })
-      .order('rank', { ascending: true })
-      .limit(5);
-
-    if (briefError) {
-      console.error('Supabase brief fetch error:', briefError);
-    }
+    // 1. Fetch briefs sorted by date desc, rank asc
+    const briefRes = await fetch(`${supabaseUrl}/rest/v1/daily_signal_briefs?select=*&order=date.desc,rank.asc&limit=5`, { headers });
+    const rawBriefs = briefRes.ok ? await briefRes.json() : [];
 
     let briefDate = '';
     let briefs = [];
-    if (rawBriefs && rawBriefs.length > 0) {
+    if (Array.isArray(rawBriefs) && rawBriefs.length > 0) {
       const latestDateStr = rawBriefs[0].date;
       briefs = rawBriefs.filter(b => b.date === latestDateStr);
       briefDate = latestDateStr;
     }
 
-    // 2. Fetch calibration scoreboard entities
-    const { data: calibration, error: calError } = await supabase
-      .from('calibration_ledger')
-      .select('*')
-      .order('calibration_score', { ascending: false });
-
-    if (calError) {
-      console.error('Supabase calibration fetch error:', calError);
-    }
+    // 2. Fetch calibration scoreboard sorted by score desc
+    const calRes = await fetch(`${supabaseUrl}/rest/v1/calibration_ledger?select=*&order=calibration_score.desc`, { headers });
+    const calibration = calRes.ok ? await calRes.json() : [];
 
     return res.status(200).json({
       ok: true,
       briefDate: briefDate || new Date().toISOString().split('T')[0],
-      briefs: briefs || [],
-      calibration: calibration || []
+      briefs: Array.isArray(briefs) ? briefs : [],
+      calibration: Array.isArray(calibration) ? calibration : []
     });
 
   } catch (err) {
-    console.error('Intelligence feed exception:', err);
+    console.error('API Error:', err);
     return res.status(200).json({
       ok: true,
       briefDate: new Date().toISOString().split('T')[0],
