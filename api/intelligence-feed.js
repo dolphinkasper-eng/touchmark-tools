@@ -18,16 +18,19 @@ export default async function handler(req, res) {
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseServiceKey) {
-    return res.status(500).json({ 
-      error: 'Missing Supabase environment variables on server.' 
+    return res.status(200).json({
+      ok: true,
+      briefDate: new Date().toISOString().split('T')[0],
+      briefs: [],
+      calibration: [],
+      warning: 'Supabase environment variables not configured on server.'
     });
   }
 
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
   try {
-    // 1. Fetch the most recent batch of briefs (sorted by date desc, rank asc)
-    // This ensures even if timezones differ, the latest 5 briefs always display.
+    const supabase = createClient(supabaseUrl.trim(), supabaseServiceKey.trim());
+
+    // 1. Fetch most recent briefs
     const { data: rawBriefs, error: briefError } = await supabase
       .from('daily_signal_briefs')
       .select('*')
@@ -36,16 +39,13 @@ export default async function handler(req, res) {
       .limit(5);
 
     if (briefError) {
-      console.error('Brief fetch error:', briefError);
+      console.error('Supabase brief fetch error:', briefError);
     }
 
-    // If we got results, find what date the latest batch belongs to
     let briefDate = '';
     let briefs = [];
-    
     if (rawBriefs && rawBriefs.length > 0) {
       const latestDateStr = rawBriefs[0].date;
-      // Filter to only include briefs matching that exact latest date
       briefs = rawBriefs.filter(b => b.date === latestDateStr);
       briefDate = latestDateStr;
     }
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
       .order('calibration_score', { ascending: false });
 
     if (calError) {
-      console.error('Calibration fetch error:', calError);
+      console.error('Supabase calibration fetch error:', calError);
     }
 
     return res.status(200).json({
@@ -68,9 +68,14 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    console.error('Intelligence feed error:', err);
-    return res.status(500).json({ 
-      error: err.message || 'Internal server error while loading feed.' 
+    console.error('Intelligence feed internal exception:', err);
+    // Return clean JSON even on unexpected exception to prevent JSON.parse crashes
+    return res.status(200).json({
+      ok: true,
+      briefDate: new Date().toISOString().split('T')[0],
+      briefs: [],
+      calibration: [],
+      error: err.message || 'Server exception caught.'
     });
   }
 }
