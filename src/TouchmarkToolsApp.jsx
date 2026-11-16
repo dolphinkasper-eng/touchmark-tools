@@ -89,15 +89,15 @@ function TouchmarkLogo({ className = 'w-7 h-7' }) {
 const MODE_META = {
   signal: {
     name: 'Touchmark Signal',
-    tagline: 'Investigative power-dynamics intelligence, entity track-record audits & creator studio',
+    tagline: 'Uncover the hidden influence of power dynamics, audit personal and institutional track records, access unique, independent creator research, and get to the truth underneath the media and stories you see.',
     welcome:
-      'Bring any headline, policy shift, or entity track record to examine what is operating beneath the surface.'
+      'Engineered to pierce deception, decode institutional narrative control, and restore objective reality, helping you to examine what is operating beneath the surface.'
   },
   pulse: {
     name: 'Touchmark Pulse',
-    tagline: 'Relational, psychological & strategic discernment beneath the surface',
+    tagline: 'Relational Intellligence, psychological clarity & strategic precision to navigate even the most challenging relational issues',
     welcome:
-      'Speak or write through a personal dilemma, relational tension, or high-stakes decision to uncover hidden incentives.'
+      'Speak or write through a personal dilemma, relational tension, or high-stakes conversation to uncover the way forward.'
   }
 };
 
