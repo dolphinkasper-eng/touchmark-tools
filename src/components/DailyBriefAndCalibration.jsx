@@ -8,7 +8,8 @@ import {
   RefreshCw,
   AlertCircle,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  Lock
 } from 'lucide-react';
 
 function laneBadgeClass(lane = '') {
@@ -32,6 +33,7 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
   const [briefDate, setBriefDate] = useState('');
   const [entities, setEntities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [feedError, setFeedError] = useState('');
   const [auditSearch, setAuditSearch] = useState('');
 
@@ -60,6 +62,33 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
   useEffect(() => {
     loadFeed();
   }, []);
+
+  const handleRefreshBrief = async () => {
+    const secret = prompt('Enter your CRON_SECRET to regenerate today’s Top-5 Brief:');
+    if (!secret) return;
+
+    setRefreshing(true);
+    setFeedError('');
+    try {
+      const res = await fetch('/api/cron/daily-brief', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${secret.trim()}`
+        }
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data?.error || data?.message || 'Failed to generate brief.');
+      }
+      // Reload feed after successful generation
+      await loadFeed();
+      setActiveTab('brief');
+    } catch (err) {
+      setFeedError(`Refresh failed: ${err.message}`);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleAuditSearchSubmit = (e) => {
     e.preventDefault();
@@ -112,7 +141,7 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
               )}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <div className="flex items-center bg-white/[0.04] p-1 rounded-full border border-white/10">
                 <button
                   type="button"
@@ -137,6 +166,18 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
                   Track-Record Scoreboard ({entities.length})
                 </button>
               </div>
+
+              {/* Secure Regenerate Brief Button */}
+              <button
+                type="button"
+                onClick={handleRefreshBrief}
+                disabled={refreshing}
+                title="Regenerate Daily Top-5 Brief (Requires CRON_SECRET)"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/30 text-amber-200 text-[11px] font-medium transition-colors cursor-pointer disabled:opacity-40"
+              >
+                <Lock className="w-3 h-3 text-amber-400" />
+                <span>{refreshing ? 'Regenerating…' : 'Refresh Brief'}</span>
+              </button>
 
               <button
                 type="button"
@@ -166,7 +207,7 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
               <div className="p-6 text-center text-xs text-stone-400 space-y-2">
                 <p>No briefs available for today yet.</p>
                 <p className="text-[11px] text-stone-500">
-                  Run your daily cron endpoint or check back after morning synthesis.
+                  Click the locked <strong className="text-amber-200">Refresh Brief</strong> button above to synthesize today's top 5 signals.
                 </p>
               </div>
             ) : (
