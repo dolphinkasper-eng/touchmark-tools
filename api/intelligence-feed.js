@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req, res) {
-  // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -23,7 +22,7 @@ export default async function handler(req, res) {
       briefDate: new Date().toISOString().split('T')[0],
       briefs: [],
       calibration: [],
-      warning: 'Supabase environment variables not configured on server.'
+      warning: 'Missing Supabase environment credentials.'
     });
   }
 
@@ -68,14 +67,13 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    console.error('Intelligence feed internal exception:', err);
-    // Return clean JSON even on unexpected exception to prevent JSON.parse crashes
+    console.error('Intelligence feed exception:', err);
     return res.status(200).json({
       ok: true,
       briefDate: new Date().toISOString().split('T')[0],
       briefs: [],
       calibration: [],
-      error: err.message || 'Server exception caught.'
+      error: err.message
     });
   }
 }
