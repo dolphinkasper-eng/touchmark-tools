@@ -41,17 +41,12 @@ export default function DailyBriefAndCalibration({ onLaunchPrompt }) {
     try {
       const res = await fetch('/api/intelligence-feed');
       const text = await res.text();
-      
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (e) {
-        throw new Error(`Server returned invalid response: ${text.slice(0, 80)}...`);
-      }
+      let data = JSON.parse(text);
 
       if (!res.ok || data.error) {
         throw new Error(data?.error || 'Could not load live intelligence feed.');
       }
+      
       setBriefs(Array.isArray(data.briefs) ? data.briefs : []);
       setBriefDate(data.briefDate || '');
       setEntities(Array.isArray(data.calibration) ? data.calibration : []);
