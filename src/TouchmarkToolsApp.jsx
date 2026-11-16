@@ -89,7 +89,6 @@ function TouchmarkLogo({ className = 'w-7 h-7' }) {
 const MODE_META = {
   signal: {
     name: 'Touchmark Signal',
-    tagline: 'Uncover the hidden influence of power dynamics, audit personal and institutional track records, access unique, independent creator research, and get to the truth underneath the media and stories you see.',
     welcome:
       'Engineered to pierce deception, decode institutional narrative control, and restore objective reality, helping you to examine what is operating beneath the surface.'
   },
