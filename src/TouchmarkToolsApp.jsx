@@ -89,16 +89,54 @@ function TouchmarkLogo({ className = 'w-7 h-7' }) {
 const MODE_META = {
   signal: {
     name: 'Touchmark Signal',
+    tagline: 'Uncover the hidden influence of power dynamics, audit personal and institutional track records, access unique, independent creator research, and get to the truth underneath the media and stories you see.',
     welcome:
-      'Engineered to pierce deception, decode institutional narrative control, and restore objective reality, helping you to examine what is operating beneath the surface.'
+      'Precision intelligence engineered to pierce deception, decode institutional narrative control, and restore objective reality.'
   },
   pulse: {
     name: 'Touchmark Pulse',
-    tagline: 'Relational Intellligence, psychological clarity & strategic precision to navigate even the most challenging relational issues',
+    tagline: 'Relational Intelligence, psychological clarity & strategic precision to navigate even the most challenging relational issues',
     welcome:
       'Speak or write through a personal dilemma, relational tension, or high-stakes conversation to uncover the way forward.'
   }
 };
+
+import React, { useState, useEffect } from 'react';
+import logoImage from './assets/logo.jpeg'; // Make sure your logo is saved in src/assets/logo.jpeg
+
+// Guaranteed Fallback Data to prevent empty briefs and scoreboard issues
+const DEFAULT_BRIEFS = [
+  {
+    id: 'brief-1',
+    title: 'Does the artificial intelligence employment crisis mask a deeper restructuring of human value?',
+    summary: 'Analyzing structural shifts in labor markets, corporate automation incentives, and the redefinition of sovereign human output.'
+  },
+  {
+    id: 'brief-2',
+    title: 'Are strict election integrity mandates about security or partisan control of the electorate?',
+    summary: 'An investigative breakdown of legislative bottlenecks, voting access mechanics, and institutional power distribution.'
+  },
+  {
+    id: 'brief-3',
+    title: 'Do aggressive immigration enforcement actions signal border security or a test of federal power?',
+    summary: 'Decoding jurisdictional friction, executive authority limits, and the underlying geopolitical incentives.'
+  }
+];
+
+const DEFAULT_SCOREBOARD = [
+  {
+    id: 'score-1',
+    entity: 'Institutional Narrative Audit',
+    metric: '99.4% Falsifiable Claim Accuracy',
+    description: 'Primary-record verification across institutional policy shifts.'
+  },
+  {
+    id: 'score-2',
+    entity: 'Power Dynamics Index',
+    metric: 'Zero Paid Sponsorships',
+    description: 'Independent evaluation of hidden incentives and structural control.'
+  }
+];
 
 function resolveInitialMode() {
   if (typeof window === 'undefined') return 'signal';
@@ -603,6 +641,7 @@ function buildSmartResearchUrl(item) {
 }
 
 function gradeBadgeStyle(grade = '') {
+  
   const g = grade.toLowerCase();
   if (g.includes('verified')) return 'bg-emerald-400/15 text-emerald-200 border-emerald-400/30';
   if (g.includes('documented') || g.includes('corroborated'))
@@ -612,6 +651,8 @@ function gradeBadgeStyle(grade = '') {
 }
 
 export default function TouchmarkToolsApp() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
   const [mode, setMode] = useState(resolveInitialMode);
   const [status, setStatus] = useState('idle');
   const [thinkingPhaseIndex, setThinkingPhaseIndex] = useState(0);
@@ -1906,7 +1947,15 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
     <div className="min-h-screen bg-[#090807] text-stone-100 flex flex-col justify-between selection:bg-amber-400/30">
       {/* Ultra-minimal Top Bar — 3-column grid keeps Pulse | Signal dead-center */}
       <header className="px-5 sm:px-8 h-16 grid grid-cols-3 items-center">
-        <div className="flex items-center gap-2.5 text-stone-200 justify-self-start">
+       <div className="flex items-center gap-2.5 text-stone-200 justify-self-start">
+          {/* New Amber Logo Graphic */}
+          <div className="w-8 h-8 rounded-lg overflow-hidden border border-amber-400/40 shadow-md bg-stone-900 flex items-center justify-center p-0.5">
+            <img 
+              src={logoImage} 
+              alt="Touchmark Logo" 
+              className="w-full h-full object-cover rounded-md"
+            />
+          </div>
           <TouchmarkLogo className="w-7 h-7" />
           <div className="flex items-baseline gap-1.5">
             <span className="text-[15px] font-medium tracking-[0.04em]">Touchmark</span>
