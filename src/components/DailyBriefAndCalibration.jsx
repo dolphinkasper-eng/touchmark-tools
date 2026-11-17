@@ -286,7 +286,15 @@ export default function DailyBriefAndCalibration({ isDarkMode = false, onLaunchP
                 </p>
               </div>
             ) : (
-         <div className="sm:w-36 h-24 rounded-xl bg-stone-900 overflow-hidden shrink-0 relative border border-stone-800 flex items-center justify-center">
+              <div className="space-y-3">
+                {briefs.map((item) => (
+                  <div
+                    key={item.id || item.rank}
+                    className={`flex flex-col sm:flex-row gap-4 p-4 rounded-2xl border transition-all ${
+                      isDarkMode ? 'bg-white/[0.025] hover:bg-white/[0.05] border-white/[0.08]' : 'bg-stone-50 hover:bg-stone-100/80 border-stone-200 shadow-2xs'
+                    }`}
+                  >
+                    <div className="sm:w-36 h-24 rounded-xl bg-stone-900 overflow-hidden shrink-0 relative border border-stone-800 flex items-center justify-center">
                       {item.image_url ? (
                         <img src={item.image_url} alt={item.headline} className="absolute inset-0 w-full h-full object-cover" />
                       ) : (
