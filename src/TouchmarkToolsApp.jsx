@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
+import React, { useState, useEffect } from 'react';
+import logoImage from './assets/logo.jpeg';
   Mic,
   Send,
   Volume2,
@@ -100,9 +100,6 @@ const MODE_META = {
       'Speak or write through a personal dilemma, relational tension, or high-stakes conversation to uncover the way forward.'
   }
 };
-
-import React, { useState, useEffect } from 'react';
-import logoImage from './assets/logo.jpeg'; // Make sure your logo is saved in src/assets/logo.jpeg
 
 // Guaranteed Fallback Data to prevent empty briefs and scoreboard issues
 const DEFAULT_BRIEFS = [
