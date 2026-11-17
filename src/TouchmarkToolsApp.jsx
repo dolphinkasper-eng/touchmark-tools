@@ -1565,7 +1565,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         <h2>Hidden Assumption & Power Dynamic</h2>
         <p>${esc(pulseLedger.hiddenAssumption)}</p>
         ${pulseLedger.powerDynamic ? `<p>${esc(pulseLedger.powerDynamic)}</p>` : ''}
-        <h2>Three Strategic Paths</h2>
+       <h2>Three Strategic Paths</h2>
         ${(pulseLedger.options || [])
           .map(
             (opt, i) => `
@@ -1574,6 +1574,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
             <p>${esc(opt.stance)}</p>
             <p class="muted"><strong>Trade-off:</strong> ${esc(opt.tradeoff)}</p>
           </div>`
+          )
           .join('')}
         ${
           pulseLedger.deepDiveReferences?.length
