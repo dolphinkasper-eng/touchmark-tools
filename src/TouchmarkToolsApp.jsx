@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import logoImage from './assets/logo.jpeg';
+import { 
+  ShieldCheck, 
+  Search, 
+  Terminal, 
+  Cpu, 
+  Activity, 
   Mic,
   Send,
   Volume2,
