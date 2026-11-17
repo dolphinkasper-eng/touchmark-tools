@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import logoImage from './assets/logo.jpeg';
 import { 
   ShieldCheck, 
   Search, 
