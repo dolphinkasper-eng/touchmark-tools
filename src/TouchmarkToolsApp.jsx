@@ -1946,25 +1946,17 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
   const activeTierRules = TIER_RULES[activeTier] || TIER_RULES.free;
   const activeTierUsed = getTotalUsedForTier(activeTier, usageState);
 
-  return (
-    <div className="min-h-screen bg-[#090807] text-stone-100 flex flex-col justify-between selection:bg-amber-400/30">
+ return (
+    <div className={`min-h-screen flex flex-col justify-between transition-colors duration-200 ${isDarkMode ? 'bg-stone-950 text-stone-100 selection:bg-amber-400/30' : 'bg-stone-50 text-stone-900 selection:bg-amber-400/30'}`}>
       {/* Ultra-minimal Top Bar — 3-column grid keeps Pulse | Signal dead-center */}
-      <header className="px-5 sm:px-8 h-16 grid grid-cols-3 items-center">
-       <div className="flex items-center gap-2.5 text-stone-200 justify-self-start">
-          {/* New Amber Logo Graphic */}
-          <div className="w-8 h-8 rounded-lg overflow-hidden border border-amber-400/40 shadow-md bg-stone-900 flex items-center justify-center p-0.5">
-            <img 
-              src={logoImage} 
-              alt="Touchmark Logo" 
-              className="w-full h-full object-cover rounded-md"
-            />
-          </div>
-          <TouchmarkLogo className="w-7 h-7" />
+      <header className={`px-5 sm:px-8 h-16 grid grid-cols-3 items-center border-b transition-colors ${isDarkMode ? 'border-stone-800 bg-stone-950 text-stone-100' : 'border-stone-200 bg-white text-stone-900'}`}>
+       <div className="flex items-center gap-2.5 justify-self-start">
+          <TouchmarkLogo className="w-8 h-8" />
           <div className="flex items-baseline gap-1.5">
             <span className="text-[15px] font-medium tracking-[0.04em]">Touchmark</span>
             <span
               className={`text-[11px] uppercase tracking-[0.18em] font-medium ${
-                mode === 'signal' ? 'text-amber-300/90' : 'text-emerald-300/90'
+                mode === 'signal' ? 'text-amber-600 dark:text-amber-300/90' : 'text-emerald-600 dark:text-emerald-300/90'
               }`}
             >
               {mode === 'signal' ? 'Signal' : 'Pulse'}
@@ -1973,12 +1965,12 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         </div>
 
         {/* Dead-Center Workspace Switcher */}
-        <div className="flex items-center bg-white/[0.04] p-1 rounded-full border border-white/10 justify-self-center">
+        <div className="flex items-center bg-stone-200/60 dark:bg-white/[0.04] p-1 rounded-full border border-stone-300 dark:border-white/10 justify-self-center">
           <button
             type="button"
             onClick={() => switchWorkspaceMode('pulse')}
-            className={`px-3.5 py-1 rounded-full text-xs transition-all ${
-              mode === 'pulse' ? 'bg-emerald-400/20 text-emerald-200' : 'text-stone-400 hover:text-stone-200'
+            className={`px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer ${
+              mode === 'pulse' ? 'bg-emerald-400/20 text-emerald-800 dark:text-emerald-200 font-medium' : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
             }`}
           >
             Pulse
@@ -1986,13 +1978,29 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
           <button
             type="button"
             onClick={() => switchWorkspaceMode('signal')}
-            className={`px-3.5 py-1 rounded-full text-xs transition-all ${
-              mode === 'signal' ? 'bg-amber-400/20 text-amber-200' : 'text-stone-400 hover:text-stone-200'
+            className={`px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer ${
+              mode === 'signal' ? 'bg-amber-400/20 text-amber-800 dark:text-amber-200 font-medium' : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
             }`}
           >
             Signal
           </button>
         </div>
+
+        {/* Center-Right Light/Dark Toggle Button */}
+        <div className="justify-self-end flex items-center gap-2">
+          <button 
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className="px-3 py-1.5 rounded-full text-xs font-mono border transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+            style={{
+              backgroundColor: isDarkMode ? '#1c1917' : '#f5f5f4',
+              borderColor: isDarkMode ? 'rgba(251, 191, 36, 0.3)' : '#d7d3ce',
+              color: isDarkMode ? '#fde68a' : '#292524'
+            }}
+          >
+            {isDarkMode ? '🌙 Dark' : '☀️ Light'}
+          </button>
+        </div>
+      </header>
 
         {/* Founding Member Allowance Pill, Voice, Studio Import, Archive & Dossier Controls */}
         <div className="flex items-center justify-end gap-2 justify-self-end">
