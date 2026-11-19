@@ -106,39 +106,6 @@ const MODE_META = {
   }
 };
 
-const DEFAULT_BRIEFS = [
-  {
-    id: 'brief-1',
-    title: 'Does the artificial intelligence employment crisis mask a deeper restructuring of human value?',
-    summary: 'Analyzing structural shifts in labor markets, corporate automation incentives, and the redefinition of sovereign human output.'
-  },
-  {
-    id: 'brief-2',
-    title: 'Are strict election integrity mandates about security or partisan control of the electorate?',
-    summary: 'An investigative breakdown of legislative bottlenecks, voting access mechanics, and institutional power distribution.'
-  },
-  {
-    id: 'brief-3',
-    title: 'Do aggressive immigration enforcement actions signal border security or a test of federal power?',
-    summary: 'Decoding jurisdictional friction, executive authority limits, and the underlying geopolitical incentives.'
-  }
-];
-
-const DEFAULT_SCOREBOARD = [
-  {
-    id: 'score-1',
-    entity: 'Institutional Narrative Audit',
-    metric: '99.4% Falsifiable Claim Accuracy',
-    description: 'Primary-record verification across institutional policy shifts.'
-  },
-  {
-    id: 'score-2',
-    entity: 'Power Dynamics Index',
-    metric: 'Zero Paid Sponsorships',
-    description: 'Independent evaluation of hidden incentives and structural control.'
-  }
-];
-
 function resolveInitialMode() {
   if (typeof window === 'undefined') return 'signal';
   const path = window.location.pathname.toLowerCase();
@@ -248,17 +215,17 @@ function MorphingSphereOrb({ status, mode, onClick }) {
   const palette =
     mode === 'signal'
       ? {
-          aura: 'radial-gradient(circle at 35% 30%, rgba(217,119,6,0.35), rgba(180,83,9,0.12) 55%, transparent 75%)',
+          aura: 'radial-gradient(circle at 35% 30%, rgba(217,119,6,0.32), rgba(180,83,9,0.1) 55%, transparent 75%)',
           sphere:
-            'radial-gradient(circle at 32% 28%, rgba(254,243,199,0.9) 0%, rgba(245,158,11,0.6) 32%, rgba(146,64,14,0.85) 72%, rgba(41,37,36,0.95) 100%)',
-          rim: 'rgba(217,119,6,0.45)',
+            'radial-gradient(circle at 32% 28%, rgba(254,243,199,0.92) 0%, rgba(245,158,11,0.62) 32%, rgba(146,64,14,0.85) 72%, rgba(41,37,36,0.95) 100%)',
+          rim: 'rgba(217,119,6,0.4)',
           dot: 'bg-amber-600'
         }
       : {
-          aura: 'radial-gradient(circle at 35% 30%, rgba(16,185,129,0.35), rgba(5,150,105,0.12) 55%, transparent 75%)',
+          aura: 'radial-gradient(circle at 35% 30%, rgba(16,185,129,0.32), rgba(5,150,105,0.1) 55%, transparent 75%)',
           sphere:
-            'radial-gradient(circle at 32% 28%, rgba(209,250,229,0.9) 0%, rgba(16,185,129,0.6) 32%, rgba(4,120,87,0.85) 72%, rgba(41,37,36,0.95) 100%)',
-          rim: 'rgba(16,185,129,0.45)',
+            'radial-gradient(circle at 32% 28%, rgba(209,250,229,0.92) 0%, rgba(16,185,129,0.62) 32%, rgba(4,120,87,0.85) 72%, rgba(41,37,36,0.95) 100%)',
+          rim: 'rgba(16,185,129,0.4)',
           dot: 'bg-emerald-600'
         };
 
@@ -295,6 +262,15 @@ function MorphingSphereOrb({ status, mode, onClick }) {
           animation: orbitSpinReverse 5.2s linear infinite;
         }
       `}</style>
+
+      {/* Ambient Atmospheric Wash Behind Orb */}
+      <div
+        className={`pointer-events-none absolute w-72 h-72 rounded-full blur-3xl -z-10 transition-colors duration-500 ${
+          mode === 'signal'
+            ? 'bg-amber-500/[0.07] dark:bg-amber-400/[0.06]'
+            : 'bg-emerald-500/[0.07] dark:bg-emerald-400/[0.06]'
+        }`}
+      />
 
       <button
         type="button"
@@ -339,7 +315,7 @@ function MorphingSphereOrb({ status, mode, onClick }) {
         <div
           style={{
             background: palette.sphere,
-            boxShadow: `inset -18px -22px 38px rgba(0,0,0,0.55), inset 10px 12px 24px rgba(255,255,255,0.45), 0 24px 60px rgba(0,0,0,0.25)`
+            boxShadow: `inset -18px -22px 38px rgba(0,0,0,0.5), inset 10px 12px 24px rgba(255,255,255,0.45), 0 20px 50px rgba(0,0,0,0.18)`
           }}
           className={`relative w-36 h-36 sm:w-40 sm:h-40 flex items-center justify-center transition-transform duration-500 ${
             isListening || isSpeaking || isThinking ? 'orb-active' : 'orb-organic group-hover:scale-[1.03]'
@@ -1933,19 +1909,31 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
   const activeTierUsed = getTotalUsedForTier(activeTier, usageState);
 
   return (
-    <div className={`min-h-screen flex flex-col justify-between transition-colors duration-200 ${isDarkMode ? 'bg-stone-950 text-stone-100 selection:bg-amber-400/30' : 'bg-stone-50 text-stone-900 selection:bg-amber-400/30'}`}>
-      
+    <div
+      className={`min-h-screen flex flex-col justify-between transition-colors duration-200 ${
+        isDarkMode
+          ? 'bg-[#0B0B0D] text-stone-100 selection:bg-amber-400/30'
+          : 'bg-[#FAF9F6] text-stone-900 selection:bg-amber-500/20'
+      }`}
+    >
       {/* Top Navigation Header */}
-      <header className={`px-5 sm:px-8 h-16 grid grid-cols-3 items-center border-b transition-colors ${isDarkMode ? 'border-stone-800 bg-stone-950 text-stone-100' : 'border-stone-200 bg-white text-stone-900'}`}>
-        
+      <header
+        className={`px-5 sm:px-8 h-16 grid grid-cols-3 items-center border-b backdrop-blur-xl transition-colors ${
+          isDarkMode
+            ? 'border-white/[0.07] bg-[#0B0B0D]/85 text-stone-100'
+            : 'border-stone-900/[0.07] bg-[#FAF9F6]/85 text-stone-900'
+        }`}
+      >
         {/* Left Column: Logo & Title */}
         <div className="flex items-center gap-2.5 justify-self-start">
           <TouchmarkLogo className="w-8 h-8" />
           <div className="flex items-baseline gap-1.5">
-            <span className="text-[15px] font-medium tracking-[0.04em]">Touchmark</span>
+            <span className="text-[15px] font-medium tracking-[-0.01em]">Touchmark</span>
             <span
-              className={`text-[11px] uppercase tracking-[0.18em] font-medium ${
-                mode === 'signal' ? 'text-amber-700 dark:text-amber-300' : 'text-emerald-700 dark:text-emerald-300'
+              className={`text-[10px] font-mono uppercase tracking-[0.16em] font-medium ${
+                mode === 'signal'
+                  ? 'text-amber-700 dark:text-amber-300'
+                  : 'text-emerald-700 dark:text-emerald-300'
               }`}
             >
               {mode === 'signal' ? 'Signal' : 'Pulse'}
@@ -1954,14 +1942,24 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         </div>
 
         {/* Center Column: Workspace Switcher */}
-        <div className={`flex items-center p-1 rounded-full border justify-self-center ${isDarkMode ? 'bg-white/[0.04] border-white/10' : 'bg-stone-200 border-stone-300'}`}>
+        <div
+          className={`flex items-center p-1 rounded-full border justify-self-center ${
+            isDarkMode
+              ? 'bg-white/[0.03] border-white/[0.08]'
+              : 'bg-[#F3F1EC] border-stone-900/[0.07]'
+          }`}
+        >
           <button
             type="button"
             onClick={() => switchWorkspaceMode('pulse')}
             className={`px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer ${
-              mode === 'pulse' 
-                ? (isDarkMode ? 'bg-emerald-400/20 text-emerald-200 font-medium' : 'bg-white text-emerald-900 font-semibold shadow-xs') 
-                : (isDarkMode ? 'text-stone-400 hover:text-stone-200' : 'text-stone-700 hover:text-stone-900')
+              mode === 'pulse'
+                ? isDarkMode
+                  ? 'bg-white/[0.1] text-emerald-200 font-medium shadow-xs'
+                  : 'bg-white text-emerald-950 font-medium shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                : isDarkMode
+                ? 'text-stone-400 hover:text-stone-200'
+                : 'text-stone-600 hover:text-stone-900'
             }`}
           >
             Pulse
@@ -1970,9 +1968,13 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
             type="button"
             onClick={() => switchWorkspaceMode('signal')}
             className={`px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer ${
-              mode === 'signal' 
-                ? (isDarkMode ? 'bg-amber-400/20 text-amber-200 font-medium' : 'bg-white text-amber-950 font-semibold shadow-xs') 
-                : (isDarkMode ? 'text-stone-400 hover:text-stone-200' : 'text-stone-700 hover:text-stone-900')
+              mode === 'signal'
+                ? isDarkMode
+                  ? 'bg-white/[0.1] text-amber-200 font-medium shadow-xs'
+                  : 'bg-white text-amber-950 font-medium shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                : isDarkMode
+                ? 'text-stone-400 hover:text-stone-200'
+                : 'text-stone-600 hover:text-stone-900'
             }`}
           >
             Signal
@@ -1981,16 +1983,16 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
 
         {/* Right Column: Light/Dark Toggle + Controls */}
         <div className="flex items-center gap-2 justify-self-end">
-          <button 
+          <button
+            type="button"
             onClick={() => setIsDarkMode(!isDarkMode)}
-            className="px-3.5 py-1.5 rounded-full text-xs font-mono border transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
-            style={{
-              backgroundColor: isDarkMode ? '#1c1917' : '#ffffff',
-              borderColor: isDarkMode ? 'rgba(217, 119, 6, 0.3)' : '#d7d3ce',
-              color: isDarkMode ? '#fde68a' : '#1c1917'
-            }}
+            className={`px-3 py-1.5 rounded-full text-xs border transition-all flex items-center gap-1.5 cursor-pointer ${
+              isDarkMode
+                ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-amber-200'
+                : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-800'
+            }`}
           >
-            {isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode'}
+            <span>{isDarkMode ? '🌙 Dark' : '☀️ Light'}</span>
           </button>
 
           <button
@@ -2000,15 +2002,15 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
               setIsUpgradeOpen(true);
             }}
             className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all cursor-pointer ${
-              isDarkMode 
-                ? 'bg-amber-400/15 hover:bg-amber-400/25 border-amber-300/35 text-amber-200' 
-                : 'bg-amber-100 hover:bg-amber-200 border-amber-300 text-amber-900 font-medium'
+              isDarkMode
+                ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-amber-200'
+                : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-800'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-300 shrink-0" />
-            <span className="hidden sm:inline">
+            <Sparkles className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 shrink-0" />
+            <span className="hidden sm:inline font-mono tabular-nums text-[11px]">
               {activeTier === 'free'
-                ? `Preview · ${Math.max(0, activeTierRules.monthlyLimit - activeTierUsed)}/${activeTierRules.monthlyLimit} Left`
+                ? `Preview · ${Math.max(0, activeTierRules.monthlyLimit - activeTierUsed)}/${activeTierRules.monthlyLimit}`
                 : `${activeTier.toUpperCase()} · ${activeTierUsed}/${activeTierRules.monthlyLimit}`}
             </span>
           </button>
@@ -2022,9 +2024,9 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                 setDrawerOpen(true);
               }}
               className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all cursor-pointer ${
-                isDarkMode 
-                  ? 'bg-emerald-400/10 hover:bg-emerald-400/20 border-emerald-400/25 text-emerald-200' 
-                  : 'bg-emerald-100 hover:bg-emerald-200 border-emerald-300 text-emerald-900 font-medium'
+                isDarkMode
+                  ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-emerald-200'
+                  : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-800'
               }`}
             >
               <PenTool className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-300" />
@@ -2039,11 +2041,19 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                 value={selectedVoice}
                 onChange={(e) => setSelectedVoice(e.target.value)}
                 className={`hidden md:block bg-transparent border rounded-full px-2.5 py-1 text-xs focus:outline-none ${
-                  isDarkMode ? 'border-white/10 text-stone-400' : 'border-stone-300 text-stone-700 font-medium'
+                  isDarkMode
+                    ? 'border-white/[0.08] text-stone-300'
+                    : 'border-stone-900/[0.08] text-stone-700'
                 }`}
               >
                 {VOICE_OPTIONS.map((v) => (
-                  <option key={v.id} value={v.id} className={isDarkMode ? 'bg-stone-900 text-stone-200' : 'bg-white text-stone-900'}>
+                  <option
+                    key={v.id}
+                    value={v.id}
+                    className={
+                      isDarkMode ? 'bg-[#141416] text-stone-200' : 'bg-[#FAF9F6] text-stone-900'
+                    }
+                  >
                     {v.label}
                   </option>
                 ))}
@@ -2059,11 +2069,17 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                   setVoiceEnabled(!voiceEnabled);
                 }}
                 aria-label="Toggle voice and ambient sound"
-                className={`p-2 rounded-full border cursor-pointer ${
-                  isDarkMode ? 'border-white/10 text-stone-400 hover:text-stone-200' : 'border-stone-300 text-stone-700 hover:text-stone-900 bg-white shadow-xs'
+                className={`p-2 rounded-full border cursor-pointer transition-colors ${
+                  isDarkMode
+                    ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-stone-300'
+                    : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-700'
                 }`}
               >
-                {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-stone-400" />}
+                {voiceEnabled ? (
+                  <Volume2 className="w-4 h-4" />
+                ) : (
+                  <VolumeX className="w-4 h-4 text-stone-400" />
+                )}
               </button>
 
               {savedDossiers.length > 0 && (
@@ -2072,18 +2088,26 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                   onClick={() => setArchiveOpen(true)}
                   aria-label="Saved Dossiers"
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all cursor-pointer ${
-                    isDarkMode ? 'bg-white/[0.04] hover:bg-white/[0.09] border-white/10 text-stone-300' : 'bg-white hover:bg-stone-100 border-stone-300 text-stone-800 font-medium shadow-xs'
+                    isDarkMode
+                      ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-stone-200'
+                      : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-800'
                   }`}
                 >
                   <FolderOpen className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
-                  <span className="hidden sm:inline">Archive ({savedDossiers.length})</span>
+                  <span className="hidden sm:inline font-mono tabular-nums text-[11px]">
+                    Archive ({savedDossiers.length})
+                  </span>
                 </button>
               )}
 
               <button
                 type="button"
                 onClick={() => setDrawerOpen(true)}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium transition-all shadow-sm cursor-pointer"
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                  isDarkMode
+                    ? 'bg-stone-100 text-stone-900 hover:bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]'
+                    : 'bg-stone-900 text-stone-50 hover:bg-stone-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]'
+                }`}
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>Dossier</span>
@@ -2096,14 +2120,18 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
       {/* Center Sanctuary */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-3xl mx-auto w-full py-2">
         {!hasArtifact && status === 'idle' && (
-          <p className={`mb-3 text-[11px] uppercase tracking-[0.22em] max-w-lg font-medium ${isDarkMode ? 'text-stone-400' : 'text-stone-600'}`}>
+          <p
+            className={`mb-4 text-xs sm:text-[13px] tracking-[-0.01em] max-w-xl leading-relaxed ${
+              isDarkMode ? 'text-stone-400' : 'text-stone-600'
+            }`}
+          >
             {MODE_META[mode].tagline}
           </p>
         )}
 
         {errorBanner && (
-          <div className="mb-4 flex items-center gap-2 px-4 py-2 rounded-full bg-red-950/60 border border-red-400/30 text-xs text-red-200">
-            <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
+          <div className="mb-4 flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 text-xs text-red-700 dark:text-red-200">
+            <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0" />
             <span>{errorBanner}</span>
           </div>
         )}
@@ -2115,16 +2143,20 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         />
 
         {status === 'listening' ? (
-          <span className="mt-3 text-[11px] uppercase tracking-[0.26em] text-amber-700 dark:text-amber-300 font-semibold animate-pulse">
+          <span className="mt-3 text-xs font-mono tracking-wide text-amber-700 dark:text-amber-300 animate-pulse">
             Listening…
           </span>
         ) : status === 'thinking' ? (
-          <span className="mt-3 text-[11px] uppercase tracking-[0.24em] text-amber-800 dark:text-amber-200/85 font-semibold transition-all duration-500">
+          <span className="mt-3 text-xs font-mono tracking-wide text-amber-800 dark:text-amber-200/85 transition-all duration-500">
             {currentThinkingLabel}
           </span>
         ) : (
           <div className="mt-4 max-h-48 sm:max-h-56 overflow-y-auto px-2 max-w-2xl">
-            <p className={`text-sm sm:text-[15px] font-normal leading-relaxed ${isDarkMode ? 'text-stone-200' : 'text-stone-800'}`}>
+            <p
+              className={`text-sm sm:text-[15px] tracking-[-0.01em] leading-relaxed ${
+                isDarkMode ? 'text-stone-200' : 'text-stone-800'
+              }`}
+            >
               {activeCaption}
             </p>
           </div>
@@ -2138,10 +2170,10 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                 setDrawerTab('analysis');
                 setDrawerOpen(true);
               }}
-              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full border text-xs font-semibold tracking-[0.14em] uppercase transition-all shadow-md cursor-pointer ${
-                isDarkMode 
-                  ? 'bg-amber-400/15 hover:bg-amber-400/25 border-amber-300/35 text-amber-200' 
-                  : 'bg-amber-600 hover:bg-amber-700 border-amber-700 text-white shadow-amber-900/10'
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-medium tracking-[-0.01em] transition-all cursor-pointer ${
+                isDarkMode
+                  ? 'bg-stone-100 text-stone-900 hover:bg-white shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.6)]'
+                  : 'bg-stone-900 text-stone-50 hover:bg-stone-800 shadow-[0_8px_24px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.15)]'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -2165,8 +2197,10 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
             e.preventDefault();
             handleSubmission();
           }}
-          className={`mx-auto max-w-xl flex items-center gap-2 border rounded-full px-4 py-2.5 transition-colors shadow-sm ${
-            isDarkMode ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-300'
+          className={`mx-auto max-w-xl flex items-center gap-2 border rounded-full px-5 py-3 transition-all focus-within:ring-2 focus-within:ring-amber-500/20 ${
+            isDarkMode
+              ? 'bg-[#141416] border-white/[0.08] focus-within:border-amber-400/40 shadow-[0_8px_30px_rgba(0,0,0,0.45)]'
+              : 'bg-white border-stone-900/[0.08] focus-within:border-amber-600/40 shadow-[0_8px_30px_rgba(0,0,0,0.04)]'
           }`}
         >
           <input
@@ -2178,21 +2212,33 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                 ? 'Speak to the orb, or unpack a tension…'
                 : 'Audit any narrative, outlet, think tank, or institution…'
             }
-            className={`flex-1 bg-transparent text-sm focus:outline-none ${isDarkMode ? 'text-stone-100 placeholder:text-stone-500' : 'text-stone-900 placeholder:text-stone-400 font-medium'}`}
+            className={`flex-1 bg-transparent text-sm focus:outline-none ${
+              isDarkMode
+                ? 'text-stone-100 placeholder:text-stone-500'
+                : 'text-stone-900 placeholder:text-stone-400'
+            }`}
           />
           <button
             type="submit"
             disabled={status === 'thinking' || !inputText.trim()}
             aria-label="Send"
-            className="p-2 rounded-full text-amber-700 dark:text-amber-300 disabled:opacity-30 transition-colors cursor-pointer"
+            className={`p-2 rounded-full transition-colors disabled:opacity-30 cursor-pointer ${
+              isDarkMode
+                ? 'bg-stone-100 text-stone-900 hover:bg-white'
+                : 'bg-stone-900 text-stone-50 hover:bg-stone-800'
+            }`}
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-3.5 h-3.5" />
           </button>
         </form>
 
         {!hasArtifact && status === 'idle' && (
-          <div className="mx-auto max-w-2xl mt-4 space-y-2 text-center">
-            <span className={`block text-[10px] uppercase tracking-[0.22em] font-medium ${isDarkMode ? 'text-stone-400' : 'text-stone-600'}`}>
+          <div className="mx-auto max-w-2xl mt-4 space-y-2.5 text-center">
+            <span
+              className={`block text-[11px] tracking-[-0.01em] ${
+                isDarkMode ? 'text-stone-400' : 'text-stone-500'
+              }`}
+            >
               {mode === 'signal'
                 ? 'Live currents & entity audits — or ask your own above'
                 : 'Starting tensions — or speak your own above'}
@@ -2204,8 +2250,10 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                     key={idx}
                     type="button"
                     onClick={() => handleSubmission(sample)}
-                    className={`px-3.5 py-1.5 rounded-full border text-[11px] transition-all truncate max-w-full cursor-pointer font-medium ${
-                      isDarkMode ? 'bg-stone-900 border-stone-800 text-stone-300 hover:text-stone-100' : 'bg-white border-stone-300 text-stone-700 hover:text-stone-900 shadow-2xs'
+                    className={`px-3.5 py-1.5 rounded-full border text-[11px] transition-all truncate max-w-full cursor-pointer ${
+                      isDarkMode
+                        ? 'bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.07] text-stone-300 hover:text-stone-100'
+                        : 'bg-[#F3F1EC] hover:bg-[#EAE7E0] border-stone-900/[0.06] text-stone-700 hover:text-stone-900'
                     }`}
                   >
                     {sample}
@@ -2228,16 +2276,30 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
 
       {/* Saved Dossiers Archive Modal */}
       {archiveOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className={`w-full max-w-lg border rounded-3xl p-6 space-y-4 max-h-[80vh] overflow-y-auto ${isDarkMode ? 'bg-stone-900 border-stone-800 text-stone-100' : 'bg-white border-stone-200 text-stone-900 shadow-2xl'}`}>
-            <div className={`flex items-center justify-between border-b pb-3 ${isDarkMode ? 'border-stone-800' : 'border-stone-200'}`}>
-              <span className="text-xs uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300 font-semibold">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+          <div
+            className={`w-full max-w-lg border rounded-3xl p-6 space-y-4 max-h-[80vh] overflow-y-auto ${
+              isDarkMode
+                ? 'bg-[#121215] border-white/[0.09] text-stone-100 shadow-[0_24px_60px_rgba(0,0,0,0.7)]'
+                : 'bg-[#FAF9F6] border-stone-900/[0.08] text-stone-900 shadow-[0_24px_60px_rgba(0,0,0,0.12)]'
+            }`}
+          >
+            <div
+              className={`flex items-center justify-between border-b pb-3 ${
+                isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.07]'
+              }`}
+            >
+              <span className="text-xs font-semibold tracking-[-0.01em] text-amber-700 dark:text-amber-300">
                 Saved Intelligence Dossiers
               </span>
               <button
                 type="button"
                 onClick={() => setArchiveOpen(false)}
-                className={`p-1.5 rounded-full cursor-pointer ${isDarkMode ? 'bg-stone-800 text-stone-300 hover:text-white' : 'bg-stone-100 text-stone-700 hover:text-stone-900'}`}
+                className={`p-1.5 rounded-full cursor-pointer ${
+                  isDarkMode
+                    ? 'bg-white/[0.05] text-stone-300 hover:text-white'
+                    : 'bg-stone-900/[0.04] text-stone-700 hover:text-stone-900'
+                }`}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2248,7 +2310,9 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                 <div
                   key={item.id}
                   className={`flex items-center justify-between gap-3 p-3.5 rounded-2xl border transition-all ${
-                    isDarkMode ? 'bg-stone-950/60 border-stone-800 hover:border-amber-400/30' : 'bg-stone-50 border-stone-200 hover:border-amber-500/40 shadow-2xs'
+                    isDarkMode
+                      ? 'bg-white/[0.02] hover:bg-white/[0.05] border-white/[0.06]'
+                      : 'bg-[#F3F1EC]/75 hover:bg-[#F3F1EC] border-stone-900/[0.06]'
                   }`}
                 >
                   <button
@@ -2257,7 +2321,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                     className="text-left flex-1 min-w-0 cursor-pointer"
                   >
                     <span
-                      className={`text-[10px] uppercase tracking-wider font-semibold ${
+                      className={`text-[10px] font-mono uppercase tracking-wider font-medium ${
                         item.mode === 'signal'
                           ? 'text-amber-700 dark:text-amber-300'
                           : item.mode === 'entity_audit'
@@ -2268,7 +2332,13 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                       {item.mode === 'entity_audit' ? 'Track-Record Audit' : item.mode} ·{' '}
                       {item.createdAt}
                     </span>
-                    <p className={`text-sm truncate mt-0.5 font-medium ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>{item.title}</p>
+                    <p
+                      className={`text-sm truncate mt-0.5 font-medium ${
+                        isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                      }`}
+                    >
+                      {item.title}
+                    </p>
                   </button>
                   <button
                     type="button"
@@ -2287,65 +2357,136 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
 
       {/* Slide-Over Dossier Drawer */}
       {drawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-xs">
-          <div className={`w-full max-w-3xl p-6 sm:p-8 flex flex-col justify-between overflow-y-auto ${isDarkMode ? 'bg-stone-950 text-stone-100 border-l border-stone-800' : 'bg-white text-stone-900 border-l border-stone-200 shadow-2xl'}`}>
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs">
+          <div
+            className={`w-full max-w-3xl p-6 sm:p-8 flex flex-col justify-between overflow-y-auto border-l ${
+              isDarkMode
+                ? 'bg-[#0E0E11] text-stone-100 border-white/[0.08]'
+                : 'bg-[#FAF9F6] text-stone-900 border-stone-900/[0.08] shadow-2xl'
+            }`}
+          >
             {mode === 'pulse' && pulseLedger ? (
               <div className="space-y-6">
-                <div className={`flex items-center justify-between border-b pb-4 ${isDarkMode ? 'border-stone-800' : 'border-stone-200'}`}>
-                  <span className="text-xs uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300 font-semibold">
+                <div
+                  className={`flex items-center justify-between border-b pb-4 ${
+                    isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.07]'
+                  }`}
+                >
+                  <span className="text-xs font-semibold tracking-[-0.01em] text-emerald-700 dark:text-emerald-300">
                     Pulse Deep Discernment
                   </span>
                   <button
                     type="button"
                     onClick={() => setDrawerOpen(false)}
-                    className={`p-1.5 rounded-full cursor-pointer ${isDarkMode ? 'bg-stone-800 text-stone-300 hover:text-white' : 'bg-stone-100 text-stone-700 hover:text-stone-900'}`}
+                    className={`p-1.5 rounded-full cursor-pointer ${
+                      isDarkMode
+                        ? 'bg-white/[0.05] text-stone-300 hover:text-white'
+                        : 'bg-stone-900/[0.04] text-stone-700 hover:text-stone-900'
+                    }`}
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
-                <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>{pulseLedger.title}</h2>
+                <h2
+                  className={`text-xl font-semibold tracking-[-0.015em] ${
+                    isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                  }`}
+                >
+                  {pulseLedger.title}
+                </h2>
 
-                <div className={`p-4 rounded-2xl border space-y-1.5 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200'}`}>
-                  <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-emerald-700 dark:text-emerald-300 font-semibold">
+                <div
+                  className={`p-4 rounded-2xl border space-y-1.5 ${
+                    isDarkMode
+                      ? 'bg-white/[0.025] border-white/[0.07]'
+                      : 'bg-[#F3F1EC] border-stone-900/[0.06]'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
                     <Scale className="w-3.5 h-3.5" />
                     Core Tension
                   </div>
-                  <p className={`text-sm leading-relaxed font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>{pulseLedger.coreTension}</p>
+                  <p
+                    className={`text-sm leading-relaxed ${
+                      isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                    }`}
+                  >
+                    {pulseLedger.coreTension}
+                  </p>
                 </div>
 
-                <div className={`p-4 rounded-2xl border space-y-1.5 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200'}`}>
-                  <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-amber-700 dark:text-amber-300 font-semibold">
+                <div
+                  className={`p-4 rounded-2xl border space-y-1.5 ${
+                    isDarkMode
+                      ? 'bg-white/[0.025] border-white/[0.07]'
+                      : 'bg-[#F3F1EC] border-stone-900/[0.06]'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300">
                     <Sparkles className="w-3.5 h-3.5" />
-                    Hidden Assumption & Power Dynamic
+                    Hidden Assumption &amp; Power Dynamic
                   </div>
-                  <p className={`text-sm leading-relaxed font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>{pulseLedger.hiddenAssumption}</p>
+                  <p
+                    className={`text-sm leading-relaxed ${
+                      isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                    }`}
+                  >
+                    {pulseLedger.hiddenAssumption}
+                  </p>
                   {pulseLedger.powerDynamic && (
-                    <p className={`text-xs pt-2 border-t leading-relaxed font-normal ${isDarkMode ? 'text-stone-400 border-stone-800' : 'text-stone-600 border-stone-200'}`}>
+                    <p
+                      className={`text-xs pt-2 border-t leading-relaxed ${
+                        isDarkMode
+                          ? 'text-stone-400 border-white/[0.07]'
+                          : 'text-stone-600 border-stone-900/[0.06]'
+                      }`}
+                    >
                       {pulseLedger.powerDynamic}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-3">
-                  <span className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold">
+                  <span className="text-xs font-semibold text-stone-500">
                     Three Strategic Paths
                   </span>
                   {pulseLedger.options?.map((opt, idx) => (
-                    <div key={idx} className={`p-4 rounded-2xl border space-y-1.5 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200'}`}>
-                      <h3 className={`text-sm font-semibold ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
+                    <div
+                      key={idx}
+                      className={`p-4 rounded-2xl border space-y-1.5 ${
+                        isDarkMode
+                          ? 'bg-white/[0.025] border-white/[0.07]'
+                          : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                      }`}
+                    >
+                      <h3
+                        className={`text-sm font-semibold ${
+                          isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                        }`}
+                      >
                         0{idx + 1}. {opt.label}
                       </h3>
-                      <p className={`text-xs leading-relaxed font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>{opt.stance}</p>
-                      <p className="text-xs text-stone-500 font-medium">Trade-off: {opt.tradeoff}</p>
+                      <p
+                        className={`text-xs leading-relaxed ${
+                          isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                        }`}
+                      >
+                        {opt.stance}
+                      </p>
+                      <p className="text-xs text-stone-500">Trade-off: {opt.tradeoff}</p>
                     </div>
                   ))}
                 </div>
 
                 {pulseLedger.deepDiveReferences?.length > 0 && (
-                  <div className={`space-y-3 pt-2 border-t ${isDarkMode ? 'border-stone-800' : 'border-stone-200'}`}>
-                    <span className="text-[11px] uppercase tracking-wider text-emerald-700 dark:text-emerald-300 block font-semibold">
-                      Thinkers, Essays & Talks to Go Deeper
+                  <div
+                    className={`space-y-3 pt-2 border-t ${
+                      isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.07]'
+                    }`}
+                  >
+                    <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 block">
+                      Thinkers, Essays &amp; Talks to Go Deeper
                     </span>
                     {pulseLedger.deepDiveReferences.map((ref, idx) => (
                       <a
@@ -2354,18 +2495,32 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                         target="_blank"
                         rel="noreferrer"
                         className={`block p-4 rounded-2xl border transition-colors space-y-1.5 ${
-                          isDarkMode ? 'bg-stone-900/60 border-stone-800 hover:border-emerald-400/40' : 'bg-stone-50 border-stone-200 hover:border-emerald-500/50 shadow-2xs'
+                          isDarkMode
+                            ? 'bg-white/[0.025] border-white/[0.07] hover:border-emerald-400/35'
+                            : 'bg-[#F3F1EC]/75 border-stone-900/[0.06] hover:border-emerald-600/35'
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-300 font-semibold">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-700 dark:text-emerald-300 font-medium">
                             {ref.lens} · {ref.format}
                           </span>
                           <ExternalLink className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                         </div>
-                        <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>{ref.title}</h4>
-                        <p className="text-xs text-stone-500 font-medium">{ref.creatorOrPublication}</p>
-                        <p className={`text-xs leading-relaxed font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-700'}`}>{ref.whyItMatters}</p>
+                        <h4
+                          className={`text-sm font-semibold ${
+                            isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                          }`}
+                        >
+                          {ref.title}
+                        </h4>
+                        <p className="text-xs text-stone-500">{ref.creatorOrPublication}</p>
+                        <p
+                          className={`text-xs leading-relaxed ${
+                            isDarkMode ? 'text-stone-300' : 'text-stone-700'
+                          }`}
+                        >
+                          {ref.whyItMatters}
+                        </p>
                       </a>
                     ))}
                   </div>
@@ -2377,11 +2532,19 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                   promptPreview={pulseLedger.subject || pulseLedger.title}
                 />
 
-                <div className={`pt-5 border-t flex flex-col sm:flex-row items-center justify-center gap-3 ${isDarkMode ? 'border-stone-800' : 'border-stone-200'}`}>
+                <div
+                  className={`pt-5 border-t flex flex-col sm:flex-row items-center justify-center gap-3 ${
+                    isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.07]'
+                  }`}
+                >
                   <button
                     type="button"
                     onClick={exportFullPdfDossier}
-                    className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-amber-600 hover:bg-amber-700 text-white font-medium text-xs tracking-wide whitespace-nowrap flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm"
+                    className={`w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full font-medium text-xs tracking-wide whitespace-nowrap flex items-center justify-center gap-2 transition-colors cursor-pointer ${
+                      isDarkMode
+                        ? 'bg-stone-100 text-stone-900 hover:bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]'
+                        : 'bg-stone-900 text-stone-50 hover:bg-stone-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]'
+                    }`}
                   >
                     <Printer className="w-4 h-4 shrink-0" />
                     <span>Export PDF Dossier</span>
@@ -2391,7 +2554,9 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                     type="button"
                     onClick={copyReceipt}
                     className={`w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full border text-xs font-medium tracking-wide whitespace-nowrap flex items-center justify-center gap-2 transition-colors cursor-pointer ${
-                      isDarkMode ? 'bg-stone-900 hover:bg-stone-800 border-stone-800 text-stone-200' : 'bg-stone-100 hover:bg-stone-200 border-stone-300 text-stone-800 shadow-2xs'
+                      isDarkMode
+                        ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-stone-200'
+                        : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-800'
                     }`}
                   >
                     {copiedReceipt ? (
@@ -2410,14 +2575,22 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
               </div>
             ) : mode === 'signal' && entityAuditReport ? (
               <div className="space-y-6">
-                <div className={`flex items-center justify-between border-b pb-4 ${isDarkMode ? 'border-stone-800' : 'border-stone-200'}`}>
-                  <span className="text-xs uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300 font-semibold">
-                    Signal Calibration & Integrity Ledger
+                <div
+                  className={`flex items-center justify-between border-b pb-4 ${
+                    isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.07]'
+                  }`}
+                >
+                  <span className="text-xs font-semibold tracking-[-0.01em] text-emerald-700 dark:text-emerald-300">
+                    Signal Calibration &amp; Integrity Ledger
                   </span>
                   <button
                     type="button"
                     onClick={() => setDrawerOpen(false)}
-                    className={`p-1.5 rounded-full cursor-pointer ${isDarkMode ? 'bg-stone-800 text-stone-300 hover:text-white' : 'bg-stone-100 text-stone-700 hover:text-stone-900'}`}
+                    className={`p-1.5 rounded-full cursor-pointer ${
+                      isDarkMode
+                        ? 'bg-white/[0.05] text-stone-300 hover:text-white'
+                        : 'bg-stone-900/[0.04] text-stone-700 hover:text-stone-900'
+                    }`}
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -2431,10 +2604,14 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
               </div>
             ) : mode === 'signal' && (signalReport || showExternalImporter) ? (
               <div className="space-y-6">
-                <div className={`space-y-4 border-b pb-4 ${isDarkMode ? 'border-stone-800' : 'border-stone-200'}`}>
+                <div
+                  className={`space-y-4 border-b pb-4 ${
+                    isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.07]'
+                  }`}
+                >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300 font-semibold">
-                      Signal Investigative Intelligence & Studio
+                    <span className="text-xs font-semibold tracking-[-0.01em] text-amber-700 dark:text-amber-300">
+                      Signal Investigative Intelligence &amp; Studio
                     </span>
                     <button
                       type="button"
@@ -2442,46 +2619,68 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                         setDrawerOpen(false);
                         setShowExternalImporter(false);
                       }}
-                      className={`p-1.5 rounded-full cursor-pointer ${isDarkMode ? 'bg-stone-800 text-stone-300 hover:text-white' : 'bg-stone-100 text-stone-700 hover:text-stone-900'}`}
+                      className={`p-1.5 rounded-full cursor-pointer ${
+                        isDarkMode
+                          ? 'bg-white/[0.05] text-stone-300 hover:text-white'
+                          : 'bg-stone-900/[0.04] text-stone-700 hover:text-stone-900'
+                      }`}
                     >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
 
                   {signalReport && (
-                    <div className={`flex flex-wrap items-center gap-1.5 p-1 rounded-full border w-fit ${isDarkMode ? 'bg-stone-900 border-stone-800' : 'bg-stone-200 border-stone-300'}`}>
+                    <div
+                      className={`flex flex-wrap items-center gap-1 p-1 rounded-full border w-fit ${
+                        isDarkMode
+                          ? 'bg-white/[0.03] border-white/[0.08]'
+                          : 'bg-[#F3F1EC] border-stone-900/[0.07]'
+                      }`}
+                    >
                       <button
                         type="button"
                         onClick={() => setDrawerTab('analysis')}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                           drawerTab === 'analysis'
-                            ? (isDarkMode ? 'bg-amber-400/20 text-amber-200 font-medium' : 'bg-white text-amber-950 font-semibold shadow-xs')
-                            : (isDarkMode ? 'text-stone-400 hover:text-stone-200' : 'text-stone-700 hover:text-stone-900')
+                            ? isDarkMode
+                              ? 'bg-white/[0.1] text-stone-100 font-medium shadow-xs'
+                              : 'bg-white text-stone-900 font-medium shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                            : isDarkMode
+                            ? 'text-stone-400 hover:text-stone-200'
+                            : 'text-stone-600 hover:text-stone-900'
                         }`}
                       >
-                        4-Scalar Radar & Record
+                        4-Scalar Radar &amp; Record
                       </button>
                       <button
                         type="button"
                         onClick={() => setDrawerTab('power')}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                           drawerTab === 'power'
-                            ? (isDarkMode ? 'bg-amber-400/20 text-amber-200 font-medium' : 'bg-white text-amber-950 font-semibold shadow-xs')
-                            : (isDarkMode ? 'text-stone-400 hover:text-stone-200' : 'text-stone-700 hover:text-stone-900')
+                            ? isDarkMode
+                              ? 'bg-white/[0.1] text-stone-100 font-medium shadow-xs'
+                              : 'bg-white text-stone-900 font-medium shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                            : isDarkMode
+                            ? 'text-stone-400 hover:text-stone-200'
+                            : 'text-stone-600 hover:text-stone-900'
                         }`}
                       >
-                        Follow the Power & Gap {isHydratingDeep && '· …'}
+                        Follow the Power &amp; Gap {isHydratingDeep && '· …'}
                       </button>
                       <button
                         type="button"
                         onClick={() => setDrawerTab('spectrum')}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                           drawerTab === 'spectrum'
-                            ? (isDarkMode ? 'bg-amber-400/20 text-amber-200 font-medium' : 'bg-white text-amber-950 font-semibold shadow-xs')
-                            : (isDarkMode ? 'text-stone-400 hover:text-stone-200' : 'text-stone-700 hover:text-stone-900')
+                            ? isDarkMode
+                              ? 'bg-white/[0.1] text-stone-100 font-medium shadow-xs'
+                              : 'bg-white text-stone-900 font-medium shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                            : isDarkMode
+                            ? 'text-stone-400 hover:text-stone-200'
+                            : 'text-stone-600 hover:text-stone-900'
                         }`}
                       >
-                        6 Lenses & Sources ({signalReport.researchLibrary?.length || 0})
+                        6 Lenses &amp; Sources ({signalReport.researchLibrary?.length || 0})
                       </button>
                       <button
                         type="button"
@@ -2491,10 +2690,14 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                             generateStudioPackage();
                           }
                         }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all inline-flex items-center gap-1 cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-full text-xs transition-all inline-flex items-center gap-1 cursor-pointer ${
                           drawerTab === 'studio'
-                            ? (isDarkMode ? 'bg-emerald-400/20 text-emerald-200 font-medium' : 'bg-white text-emerald-950 font-semibold shadow-xs')
-                            : (isDarkMode ? 'text-emerald-300/80 hover:text-emerald-200' : 'text-emerald-800 hover:text-emerald-950')
+                            ? isDarkMode
+                              ? 'bg-white/[0.1] text-emerald-200 font-medium shadow-xs'
+                              : 'bg-white text-emerald-950 font-medium shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                            : isDarkMode
+                            ? 'text-emerald-300/80 hover:text-emerald-200'
+                            : 'text-emerald-800 hover:text-emerald-950'
                         }`}
                       >
                         <PenTool className="w-3 h-3" />
@@ -2507,79 +2710,139 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                 {drawerTab === 'analysis' && signalReport ? (
                   <>
                     <div>
-                      <span className="text-[11px] uppercase tracking-wider text-stone-500 block mb-1 font-semibold">
+                      <span className="text-[11px] font-mono uppercase tracking-wider text-stone-500 block mb-1">
                         Subject Under Examination
                       </span>
-                      <h2 className={`text-lg font-semibold leading-snug ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
+                      <h2
+                        className={`text-lg font-semibold tracking-[-0.015em] leading-snug ${
+                          isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                        }`}
+                      >
                         “{signalReport.subject}”
                       </h2>
                     </div>
 
                     <div className="grid sm:grid-cols-2 gap-3">
-                      <div className={`p-4 rounded-2xl border space-y-1.5 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
+                      <div
+                        className={`p-4 rounded-2xl border space-y-1.5 ${
+                          isDarkMode
+                            ? 'bg-white/[0.025] border-white/[0.07]'
+                            : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                        }`}
+                      >
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] uppercase tracking-wider text-stone-500 font-semibold">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
                             1. Constellation Rarity
                           </span>
-                          <span className="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300">
+                          <span className="text-xs font-mono tabular-nums font-semibold text-emerald-700 dark:text-emerald-300">
                             {signalReport.constellationRarityScore}/100
                           </span>
                         </div>
-                        <div className={`text-xs font-semibold ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
+                        <div
+                          className={`text-xs font-semibold ${
+                            isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                          }`}
+                        >
                           {signalReport.constellationRarityLabel}
                         </div>
-                        <p className={`text-[11px] leading-relaxed ${isDarkMode ? 'text-stone-400' : 'text-stone-600'}`}>
+                        <p
+                          className={`text-[11px] leading-relaxed ${
+                            isDarkMode ? 'text-stone-400' : 'text-stone-600'
+                          }`}
+                        >
                           {signalReport.constellationRaritySummary}
                         </p>
                       </div>
 
-                      <div className={`p-4 rounded-2xl border space-y-1.5 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
+                      <div
+                        className={`p-4 rounded-2xl border space-y-1.5 ${
+                          isDarkMode
+                            ? 'bg-white/[0.025] border-white/[0.07]'
+                            : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                        }`}
+                      >
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] uppercase tracking-wider text-stone-500 font-semibold">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
                             2. Narrative Curation
                           </span>
-                          <span className="text-xs font-mono font-bold text-amber-700 dark:text-amber-300">
+                          <span className="text-xs font-mono tabular-nums font-semibold text-amber-700 dark:text-amber-300">
                             {signalReport.narrativeCurationScore}/100
                           </span>
                         </div>
-                        <div className={`text-xs font-semibold ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
+                        <div
+                          className={`text-xs font-semibold ${
+                            isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                          }`}
+                        >
                           {signalReport.narrativeCurationLabel}
                         </div>
-                        <p className={`text-[11px] leading-relaxed ${isDarkMode ? 'text-stone-400' : 'text-stone-600'}`}>
+                        <p
+                          className={`text-[11px] leading-relaxed ${
+                            isDarkMode ? 'text-stone-400' : 'text-stone-600'
+                          }`}
+                        >
                           {signalReport.narrativeCurationSummary}
                         </p>
                       </div>
 
-                      <div className={`p-4 rounded-2xl border space-y-1.5 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
+                      <div
+                        className={`p-4 rounded-2xl border space-y-1.5 ${
+                          isDarkMode
+                            ? 'bg-white/[0.025] border-white/[0.07]'
+                            : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                        }`}
+                      >
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] uppercase tracking-wider text-stone-500 font-semibold">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
                             3. Coordination Evidence
                           </span>
-                          <span className="text-xs font-mono font-bold text-sky-700 dark:text-sky-300">
+                          <span className="text-xs font-mono tabular-nums font-semibold text-sky-700 dark:text-sky-300">
                             {signalReport.coordinationEvidenceScore}/100
                           </span>
                         </div>
-                        <div className={`text-xs font-semibold ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
+                        <div
+                          className={`text-xs font-semibold ${
+                            isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                          }`}
+                        >
                           {signalReport.coordinationEvidenceLabel}
                         </div>
-                        <p className={`text-[11px] leading-relaxed ${isDarkMode ? 'text-stone-400' : 'text-stone-600'}`}>
+                        <p
+                          className={`text-[11px] leading-relaxed ${
+                            isDarkMode ? 'text-stone-400' : 'text-stone-600'
+                          }`}
+                        >
                           {signalReport.coordinationEvidenceSummary}
                         </p>
                       </div>
 
-                      <div className={`p-4 rounded-2xl border space-y-1.5 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
+                      <div
+                        className={`p-4 rounded-2xl border space-y-1.5 ${
+                          isDarkMode
+                            ? 'bg-white/[0.025] border-white/[0.07]'
+                            : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                        }`}
+                      >
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] uppercase tracking-wider text-stone-500 font-semibold">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
                             4. Center of Gravity
                           </span>
-                          <span className="text-xs font-mono font-bold text-amber-800 dark:text-amber-200">
+                          <span className="text-xs font-mono tabular-nums font-semibold text-amber-800 dark:text-amber-200">
                             {signalReport.centerOfGravityLikelihood}%
                           </span>
                         </div>
-                        <div className={`text-xs font-semibold ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
+                        <div
+                          className={`text-xs font-semibold ${
+                            isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                          }`}
+                        >
                           {signalReport.centerOfGravityLabel}
                         </div>
-                        <p className={`text-[11px] leading-relaxed ${isDarkMode ? 'text-stone-400' : 'text-stone-600'}`}>
+                        <p
+                          className={`text-[11px] leading-relaxed ${
+                            isDarkMode ? 'text-stone-400' : 'text-stone-600'
+                          }`}
+                        >
                           {signalReport.centerOfGravitySummary}
                         </p>
                       </div>
@@ -2596,26 +2859,42 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                     />
 
                     {signalReport.verifiedTimeline?.length > 0 && (
-                      <div className={`p-5 rounded-2xl border space-y-3 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
-                        <div className={`flex items-center gap-1.5 text-xs uppercase tracking-wider font-semibold ${isDarkMode ? 'text-stone-200' : 'text-stone-900'}`}>
+                      <div
+                        className={`p-5 rounded-2xl border space-y-3 ${
+                          isDarkMode
+                            ? 'bg-white/[0.025] border-white/[0.07]'
+                            : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                        }`}
+                      >
+                        <div
+                          className={`flex items-center gap-1.5 text-xs font-semibold ${
+                            isDarkMode ? 'text-stone-200' : 'text-stone-900'
+                          }`}
+                        >
                           <Clock className="w-4 h-4 text-emerald-700 dark:text-emerald-300" />
-                          Verified Record & Legal Status Chronology
+                          Verified Record &amp; Legal Status Chronology
                         </div>
-                        <div className="space-y-2.5 border-l border-emerald-600/40 pl-3.5">
+                        <div className="space-y-2.5 border-l border-emerald-600/35 pl-3.5">
                           {signalReport.verifiedTimeline.map((item, idx) => (
                             <div key={idx} className="text-xs leading-relaxed space-y-1">
                               <div className="flex flex-wrap items-center gap-1.5">
-                                <span className="font-mono text-emerald-800 dark:text-emerald-300 font-semibold">
+                                <span className="font-mono text-emerald-800 dark:text-emerald-300 font-medium">
                                   {item.date}
                                 </span>
                                 {item.legalStatus && (
-                                  <span className={`px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-wider font-medium ${isDarkMode ? 'bg-stone-900 border-stone-800 text-stone-300' : 'bg-stone-200 border-stone-300 text-stone-800'}`}>
+                                  <span
+                                    className={`px-2 py-0.5 rounded-full border text-[10px] font-mono uppercase tracking-wider ${
+                                      isDarkMode
+                                        ? 'bg-white/[0.04] border-white/[0.08] text-stone-300'
+                                        : 'bg-white border-stone-900/[0.08] text-stone-700'
+                                    }`}
+                                  >
                                     {item.legalStatus}
                                   </span>
                                 )}
                                 {item.epistemicGrade && (
                                   <span
-                                    className={`px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-wider font-medium ${gradeBadgeStyle(
+                                    className={`px-2 py-0.5 rounded-full border text-[10px] font-mono uppercase tracking-wider ${gradeBadgeStyle(
                                       item.epistemicGrade
                                     )}`}
                                   >
@@ -2623,7 +2902,9 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                                   </span>
                                 )}
                               </div>
-                              <p className={isDarkMode ? 'text-stone-300 font-normal' : 'text-stone-800 font-normal'}>{item.event}</p>
+                              <p className={isDarkMode ? 'text-stone-300' : 'text-stone-800'}>
+                                {item.event}
+                              </p>
                             </div>
                           ))}
                         </div>
@@ -2631,31 +2912,57 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                     )}
 
                     {signalReport.narrativeManipulationAudit && (
-                      <div className={`p-5 rounded-2xl border space-y-2.5 ${isDarkMode ? 'bg-amber-400/[0.06] border-amber-400/25' : 'bg-amber-50 border-amber-300 shadow-2xs'}`}>
-                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-800 dark:text-amber-300 font-semibold">
+                      <div
+                        className={`p-5 rounded-2xl border space-y-2.5 ${
+                          isDarkMode
+                            ? 'bg-amber-400/[0.05] border-amber-400/20'
+                            : 'bg-amber-500/[0.06] border-amber-500/20'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300">
                           <Radio className="w-4 h-4" />
-                          How the Mainstream Narrative Is Curated & Distorted
+                          How the Mainstream Narrative Is Curated &amp; Distorted
                         </div>
-                        <p className={`text-xs sm:text-sm leading-relaxed font-normal ${isDarkMode ? 'text-stone-200' : 'text-stone-900'}`}>
+                        <p
+                          className={`text-xs sm:text-sm leading-relaxed ${
+                            isDarkMode ? 'text-stone-200' : 'text-stone-900'
+                          }`}
+                        >
                           {signalReport.narrativeManipulationAudit}
                         </p>
                       </div>
                     )}
 
                     {signalReport.centerOfGravity && (
-                      <div className={`p-5 rounded-2xl border space-y-2.5 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
-                        <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-800 dark:text-amber-200 font-semibold">
+                      <div
+                        className={`p-5 rounded-2xl border space-y-2.5 ${
+                          isDarkMode
+                            ? 'bg-white/[0.025] border-white/[0.07]'
+                            : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 dark:text-amber-200">
                           <Compass className="w-4 h-4" />
-                          Center of Gravity & Epistemic Weighing
+                          Center of Gravity &amp; Epistemic Weighing
                         </div>
-                        <p className={`text-xs sm:text-sm leading-relaxed font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>
+                        <p
+                          className={`text-xs sm:text-sm leading-relaxed ${
+                            isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                          }`}
+                        >
                           {signalReport.centerOfGravity}
                         </p>
                       </div>
                     )}
 
-                    <div className={`p-5 rounded-2xl border space-y-3 ${isDarkMode ? 'bg-stone-900/40 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
-                      <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-sky-700 dark:text-sky-300 font-semibold">
+                    <div
+                      className={`p-5 rounded-2xl border space-y-3 ${
+                        isDarkMode
+                          ? 'bg-white/[0.02] border-white/[0.07]'
+                          : 'bg-[#F3F1EC]/60 border-stone-900/[0.06]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-sky-700 dark:text-sky-300">
                         <RefreshCw className="w-3.5 h-3.5" />
                         Cumulative Investigation · Append New Evidence
                       </div>
@@ -2665,30 +2972,49 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                           value={revisionInput}
                           onChange={(e) => setRevisionInput(e.target.value)}
                           placeholder="Paste a new filing, date, or development to update scores & conclusions…"
-                          className={`flex-1 border rounded-full px-3.5 py-2 text-xs focus:outline-none ${
-                            isDarkMode 
-                              ? 'bg-stone-900 border-stone-800 text-stone-200 placeholder:text-stone-600 focus:border-sky-400/40' 
-                              : 'bg-white border-stone-300 text-stone-900 placeholder:text-stone-400 focus:border-sky-500/50 shadow-2xs font-medium'
+                          className={`flex-1 border rounded-full px-4 py-2 text-xs focus:outline-none focus-within:ring-2 focus-within:ring-sky-500/20 ${
+                            isDarkMode
+                              ? 'bg-[#141416] border-white/[0.08] text-stone-200 placeholder:text-stone-500'
+                              : 'bg-white border-stone-900/[0.08] text-stone-900 placeholder:text-stone-400'
                           }`}
                         />
                         <button
                           type="submit"
                           disabled={isRevising || !revisionInput.trim()}
-                          className="px-4 py-2 rounded-full bg-sky-600 text-white font-medium text-xs hover:bg-sky-700 disabled:opacity-40 whitespace-nowrap cursor-pointer shadow-xs"
+                          className={`px-4 py-2 rounded-full font-medium text-xs transition-all disabled:opacity-35 whitespace-nowrap cursor-pointer ${
+                            isDarkMode
+                              ? 'bg-stone-100 text-stone-900 hover:bg-white'
+                              : 'bg-stone-900 text-stone-50 hover:bg-stone-800'
+                          }`}
                         >
                           {isRevising ? 'Updating…' : 'Update Dossier'}
                         </button>
                       </form>
 
                       {signalReport.revisionLog?.length > 0 && (
-                        <div className={`space-y-2 pt-2 border-t ${isDarkMode ? 'border-stone-800' : 'border-stone-200'}`}>
-                          <span className="text-[10px] uppercase tracking-wider text-stone-500 font-semibold block">
+                        <div
+                          className={`space-y-2 pt-2 border-t ${
+                            isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.06]'
+                          }`}
+                        >
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 block">
                             Revision Log
                           </span>
                           {signalReport.revisionLog.map((rev, i) => (
-                            <div key={i} className={`p-3 rounded-xl text-xs space-y-1 ${isDarkMode ? 'bg-stone-900 border border-stone-800' : 'bg-stone-100 border border-stone-300 shadow-2xs'}`}>
-                              <span className="text-[10px] font-mono text-sky-700 dark:text-sky-300 font-bold">{rev.timestamp}</span>
-                              <p className={isDarkMode ? 'text-stone-300' : 'text-stone-800 font-normal'}>{rev.summary}</p>
+                            <div
+                              key={i}
+                              className={`p-3 rounded-xl text-xs space-y-1 border ${
+                                isDarkMode
+                                  ? 'bg-white/[0.02] border-white/[0.06]'
+                                  : 'bg-white border-stone-900/[0.06]'
+                              }`}
+                            >
+                              <span className="text-[10px] font-mono text-sky-700 dark:text-sky-300 font-medium">
+                                {rev.timestamp}
+                              </span>
+                              <p className={isDarkMode ? 'text-stone-300' : 'text-stone-800'}>
+                                {rev.summary}
+                              </p>
                             </div>
                           ))}
                         </div>
@@ -2698,23 +3024,29 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                 ) : drawerTab === 'power' && signalReport ? (
                   isHydratingDeep && !signalReport.powerOperationBlueprint ? (
                     <div className="py-16 text-center space-y-2">
-                      <p className="text-xs uppercase tracking-[0.22em] text-amber-700 dark:text-amber-300 font-semibold animate-pulse">
-                        Mapping Follow-the-Power Vectors, Relationship Graph & Investigation Gaps…
+                      <p className="text-xs font-mono tracking-wide text-amber-700 dark:text-amber-300 animate-pulse">
+                        Mapping Follow-the-Power Vectors, Relationship Graph &amp; Investigation Gaps…
                       </p>
-                      <p className="text-xs text-stone-500 font-medium">
+                      <p className="text-xs text-stone-500">
                         Completing deep institutional audit in the background.
                       </p>
                     </div>
                   ) : (
                     <>
                       {signalReport.relationshipMap?.length > 0 && (
-                        <div className={`p-5 rounded-2xl border space-y-3 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
+                        <div
+                          className={`p-5 rounded-2xl border space-y-3 ${
+                            isDarkMode
+                              ? 'bg-white/[0.025] border-white/[0.07]'
+                              : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                          }`}
+                        >
                           <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-sky-700 dark:text-sky-300 font-semibold">
+                            <div className="flex items-center gap-1.5 text-xs font-semibold text-sky-700 dark:text-sky-300">
                               <GitBranch className="w-4 h-4" />
-                              Institutional Relationship & Influence Map
+                              Institutional Relationship &amp; Influence Map
                             </div>
-                            <span className="text-[10px] text-stone-500 font-medium">
+                            <span className="text-[10px] text-stone-500">
                               Click any entity to audit its multi-year track record
                             </span>
                           </div>
@@ -2723,7 +3055,9 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                               <div
                                 key={idx}
                                 className={`flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl border text-xs ${
-                                  isDarkMode ? 'bg-stone-900/90 border-stone-800' : 'bg-white border-stone-200 shadow-2xs'
+                                  isDarkMode
+                                    ? 'bg-[#141416] border-white/[0.07]'
+                                    : 'bg-white border-stone-900/[0.06]'
                                 }`}
                               >
                                 <div className="flex flex-wrap items-center gap-2">
@@ -2731,24 +3065,34 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                                     type="button"
                                     onClick={() => launchEntityAudit(edge.sourceEntity)}
                                     title={`Audit multi-year track record of ${edge.sourceEntity}`}
-                                    className={`font-semibold underline decoration-amber-500/40 hover:text-amber-700 dark:hover:text-amber-200 cursor-pointer ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}
+                                    className={`font-semibold underline decoration-amber-500/40 hover:text-amber-700 dark:hover:text-amber-200 cursor-pointer ${
+                                      isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                                    }`}
                                   >
                                     {edge.sourceEntity} ↗
                                   </button>
-                                  <span className={`px-2 py-0.5 rounded text-[11px] font-medium ${isDarkMode ? 'bg-stone-800 text-amber-200' : 'bg-amber-100 text-amber-900'}`}>
+                                  <span
+                                    className={`px-2 py-0.5 rounded text-[11px] font-mono ${
+                                      isDarkMode
+                                        ? 'bg-white/[0.05] text-amber-200'
+                                        : 'bg-amber-500/10 text-amber-900'
+                                    }`}
+                                  >
                                     ── {edge.relationshipType} ──►
                                   </span>
                                   <button
                                     type="button"
                                     onClick={() => launchEntityAudit(edge.targetEntity)}
                                     title={`Audit multi-year track record of ${edge.targetEntity}`}
-                                    className={`font-semibold underline decoration-amber-500/40 hover:text-amber-700 dark:hover:text-amber-200 cursor-pointer ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}
+                                    className={`font-semibold underline decoration-amber-500/40 hover:text-amber-700 dark:hover:text-amber-200 cursor-pointer ${
+                                      isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                                    }`}
                                   >
                                     {edge.targetEntity} ↗
                                   </button>
                                 </div>
                                 <span
-                                  className={`px-2 py-0.5 rounded-full border text-[9px] uppercase tracking-wider font-semibold ${gradeBadgeStyle(
+                                  className={`px-2 py-0.5 rounded-full border text-[9px] font-mono uppercase tracking-wider ${gradeBadgeStyle(
                                     edge.epistemicGrade
                                   )}`}
                                 >
@@ -2761,8 +3105,14 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                       )}
 
                       {signalReport.followThePower?.length > 0 && (
-                        <div className={`p-5 rounded-2xl border space-y-3 ${isDarkMode ? 'bg-amber-400/[0.06] border-amber-300/25' : 'bg-amber-50 border-amber-300 shadow-2xs'}`}>
-                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-800 dark:text-amber-300 font-semibold">
+                        <div
+                          className={`p-5 rounded-2xl border space-y-3 ${
+                            isDarkMode
+                              ? 'bg-amber-400/[0.05] border-amber-300/20'
+                              : 'bg-amber-500/[0.06] border-amber-500/20'
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300">
                             <ShieldAlert className="w-4 h-4" />
                             Follow the Power Audit
                           </div>
@@ -2770,21 +3120,35 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                             {signalReport.followThePower.map((fp, idx) => (
                               <div
                                 key={idx}
-                                className={`p-3 rounded-xl border space-y-1 ${isDarkMode ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200 shadow-2xs'}`}
+                                className={`p-3 rounded-xl border space-y-1 ${
+                                  isDarkMode
+                                    ? 'bg-[#141416] border-white/[0.07]'
+                                    : 'bg-white border-stone-900/[0.06]'
+                                }`}
                               >
                                 <div className="flex items-center justify-between gap-2">
-                                  <span className={`text-xs font-semibold ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
+                                  <span
+                                    className={`text-xs font-semibold ${
+                                      isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                                    }`}
+                                  >
                                     {fp.vector}
                                   </span>
                                   <span
-                                    className={`px-2 py-0.5 rounded-full border text-[9px] uppercase tracking-wider font-semibold ${gradeBadgeStyle(
+                                    className={`px-2 py-0.5 rounded-full border text-[9px] font-mono uppercase tracking-wider ${gradeBadgeStyle(
                                       fp.epistemicGrade
                                     )}`}
                                   >
                                     {fp.epistemicGrade}
                                   </span>
                                 </div>
-                                <p className={`text-xs leading-relaxed font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>{fp.finding}</p>
+                                <p
+                                  className={`text-xs leading-relaxed ${
+                                    isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                                  }`}
+                                >
+                                  {fp.finding}
+                                </p>
                               </div>
                             ))}
                           </div>
@@ -2792,50 +3156,96 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                       )}
 
                       {signalReport.investigationGap && (
-                        <div className={`p-5 rounded-2xl border space-y-3 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
-                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-sky-700 dark:text-sky-300 font-semibold">
+                        <div
+                          className={`p-5 rounded-2xl border space-y-3 ${
+                            isDarkMode
+                              ? 'bg-white/[0.025] border-white/[0.07]'
+                              : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-sky-700 dark:text-sky-300">
                             <Layers className="w-4 h-4" />
                             The Investigation Gap: Established vs. Suspected vs. Unknown
                           </div>
                           <div className="grid sm:grid-cols-2 gap-3 text-xs">
-                            <div className={`p-3 rounded-xl border space-y-1.5 ${isDarkMode ? 'bg-emerald-400/[0.04] border-emerald-400/20' : 'bg-emerald-50 border-emerald-200 shadow-2xs'}`}>
-                              <span className="text-[10px] uppercase tracking-wider text-emerald-800 dark:text-emerald-300 font-bold block">
+                            <div
+                              className={`p-3 rounded-xl border space-y-1.5 ${
+                                isDarkMode
+                                  ? 'bg-emerald-400/[0.04] border-emerald-400/20'
+                                  : 'bg-emerald-500/[0.06] border-emerald-500/20'
+                              }`}
+                            >
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-800 dark:text-emerald-300 font-semibold block">
                                 Established (Documented)
                               </span>
-                              <ul className={`list-disc pl-4 space-y-1 font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>
+                              <ul
+                                className={`list-disc pl-4 space-y-1 ${
+                                  isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                                }`}
+                              >
                                 {(signalReport.investigationGap.established || []).map((x, i) => (
                                   <li key={i}>{x}</li>
                                 ))}
                               </ul>
                             </div>
 
-                            <div className={`p-3 rounded-xl border space-y-1.5 ${isDarkMode ? 'bg-amber-400/[0.04] border-amber-400/20' : 'bg-amber-50 border-amber-200 shadow-2xs'}`}>
-                              <span className="text-[10px] uppercase tracking-wider text-amber-900 dark:text-amber-300 font-bold block">
+                            <div
+                              className={`p-3 rounded-xl border space-y-1.5 ${
+                                isDarkMode
+                                  ? 'bg-amber-400/[0.04] border-amber-400/20'
+                                  : 'bg-amber-500/[0.06] border-amber-500/20'
+                              }`}
+                            >
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-amber-900 dark:text-amber-300 font-semibold block">
                                 Suspected (Structural Inference)
                               </span>
-                              <ul className={`list-disc pl-4 space-y-1 font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>
+                              <ul
+                                className={`list-disc pl-4 space-y-1 ${
+                                  isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                                }`}
+                              >
                                 {(signalReport.investigationGap.suspected || []).map((x, i) => (
                                   <li key={i}>{x}</li>
                                 ))}
                               </ul>
                             </div>
 
-                            <div className={`p-3 rounded-xl border space-y-1.5 ${isDarkMode ? 'bg-purple-400/[0.04] border-purple-400/20' : 'bg-purple-50 border-purple-200 shadow-2xs'}`}>
-                              <span className="text-[10px] uppercase tracking-wider text-purple-900 dark:text-purple-300 font-bold block">
+                            <div
+                              className={`p-3 rounded-xl border space-y-1.5 ${
+                                isDarkMode
+                                  ? 'bg-purple-400/[0.04] border-purple-400/20'
+                                  : 'bg-purple-500/[0.06] border-purple-500/20'
+                              }`}
+                            >
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-purple-900 dark:text-purple-300 font-semibold block">
                                 Unknown (Lacks Direct Proof)
                               </span>
-                              <ul className={`list-disc pl-4 space-y-1 font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>
+                              <ul
+                                className={`list-disc pl-4 space-y-1 ${
+                                  isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                                }`}
+                              >
                                 {(signalReport.investigationGap.unknown || []).map((x, i) => (
                                   <li key={i}>{x}</li>
                                 ))}
                               </ul>
                             </div>
 
-                            <div className={`p-3 rounded-xl border space-y-1.5 ${isDarkMode ? 'bg-sky-400/[0.04] border-sky-400/20' : 'bg-sky-50 border-sky-200 shadow-2xs'}`}>
-                              <span className="text-[10px] uppercase tracking-wider text-sky-900 dark:text-sky-300 font-bold block">
+                            <div
+                              className={`p-3 rounded-xl border space-y-1.5 ${
+                                isDarkMode
+                                  ? 'bg-sky-400/[0.04] border-sky-400/20'
+                                  : 'bg-sky-500/[0.06] border-sky-500/20'
+                              }`}
+                            >
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-sky-900 dark:text-sky-300 font-semibold block">
                                 Next Primary Targets to Check
                               </span>
-                              <ul className={`list-disc pl-4 space-y-1 font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>
+                              <ul
+                                className={`list-disc pl-4 space-y-1 ${
+                                  isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                                }`}
+                              >
                                 {(signalReport.investigationGap.nextTargets || []).map((x, i) => (
                                   <li key={i}>{x}</li>
                                 ))}
@@ -2846,12 +3256,22 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                       )}
 
                       {signalReport.uncomfortableQuestions?.length > 0 && (
-                        <div className={`p-5 rounded-2xl border space-y-2.5 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
-                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-800 dark:text-amber-200 font-semibold">
+                        <div
+                          className={`p-5 rounded-2xl border space-y-2.5 ${
+                            isDarkMode
+                              ? 'bg-white/[0.025] border-white/[0.07]'
+                              : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 dark:text-amber-200">
                             <HelpCircle className="w-4 h-4" />
                             Uncomfortable Questions Conventional Coverage Overlooks
                           </div>
-                          <ul className={`list-disc pl-4 space-y-1.5 text-xs leading-relaxed font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>
+                          <ul
+                            className={`list-disc pl-4 space-y-1.5 text-xs leading-relaxed ${
+                              isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                            }`}
+                          >
                             {signalReport.uncomfortableQuestions.map((q, idx) => (
                               <li key={idx}>{q}</li>
                             ))}
@@ -2861,27 +3281,51 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
 
                       {signalReport.scenarios?.length > 0 && (
                         <div className="space-y-3">
-                          <span className="text-[11px] uppercase tracking-[0.18em] text-stone-500 block font-semibold">
-                            Competing Possibilities & Steelmanned Counter-Weights
+                          <span className="text-xs font-semibold text-stone-500 block">
+                            Competing Possibilities &amp; Steelmanned Counter-Weights
                           </span>
                           {signalReport.scenarios.map((sc, idx) => (
                             <div
                               key={idx}
-                              className={`p-4 rounded-2xl border space-y-2 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}
+                              className={`p-4 rounded-2xl border space-y-2 ${
+                                isDarkMode
+                                  ? 'bg-white/[0.025] border-white/[0.07]'
+                                  : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                              }`}
                             >
                               <div className="flex items-center justify-between gap-2">
-                                <h3 className={`text-sm font-semibold ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>{sc.name}</h3>
-                                <span className={`shrink-0 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold ${isDarkMode ? 'bg-stone-800 text-amber-200' : 'bg-amber-100 text-amber-900'}`}>
+                                <h3
+                                  className={`text-sm font-semibold ${
+                                    isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                                  }`}
+                                >
+                                  {sc.name}
+                                </h3>
+                                <span
+                                  className={`shrink-0 px-2.5 py-0.5 rounded-full text-xs font-mono tabular-nums font-medium ${
+                                    isDarkMode
+                                      ? 'bg-white/[0.06] text-amber-200'
+                                      : 'bg-white text-stone-800 border border-stone-900/[0.08]'
+                                  }`}
+                                >
                                   {sc.likelihood}%
                                 </span>
                               </div>
-                              <p className={`text-xs leading-relaxed font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>
-                                <span className="text-emerald-700 dark:text-emerald-300 font-semibold">Supporting evidence: </span>
+                              <p
+                                className={`text-xs leading-relaxed ${
+                                  isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                                }`}
+                              >
+                                <span className="text-emerald-700 dark:text-emerald-300 font-semibold">
+                                  Supporting evidence:{' '}
+                                </span>
                                 {sc.caseFor}
                               </p>
                               {sc.caseAgainst && (
-                                <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed font-normal">
-                                  <span className="text-stone-500 font-semibold">Counter-weight: </span>
+                                <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+                                  <span className="text-stone-500 font-semibold">
+                                    Counter-weight:{' '}
+                                  </span>
                                   {sc.caseAgainst}
                                 </p>
                               )}
@@ -2891,21 +3335,35 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                       )}
 
                       {signalReport.diagnosticChecklist?.length > 0 && (
-                        <div className={`p-5 rounded-2xl border space-y-3 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
-                          <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-emerald-700 dark:text-emerald-300 font-semibold">
+                        <div
+                          className={`p-5 rounded-2xl border space-y-3 ${
+                            isDarkMode
+                              ? 'bg-white/[0.025] border-white/[0.07]'
+                              : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
                             <SearchCheck className="w-4 h-4" />
-                            Primary Records & Falsifiable Diagnostic Tests
+                            Primary Records &amp; Falsifiable Diagnostic Tests
                           </div>
                           <div className="space-y-2.5">
                             {signalReport.diagnosticChecklist.map((doc, idx) => (
                               <div
                                 key={idx}
-                                className={`p-3 rounded-xl border space-y-1 ${isDarkMode ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200 shadow-2xs'}`}
+                                className={`p-3 rounded-xl border space-y-1 ${
+                                  isDarkMode
+                                    ? 'bg-[#141416] border-white/[0.07]'
+                                    : 'bg-white border-stone-900/[0.06]'
+                                }`}
                               >
-                                <h4 className={`text-xs font-semibold ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
+                                <h4
+                                  className={`text-xs font-semibold ${
+                                    isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                                  }`}
+                                >
                                   {doc.primaryDocument}
                                 </h4>
-                                <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed font-normal">
+                                <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
                                   {doc.whatToLookFor}
                                 </p>
                               </div>
@@ -2915,12 +3373,26 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                       )}
 
                       {signalReport.historicalPrecedents && (
-                        <div className={`p-5 rounded-2xl border space-y-2.5 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
-                          <div className={`flex items-center gap-1.5 text-xs uppercase tracking-wider font-semibold ${isDarkMode ? 'text-stone-200' : 'text-stone-900'}`}>
+                        <div
+                          className={`p-5 rounded-2xl border space-y-2.5 ${
+                            isDarkMode
+                              ? 'bg-white/[0.025] border-white/[0.07]'
+                              : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                          }`}
+                        >
+                          <div
+                            className={`flex items-center gap-1.5 text-xs font-semibold ${
+                              isDarkMode ? 'text-stone-200' : 'text-stone-900'
+                            }`}
+                          >
                             <History className="w-4 h-4 text-amber-700 dark:text-amber-300" />
-                            Historical Precedents & Where Analogies Break Down
+                            Historical Precedents &amp; Where Analogies Break Down
                           </div>
-                          <p className={`text-xs sm:text-sm leading-relaxed whitespace-pre-line font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>
+                          <p
+                            className={`text-xs sm:text-sm leading-relaxed whitespace-pre-line ${
+                              isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                            }`}
+                          >
                             {signalReport.historicalPrecedents}
                           </p>
                         </div>
@@ -2930,42 +3402,54 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                 ) : drawerTab === 'spectrum' && signalReport ? (
                   isHydratingDeep && signalReport.researchLibrary?.length === 0 ? (
                     <div className="py-16 text-center space-y-2">
-                      <p className="text-xs uppercase tracking-[0.22em] text-amber-700 dark:text-amber-300 font-semibold animate-pulse">
-                        Assembling 6 Analytical Lenses & Verified Search Sources…
+                      <p className="text-xs font-mono tracking-wide text-amber-700 dark:text-amber-300 animate-pulse">
+                        Assembling 6 Analytical Lenses &amp; Verified Search Sources…
                       </p>
                     </div>
                   ) : (
                     <div className="space-y-6">
                       {signalReport.spectrumPerspectives?.length > 0 && (
                         <div className="space-y-3">
-                          <span className="text-[11px] uppercase tracking-[0.18em] text-amber-800 dark:text-amber-300 block font-semibold">
+                          <span className="text-xs font-semibold text-amber-800 dark:text-amber-300 block">
                             Perspectives Across Six Functional Analytical Lenses
                           </span>
                           <div className="grid sm:grid-cols-2 gap-3">
                             {signalReport.spectrumPerspectives.map((sp, idx) => (
                               <div
                                 key={idx}
-                                className={`p-4 rounded-2xl border space-y-1.5 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}
+                                className={`p-4 rounded-2xl border space-y-1.5 ${
+                                  isDarkMode
+                                    ? 'bg-white/[0.025] border-white/[0.07]'
+                                    : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                                }`}
                               >
-                                <span className="text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-300 block font-semibold">
+                                <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-300 block font-medium">
                                   {sp.lens}
                                 </span>
-                                <p className="text-[11px] italic text-stone-500 font-medium">{sp.coreQuestion}</p>
+                                <p className="text-[11px] italic text-stone-500">{sp.coreQuestion}</p>
                                 <div className="flex items-center justify-between gap-2">
-                                  <h4 className={`text-xs font-semibold ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
+                                  <h4
+                                    className={`text-xs font-semibold ${
+                                      isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                                    }`}
+                                  >
                                     {sp.thinkerOrOutlet}
                                   </h4>
                                   {sp.thinkerOrOutlet && (
                                     <button
                                       type="button"
                                       onClick={() => launchEntityAudit(sp.thinkerOrOutlet)}
-                                      className="text-[10px] text-amber-700 dark:text-amber-300 underline decoration-amber-500/40 hover:text-amber-900 dark:hover:text-amber-200 shrink-0 cursor-pointer font-medium"
+                                      className="text-[10px] text-amber-700 dark:text-amber-300 underline decoration-amber-500/40 hover:text-amber-900 dark:hover:text-amber-200 shrink-0 cursor-pointer"
                                     >
                                       Audit ↗
                                     </button>
                                   )}
                                 </div>
-                                <p className={`text-xs leading-relaxed font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>
+                                <p
+                                  className={`text-xs leading-relaxed ${
+                                    isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                                  }`}
+                                >
                                   {sp.coreThesis}
                                 </p>
                               </div>
@@ -2976,7 +3460,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
 
                       {signalReport.groundingSources?.length > 0 && (
                         <div className="space-y-2">
-                          <span className="text-[11px] uppercase tracking-[0.18em] text-emerald-800 dark:text-emerald-300 block font-semibold">
+                          <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block">
                             Verified Live Google Search Grounding Sources
                           </span>
                           {signalReport.groundingSources.map((src, idx) => (
@@ -2985,8 +3469,10 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                               href={src.url}
                               target="_blank"
                               rel="noreferrer"
-                              className={`flex items-center justify-between p-3 rounded-2xl border text-xs transition-colors font-medium ${
-                                isDarkMode ? 'bg-stone-900/60 border-stone-800 hover:border-emerald-400/40 text-stone-200' : 'bg-stone-50 border-stone-200 hover:border-emerald-500/50 text-stone-900 shadow-2xs'
+                              className={`flex items-center justify-between p-3 rounded-2xl border text-xs transition-colors ${
+                                isDarkMode
+                                  ? 'bg-white/[0.025] border-white/[0.07] hover:border-emerald-400/35 text-stone-200'
+                                  : 'bg-[#F3F1EC]/75 border-stone-900/[0.06] hover:border-emerald-600/35 text-stone-900'
                               }`}
                             >
                               <span className="truncate pr-2">{src.title}</span>
@@ -2998,8 +3484,8 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
 
                       {signalReport.researchLibrary?.length > 0 && (
                         <div className="space-y-3">
-                          <span className="text-[11px] uppercase tracking-[0.18em] text-stone-500 block font-semibold">
-                            Curated YouTube Talks (Left, Centrist & Right), Studies & Essays (Direct Search Links)
+                          <span className="text-xs font-semibold text-stone-500 block">
+                            Curated YouTube Talks (Left, Centrist &amp; Right), Studies &amp; Essays
                           </span>
                           {signalReport.researchLibrary.map((item, idx) => {
                             const fmt = (item.format || '').toLowerCase();
@@ -3011,12 +3497,12 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                               : BookOpen;
 
                             const badgeStyle = tag.includes('centrist')
-                              ? 'bg-sky-700/10 border-sky-700/25 text-sky-900 dark:text-sky-200 font-semibold'
+                              ? 'bg-sky-500/10 border-sky-500/20 text-sky-900 dark:text-sky-200'
                               : tag.includes('left')
-                              ? 'bg-indigo-700/10 border-indigo-700/25 text-indigo-900 dark:text-indigo-200 font-semibold'
+                              ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-900 dark:text-indigo-200'
                               : tag.includes('right')
-                              ? 'bg-rose-700/10 border-rose-700/25 text-rose-900 dark:text-rose-200 font-semibold'
-                              : 'bg-amber-700/10 border-amber-700/20 text-amber-900 dark:text-amber-200 font-semibold';
+                              ? 'bg-rose-500/10 border-rose-500/20 text-rose-900 dark:text-rose-200'
+                              : 'bg-amber-500/10 border-amber-500/20 text-amber-900 dark:text-amber-200';
 
                             return (
                               <a
@@ -3025,21 +3511,31 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                                 target="_blank"
                                 rel="noreferrer"
                                 className={`block p-4 rounded-2xl border transition-all space-y-2 ${
-                                  isDarkMode ? 'bg-stone-900/60 border-stone-800 hover:border-amber-400/40' : 'bg-stone-50 border-stone-200 hover:border-amber-500/50 shadow-2xs'
+                                  isDarkMode
+                                    ? 'bg-white/[0.025] border-white/[0.07] hover:border-amber-400/35'
+                                    : 'bg-[#F3F1EC]/75 border-stone-900/[0.06] hover:border-amber-600/35'
                                 }`}
                               >
                                 <div className="flex items-center justify-between gap-2">
                                   <div className="flex flex-wrap items-center gap-1.5">
-                                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider border font-semibold ${isDarkMode ? 'bg-stone-800 border-stone-700 text-stone-200' : 'bg-stone-200 border-stone-300 text-stone-800'}`}>
+                                    <span
+                                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider border ${
+                                        isDarkMode
+                                          ? 'bg-white/[0.05] border-white/[0.08] text-stone-200'
+                                          : 'bg-white border-stone-900/[0.08] text-stone-800'
+                                      }`}
+                                    >
                                       <Icon
                                         className={`w-3 h-3 ${
-                                          fmt.includes('youtube') ? 'text-red-600 dark:text-red-400' : 'text-amber-700 dark:text-amber-300'
+                                          fmt.includes('youtube')
+                                            ? 'text-red-600 dark:text-red-400'
+                                            : 'text-amber-700 dark:text-amber-300'
                                         }`}
                                       />
                                       {item.format}
                                     </span>
                                     <span
-                                      className={`px-2.5 py-0.5 rounded-full border text-[10px] uppercase tracking-wider ${badgeStyle}`}
+                                      className={`px-2.5 py-0.5 rounded-full border text-[10px] font-mono uppercase tracking-wider ${badgeStyle}`}
                                     >
                                       {item.perspectiveTag}
                                     </span>
@@ -3048,15 +3544,23 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                                 </div>
 
                                 <div>
-                                  <h4 className={`text-sm font-semibold leading-snug ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
+                                  <h4
+                                    className={`text-sm font-semibold leading-snug ${
+                                      isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                                    }`}
+                                  >
                                     {item.title}
                                   </h4>
-                                  <span className="text-xs text-stone-600 dark:text-stone-400 font-medium">
+                                  <span className="text-xs text-stone-600 dark:text-stone-400">
                                     {item.authorOrChannel}
                                   </span>
                                 </div>
 
-                                <p className={`text-xs leading-relaxed font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>
+                                <p
+                                  className={`text-xs leading-relaxed ${
+                                    isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                                  }`}
+                                >
                                   {item.takeaway}
                                 </p>
                               </a>
@@ -3070,19 +3574,21 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                   <div className="space-y-5">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div>
-                        <span className="text-[11px] uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300 block font-semibold">
+                        <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 block">
                           Touchmark Studio · Research-to-Broadcast Engine
                         </span>
-                        <p className="text-xs text-stone-500 font-medium mt-0.5">
-                          Inherits your verified Signal record—or your own pasted research notes—to draft scripts & essays.
+                        <p className="text-xs text-stone-500 mt-0.5">
+                          Inherits your verified Signal record—or your own pasted research notes—to draft scripts &amp; essays.
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => setShowExternalImporter(!showExternalImporter)}
-                          className={`px-3 py-1.5 rounded-full border text-xs inline-flex items-center gap-1 cursor-pointer font-medium ${
-                            isDarkMode ? 'bg-stone-900 hover:bg-stone-800 border-stone-800 text-stone-300' : 'bg-stone-100 hover:bg-stone-200 border-stone-300 text-stone-800 shadow-2xs'
+                          className={`px-3 py-1.5 rounded-full border text-xs inline-flex items-center gap-1 cursor-pointer transition-colors ${
+                            isDarkMode
+                              ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-stone-200'
+                              : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-800'
                           }`}
                         >
                           <PlusCircle className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-300" />
@@ -3092,7 +3598,11 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                           <button
                             type="button"
                             onClick={() => generateStudioPackage()}
-                            className="px-4 py-1.5 rounded-full bg-emerald-600 border border-emerald-700 text-xs text-white hover:bg-emerald-700 cursor-pointer font-medium shadow-xs"
+                            className={`px-4 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
+                              isDarkMode
+                                ? 'bg-stone-100 text-stone-900 hover:bg-white'
+                                : 'bg-stone-900 text-stone-50 hover:bg-stone-800'
+                            }`}
                           >
                             Generate Suite
                           </button>
@@ -3101,8 +3611,14 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                     </div>
 
                     {showExternalImporter && (
-                      <div className={`p-4 rounded-2xl border space-y-3 ${isDarkMode ? 'bg-stone-900/60 border-emerald-400/25' : 'bg-emerald-50 border-emerald-300 shadow-2xs'}`}>
-                        <span className="text-[10px] uppercase tracking-wider text-emerald-800 dark:text-emerald-300 font-bold block">
+                      <div
+                        className={`p-4 rounded-2xl border space-y-3 ${
+                          isDarkMode
+                            ? 'bg-white/[0.025] border-emerald-400/20'
+                            : 'bg-emerald-500/[0.06] border-emerald-500/20'
+                        }`}
+                      >
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-800 dark:text-emerald-300 font-semibold block">
                           Paste External Research Notes, Transcripts or Articles
                         </span>
                         <textarea
@@ -3111,7 +3627,9 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                           onChange={(e) => setExternalResearchNotes(e.target.value)}
                           placeholder="Paste your own research notes, interview transcript, or document excerpts here to produce a Substack essay, YouTube script, and short-form pack…"
                           className={`w-full border rounded-xl p-3 text-xs focus:outline-none ${
-                            isDarkMode ? 'bg-stone-900 border-stone-800 text-stone-200 placeholder:text-stone-600 focus:border-emerald-400/40' : 'bg-white border-stone-300 text-stone-900 placeholder:text-stone-400 focus:border-emerald-500/50 shadow-2xs font-medium'
+                            isDarkMode
+                              ? 'bg-[#141416] border-white/[0.08] text-stone-200 placeholder:text-stone-500'
+                              : 'bg-white border-stone-900/[0.08] text-stone-900 placeholder:text-stone-400'
                           }`}
                         />
                         <div className="flex justify-end">
@@ -3119,7 +3637,11 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                             type="button"
                             disabled={isGeneratingStudio || !externalResearchNotes.trim()}
                             onClick={() => generateStudioPackage(externalResearchNotes)}
-                            className="px-4 py-2 rounded-full bg-emerald-600 text-white font-medium text-xs hover:bg-emerald-700 disabled:opacity-40 cursor-pointer shadow-xs"
+                            className={`px-4 py-2 rounded-full font-medium text-xs disabled:opacity-35 cursor-pointer ${
+                              isDarkMode
+                                ? 'bg-stone-100 text-stone-900 hover:bg-white'
+                                : 'bg-stone-900 text-stone-50 hover:bg-stone-800'
+                            }`}
                           >
                             {isGeneratingStudio ? 'Building Studio Package…' : 'Build From Imported Research'}
                           </button>
@@ -3129,45 +3651,83 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
 
                     {isGeneratingStudio ? (
                       <div className="py-16 text-center space-y-2">
-                        <p className="text-xs uppercase tracking-[0.22em] text-emerald-700 dark:text-emerald-300 font-semibold animate-pulse">
-                          Structuring Substack Essay, YouTube Script, Short-Form Pack & Integrity Audit…
+                        <p className="text-xs font-mono tracking-wide text-emerald-700 dark:text-emerald-300 animate-pulse">
+                          Structuring Substack Essay, YouTube Script, Short-Form Pack &amp; Integrity Audit…
                         </p>
-                        <p className="text-xs text-stone-500 font-medium">
+                        <p className="text-xs text-stone-500">
                           Cross-checking every draft claim against your Signal evidence grades.
                         </p>
                       </div>
                     ) : signalReport?.studioAssets ? (
                       <>
-                        <div className={`p-4 rounded-2xl border space-y-2 ${isDarkMode ? 'bg-emerald-400/[0.05] border-emerald-400/20' : 'bg-emerald-50 border-emerald-200 shadow-2xs'}`}>
-                          <span className="text-[10px] uppercase tracking-wider text-emerald-800 dark:text-emerald-300 font-bold block">
+                        <div
+                          className={`p-4 rounded-2xl border space-y-2 ${
+                            isDarkMode
+                              ? 'bg-emerald-400/[0.04] border-emerald-400/20'
+                              : 'bg-emerald-500/[0.06] border-emerald-500/20'
+                          }`}
+                        >
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-800 dark:text-emerald-300 font-semibold block">
                             Lead Editorial Hook
                           </span>
-                          <p className={`text-xs sm:text-sm leading-relaxed font-normal ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>
+                          <p
+                            className={`text-xs sm:text-sm leading-relaxed ${
+                              isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                            }`}
+                          >
                             {signalReport.studioAssets.editorialHook}
                           </p>
                           {signalReport.studioAssets.alternativeAngles?.length > 0 && (
-                            <div className={`pt-2 border-t space-y-1 ${isDarkMode ? 'border-stone-800' : 'border-stone-200'}`}>
-                              <span className="text-[10px] uppercase tracking-wider text-stone-500 block font-semibold">
+                            <div
+                              className={`pt-2 border-t space-y-1 ${
+                                isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.07]'
+                              }`}
+                            >
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 block">
                                 Alternative Editorial Angles
                               </span>
                               {signalReport.studioAssets.alternativeAngles.map((ang, i) => (
-                                <p key={i} className="text-xs text-stone-700 dark:text-stone-300 font-normal">
-                                  <strong className={isDarkMode ? 'text-stone-100 font-semibold' : 'text-stone-900 font-semibold'}>{ang.angleTitle}:</strong> {ang.framing}
+                                <p
+                                  key={i}
+                                  className="text-xs text-stone-700 dark:text-stone-300"
+                                >
+                                  <strong
+                                    className={
+                                      isDarkMode ? 'text-stone-100 font-semibold' : 'text-stone-900 font-semibold'
+                                    }
+                                  >
+                                    {ang.angleTitle}:
+                                  </strong>{' '}
+                                  {ang.framing}
                                 </p>
                               ))}
                             </div>
                           )}
                         </div>
 
-                        <div className={`flex flex-wrap items-center justify-between gap-2 border-b pb-3 ${isDarkMode ? 'border-stone-800' : 'border-stone-200'}`}>
-                          <div className="flex flex-wrap items-center gap-1.5">
+                        <div
+                          className={`flex flex-wrap items-center justify-between gap-2 border-b pb-3 ${
+                            isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.07]'
+                          }`}
+                        >
+                          <div
+                            className={`flex flex-wrap items-center gap-1 p-1 rounded-full border ${
+                              isDarkMode
+                                ? 'bg-white/[0.03] border-white/[0.08]'
+                                : 'bg-[#F3F1EC] border-stone-900/[0.07]'
+                            }`}
+                          >
                             <button
                               type="button"
                               onClick={() => setStudioFormatView('substack')}
-                              className={`px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 cursor-pointer font-medium ${
+                              className={`px-3 py-1 rounded-full text-xs flex items-center gap-1.5 cursor-pointer transition-all ${
                                 studioFormatView === 'substack'
-                                  ? 'bg-amber-600 text-white font-semibold'
-                                  : isDarkMode ? 'text-stone-400 hover:text-stone-200 bg-stone-900' : 'text-stone-700 hover:text-stone-900 bg-stone-200'
+                                  ? isDarkMode
+                                    ? 'bg-white/[0.1] text-stone-100 font-medium shadow-xs'
+                                    : 'bg-white text-stone-900 font-medium shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                                  : isDarkMode
+                                  ? 'text-stone-400 hover:text-stone-200'
+                                  : 'text-stone-600 hover:text-stone-900'
                               }`}
                             >
                               <BookOpen className="w-3.5 h-3.5" />
@@ -3176,10 +3736,14 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                             <button
                               type="button"
                               onClick={() => setStudioFormatView('script')}
-                              className={`px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 cursor-pointer font-medium ${
+                              className={`px-3 py-1 rounded-full text-xs flex items-center gap-1.5 cursor-pointer transition-all ${
                                 studioFormatView === 'script'
-                                  ? 'bg-amber-600 text-white font-semibold'
-                                  : isDarkMode ? 'text-stone-400 hover:text-stone-200 bg-stone-900' : 'text-stone-700 hover:text-stone-900 bg-stone-200'
+                                  ? isDarkMode
+                                    ? 'bg-white/[0.1] text-stone-100 font-medium shadow-xs'
+                                    : 'bg-white text-stone-900 font-medium shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                                  : isDarkMode
+                                  ? 'text-stone-400 hover:text-stone-200'
+                                  : 'text-stone-600 hover:text-stone-900'
                               }`}
                             >
                               <Video className="w-3.5 h-3.5" />
@@ -3188,10 +3752,14 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                             <button
                               type="button"
                               onClick={() => setStudioFormatView('shortform')}
-                              className={`px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 cursor-pointer font-medium ${
+                              className={`px-3 py-1 rounded-full text-xs flex items-center gap-1.5 cursor-pointer transition-all ${
                                 studioFormatView === 'shortform'
-                                  ? 'bg-amber-600 text-white font-semibold'
-                                  : isDarkMode ? 'text-stone-400 hover:text-stone-200 bg-stone-900' : 'text-stone-700 hover:text-stone-900 bg-stone-200'
+                                  ? isDarkMode
+                                    ? 'bg-white/[0.1] text-stone-100 font-medium shadow-xs'
+                                    : 'bg-white text-stone-900 font-medium shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                                  : isDarkMode
+                                  ? 'text-stone-400 hover:text-stone-200'
+                                  : 'text-stone-600 hover:text-stone-900'
                               }`}
                             >
                               <Scissors className="w-3.5 h-3.5" />
@@ -3200,14 +3768,18 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                             <button
                               type="button"
                               onClick={() => setStudioFormatView('audit')}
-                              className={`px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 cursor-pointer font-medium ${
+                              className={`px-3 py-1 rounded-full text-xs flex items-center gap-1.5 cursor-pointer transition-all ${
                                 studioFormatView === 'audit'
-                                  ? 'bg-amber-600 text-white font-semibold'
-                                  : isDarkMode ? 'text-stone-400 hover:text-stone-200 bg-stone-900' : 'text-stone-700 hover:text-stone-900 bg-stone-200'
+                                  ? isDarkMode
+                                    ? 'bg-white/[0.1] text-stone-100 font-medium shadow-xs'
+                                    : 'bg-white text-stone-900 font-medium shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                                  : isDarkMode
+                                  ? 'text-stone-400 hover:text-stone-200'
+                                  : 'text-stone-600 hover:text-stone-900'
                               }`}
                             >
                               <CheckSquare className="w-3.5 h-3.5" />
-                              Audit & Visuals
+                              Audit &amp; Visuals
                             </button>
                           </div>
 
@@ -3231,8 +3803,10 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                               setCopiedStudioText(true);
                               setTimeout(() => setCopiedStudioText(false), 2000);
                             }}
-                            className={`px-3 py-1.5 rounded-full border text-xs cursor-pointer font-medium ${
-                              isDarkMode ? 'bg-stone-900 hover:bg-stone-800 border-stone-800 text-stone-200' : 'bg-stone-100 hover:bg-stone-200 border-stone-300 text-stone-800 shadow-2xs'
+                            className={`px-3 py-1.5 rounded-full border text-xs cursor-pointer transition-colors ${
+                              isDarkMode
+                                ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-stone-200'
+                                : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-800'
                             }`}
                           >
                             {copiedStudioText ? 'Copied!' : 'Copy Draft'}
@@ -3240,11 +3814,23 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                         </div>
 
                         {studioFormatView === 'substack' ? (
-                          <div className={`p-5 rounded-2xl border text-xs sm:text-sm leading-relaxed whitespace-pre-line font-normal ${isDarkMode ? 'bg-stone-900/60 border-stone-800 text-stone-200' : 'bg-stone-50 border-stone-200 text-stone-900 shadow-2xs'}`}>
+                          <div
+                            className={`p-5 rounded-2xl border text-xs sm:text-sm leading-relaxed whitespace-pre-line ${
+                              isDarkMode
+                                ? 'bg-white/[0.025] border-white/[0.07] text-stone-200'
+                                : 'bg-[#F3F1EC]/75 border-stone-900/[0.06] text-stone-900'
+                            }`}
+                          >
                             {signalReport.studioAssets.substackEssayDraft}
                           </div>
                         ) : studioFormatView === 'script' ? (
-                          <div className={`p-5 rounded-2xl border text-xs sm:text-sm leading-relaxed whitespace-pre-line font-mono font-normal ${isDarkMode ? 'bg-stone-900/60 border-stone-800 text-stone-200' : 'bg-stone-50 border-stone-200 text-stone-900 shadow-2xs'}`}>
+                          <div
+                            className={`p-5 rounded-2xl border text-xs sm:text-sm leading-relaxed whitespace-pre-line font-mono ${
+                              isDarkMode
+                                ? 'bg-white/[0.025] border-white/[0.07] text-stone-200'
+                                : 'bg-[#F3F1EC]/75 border-stone-900/[0.06] text-stone-900'
+                            }`}
+                          >
                             {signalReport.studioAssets.youtubePodcastScript}
                           </div>
                         ) : studioFormatView === 'shortform' ? (
@@ -3252,25 +3838,37 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                             {(signalReport.studioAssets.shortFormPack || []).map((clip, i) => (
                               <div
                                 key={i}
-                                className={`p-4 rounded-2xl border space-y-1.5 text-xs ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}
+                                className={`p-4 rounded-2xl border space-y-1.5 text-xs ${
+                                  isDarkMode
+                                    ? 'bg-white/[0.025] border-white/[0.07]'
+                                    : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                                }`}
                               >
-                                <span className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-300 font-bold block">
+                                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-700 dark:text-emerald-300 font-semibold block">
                                   Clip 0{i + 1} · {clip.platform}
                                 </span>
-                                <p className={`font-semibold ${isDarkMode ? 'text-stone-100' : 'text-stone-900'}`}>Hook: “{clip.hook}”</p>
-                                <p className={`font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>{clip.coreBeat}</p>
-                                <p className="text-stone-600 dark:text-stone-400 font-normal">
+                                <p
+                                  className={`font-semibold ${
+                                    isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                                  }`}
+                                >
+                                  Hook: “{clip.hook}”
+                                </p>
+                                <p className={isDarkMode ? 'text-stone-300' : 'text-stone-800'}>
+                                  {clip.coreBeat}
+                                </p>
+                                <p className="text-stone-600 dark:text-stone-400">
                                   <strong>Visual Direction:</strong> {clip.visualDirection}
                                 </p>
                               </div>
                             ))}
 
                             {signalReport.studioAssets.doNotCompressWarnings?.length > 0 && (
-                              <div className="p-4 rounded-2xl bg-red-950/20 border border-red-400/25 space-y-2">
-                                <span className="text-[10px] uppercase tracking-wider text-red-700 dark:text-red-300 font-bold block">
+                              <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 space-y-2">
+                                <span className="text-[10px] font-mono uppercase tracking-wider text-red-700 dark:text-red-300 font-semibold block">
                                   Editorial Safeguard · Do Not Compress Into Short-Form
                                 </span>
-                                <ul className="list-disc pl-4 space-y-1 text-xs text-stone-700 dark:text-stone-300 font-normal">
+                                <ul className="list-disc pl-4 space-y-1 text-xs text-stone-700 dark:text-stone-300">
                                   {signalReport.studioAssets.doNotCompressWarnings.map((w, i) => (
                                     <li key={i}>{w}</li>
                                   ))}
@@ -3280,24 +3878,55 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                           </div>
                         ) : (
                           <div className="space-y-4">
-                            <div className={`p-4 rounded-2xl border space-y-2 ${isDarkMode ? 'bg-amber-400/[0.06] border-amber-400/25' : 'bg-amber-50 border-amber-300 shadow-2xs'}`}>
-                              <span className="text-[11px] uppercase tracking-wider text-amber-950 dark:text-amber-300 font-bold block">
-                                Journalistic Integrity & Overstatement Guardrails
+                            <div
+                              className={`p-4 rounded-2xl border space-y-2 ${
+                                isDarkMode
+                                  ? 'bg-amber-400/[0.05] border-amber-400/20'
+                                  : 'bg-amber-500/[0.06] border-amber-500/20'
+                              }`}
+                            >
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-amber-900 dark:text-amber-300 font-semibold block">
+                                Journalistic Integrity &amp; Overstatement Guardrails
                               </span>
-                              <ul className={`list-disc pl-4 space-y-1.5 text-xs font-normal ${isDarkMode ? 'text-stone-300' : 'text-stone-800'}`}>
-                                {(signalReport.studioAssets.evidenceIntegrityAudit || []).map((flag, i) => (
-                                  <li key={i}>{flag}</li>
-                                ))}
+                              <ul
+                                className={`list-disc pl-4 space-y-1.5 text-xs ${
+                                  isDarkMode ? 'text-stone-300' : 'text-stone-800'
+                                }`}
+                              >
+                                {(signalReport.studioAssets.evidenceIntegrityAudit || []).map(
+                                  (flag, i) => (
+                                    <li key={i}>{flag}</li>
+                                  )
+                                )}
                               </ul>
                             </div>
 
-                            <div className={`p-4 rounded-2xl border space-y-2 ${isDarkMode ? 'bg-stone-900/60 border-stone-800' : 'bg-stone-50 border-stone-200 shadow-2xs'}`}>
-                              <span className="text-[11px] uppercase tracking-wider text-sky-800 dark:text-sky-300 font-bold block">
-                                On-Screen Primary Evidence & B-Roll Shot List
+                            <div
+                              className={`p-4 rounded-2xl border space-y-2 ${
+                                isDarkMode
+                                  ? 'bg-white/[0.025] border-white/[0.07]'
+                                  : 'bg-[#F3F1EC]/75 border-stone-900/[0.06]'
+                              }`}
+                            >
+                              <span className="text-[10px] font-mono uppercase tracking-wider text-sky-800 dark:text-sky-300 font-semibold block">
+                                On-Screen Primary Evidence &amp; B-Roll Shot List
                               </span>
                               {(signalReport.studioAssets.visualAssetChecklist || []).map((v, i) => (
-                                <div key={i} className={`text-xs pb-2 border-b font-normal ${isDarkMode ? 'text-stone-300 border-stone-800' : 'text-stone-800 border-stone-200'}`}>
-                                  <strong className={isDarkMode ? 'text-stone-100 font-semibold' : 'text-stone-900 font-semibold'}>{v.timestampOrBeat}:</strong>{' '}
+                                <div
+                                  key={i}
+                                  className={`text-xs pb-2 border-b ${
+                                    isDarkMode
+                                      ? 'text-stone-300 border-white/[0.06]'
+                                      : 'text-stone-800 border-stone-900/[0.06]'
+                                  }`}
+                                >
+                                  <strong
+                                    className={
+                                      isDarkMode ? 'text-stone-100 font-semibold' : 'text-stone-900 font-semibold'
+                                    }
+                                  >
+                                    {v.timestampOrBeat}:
+                                  </strong>{' '}
                                   {v.onScreenEvidence}
                                 </div>
                               ))}
@@ -3318,23 +3947,35 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                 )}
 
                 {signalReport && (
-                  <div className={`pt-5 border-t flex flex-col sm:flex-row items-center justify-center gap-3 ${isDarkMode ? 'border-stone-800' : 'border-stone-200'}`}>
+                  <div
+                    className={`pt-5 border-t flex flex-col sm:flex-row items-center justify-center gap-3 ${
+                      isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.07]'
+                    }`}
+                  >
                     <button
                       type="button"
                       onClick={exportFullPdfDossier}
                       disabled={isHydratingDeep}
-                      className="w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full bg-amber-600 hover:bg-amber-700 text-white font-medium text-xs tracking-wide whitespace-nowrap disabled:opacity-50 flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm"
+                      className={`w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full font-medium text-xs tracking-wide whitespace-nowrap disabled:opacity-45 flex items-center justify-center gap-2 transition-colors cursor-pointer ${
+                        isDarkMode
+                          ? 'bg-stone-100 text-stone-900 hover:bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]'
+                          : 'bg-stone-900 text-stone-50 hover:bg-stone-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]'
+                      }`}
                     >
                       <Printer className="w-4 h-4 shrink-0" />
-                      <span>{isHydratingDeep ? 'Finalizing Full PDF…' : 'Export PDF Dossier'}</span>
+                      <span>
+                        {isHydratingDeep ? 'Finalizing Full PDF…' : 'Export PDF Dossier'}
+                      </span>
                     </button>
 
                     <button
                       type="button"
                       onClick={copyReceipt}
                       disabled={isHydratingDeep}
-                      className={`w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full border text-xs font-medium tracking-wide whitespace-nowrap disabled:opacity-50 flex items-center justify-center gap-2 transition-colors cursor-pointer ${
-                        isDarkMode ? 'bg-stone-900 hover:bg-stone-800 border-stone-800 text-stone-200' : 'bg-stone-100 hover:bg-stone-200 border-stone-300 text-stone-800 shadow-2xs'
+                      className={`w-full sm:w-auto min-w-[200px] px-6 py-3 rounded-full border text-xs font-medium tracking-wide whitespace-nowrap disabled:opacity-45 flex items-center justify-center gap-2 transition-colors cursor-pointer ${
+                        isDarkMode
+                          ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-stone-200'
+                          : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-800'
                       }`}
                     >
                       {copiedReceipt ? (
@@ -3358,9 +3999,13 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
       )}
 
       {checkoutBanner && (
-        <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl border px-4 py-3 text-xs shadow-2xl backdrop-blur font-medium ${
-          isDarkMode ? 'border-amber-400/40 bg-stone-900/95 text-stone-100' : 'border-amber-500/60 bg-white/95 text-stone-900'
-        }`}>
+        <div
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl border px-4 py-3 text-xs shadow-2xl backdrop-blur font-medium ${
+            isDarkMode
+              ? 'border-amber-400/35 bg-[#141416]/95 text-stone-100'
+              : 'border-stone-900/[0.08] bg-[#FAF9F6]/95 text-stone-900'
+          }`}
+        >
           <span>{checkoutBanner}</span>
           <button
             type="button"
@@ -3374,7 +4019,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
       )}
 
       {isUpgradeOpen && upgradeReason && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[60] max-w-lg w-[92%] rounded-xl border border-amber-400/50 bg-stone-950/95 px-4 py-3 text-center text-xs text-amber-200 shadow-2xl font-medium">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[60] max-w-lg w-[92%] rounded-xl border border-amber-400/50 bg-[#141416]/95 px-4 py-3 text-center text-xs text-amber-200 shadow-2xl font-medium">
           {upgradeReason}
         </div>
       )}
