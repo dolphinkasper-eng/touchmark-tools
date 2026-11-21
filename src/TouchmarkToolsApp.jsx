@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  ShieldCheck, 
-  Search, 
-  Terminal, 
-  Cpu, 
-  Activity, 
-  Mic,
   Send,
   Volume2,
   VolumeX,
@@ -38,7 +32,8 @@ import {
   GitBranch,
   PlusCircle,
   RefreshCw,
-  Scissors
+  Scissors,
+  Mic
 } from 'lucide-react';
 import FoundingMemberModal from './FoundingMemberModal';
 import {
@@ -209,165 +204,158 @@ function createContemplationSoundscape() {
   return { startThinkingDrone, stopThinkingDrone };
 }
 
-// --- LIQUID WATER-IRIS ORB ---
+// --- ORIGINAL GLOWING CORE + EYE OVAL OUTLINE ---
 function MorphingSphereOrb({ status, mode, onClick }) {
   const isListening = status === 'listening';
   const isThinking = status === 'thinking';
   const isSpeaking = status === 'speaking';
   const isActive = isListening || isThinking || isSpeaking;
 
-  const palette =
-    mode === 'signal'
-      ? {
-          ambient: 'rgba(217, 119, 6, 0.22)',
-          outerLiquid:
-            'radial-gradient(circle at 32% 28%, rgba(254, 243, 199, 0.35) 0%, rgba(217, 119, 6, 0.24) 48%, rgba(28, 25, 23, 0.88) 100%)',
-          midLiquid:
-            'radial-gradient(circle at 68% 72%, rgba(251, 191, 36, 0.32) 0%, rgba(180, 83, 9, 0.22) 52%, rgba(14, 14, 17, 0.92) 100%)',
-          irisRing: 'rgba(245, 158, 11, 0.45)',
-          irisGlow:
-            'radial-gradient(circle at 38% 35%, #FFFBEB 0%, #F59E0B 34%, #92400E 70%, #0E0E11 100%)',
-          rim: 'rgba(217, 119, 6, 0.35)'
-        }
-      : {
-          ambient: 'rgba(16, 185, 129, 0.22)',
-          outerLiquid:
-            'radial-gradient(circle at 32% 28%, rgba(209, 250, 229, 0.35) 0%, rgba(16, 185, 129, 0.24) 48%, rgba(28, 25, 23, 0.88) 100%)',
-          midLiquid:
-            'radial-gradient(circle at 68% 72%, rgba(52, 211, 153, 0.32) 0%, rgba(4, 120, 87, 0.22) 52%, rgba(14, 14, 17, 0.92) 100%)',
-          irisRing: 'rgba(16, 185, 129, 0.45)',
-          irisGlow:
-            'radial-gradient(circle at 38% 35%, #ECFDF5 0%, #10B981 34%, #065F46 70%, #0E0E11 100%)',
-          rim: 'rgba(16, 185, 129, 0.35)'
-        };
+  const isSignal = mode === 'signal';
 
   return (
     <div className="relative flex flex-col items-center justify-center select-none">
       <style>{`
-        @keyframes waterUndulateSlow {
+        @keyframes eyeBreathe {
           0%, 100% {
-            border-radius: 56% 44% 52% 48% / 48% 55% 45% 52%;
-            transform: rotate(0deg) scale(1);
-          }
-          33% {
-            border-radius: 46% 54% 44% 56% / 54% 46% 55% 45%;
-            transform: rotate(120deg) scale(1.03);
-          }
-          66% {
-            border-radius: 53% 47% 57% 43% / 45% 53% 47% 55%;
-            transform: rotate(240deg) scale(0.98);
-          }
-        }
-        @keyframes waterCounterFlow {
-          0%, 100% {
-            border-radius: 45% 55% 48% 52% / 54% 45% 55% 46%;
-            transform: rotate(360deg) scale(1);
+            transform: scale(1);
+            opacity: 0.9;
           }
           50% {
-            border-radius: 55% 45% 53% 47% / 46% 54% 46% 54%;
-            transform: rotate(180deg) scale(1.04);
+            transform: scale(1.03);
+            opacity: 1;
           }
         }
-        @keyframes waterActiveRipple {
+        @keyframes corePulseSoft {
           0%, 100% {
-            border-radius: 58% 42% 54% 46% / 46% 56% 44% 54%;
-            transform: scale(1.02);
+            transform: scale(1);
           }
           50% {
-            border-radius: 43% 57% 46% 54% / 55% 44% 56% 45%;
-            transform: scale(1.09);
+            transform: scale(1.07);
           }
         }
-        @keyframes irisAperturePulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.08); }
+        .eye-oval-breathe {
+          animation: eyeBreathe 5.5s ease-in-out infinite;
         }
-        .water-membrane-outer {
-          animation: waterUndulateSlow 13s ease-in-out infinite;
-        }
-        .water-membrane-mid {
-          animation: waterCounterFlow 9.5s ease-in-out infinite;
-        }
-        .water-membrane-active {
-          animation: waterActiveRipple 2.4s ease-in-out infinite;
-        }
-        .iris-breathe {
-          animation: irisAperturePulse 4.5s ease-in-out infinite;
+        .core-glow-pulse {
+          animation: corePulseSoft 4.2s ease-in-out infinite;
         }
       `}</style>
 
-      {/* Soft Ambient Backlight */}
+      {/* Soft Ambient Aura */}
       <div
-        style={{ background: palette.ambient }}
-        className="pointer-events-none absolute w-72 h-72 rounded-full blur-3xl -z-10 transition-colors duration-700"
+        style={{
+          background: isSignal
+            ? 'radial-gradient(circle, rgba(217,119,6,0.22) 0%, rgba(180,83,9,0.06) 55%, transparent 75%)'
+            : 'radial-gradient(circle, rgba(16,185,129,0.20) 0%, rgba(5,150,105,0.05) 55%, transparent 75%)'
+        }}
+        className="pointer-events-none absolute w-72 h-56 rounded-full blur-2xl -z-10"
       />
 
       <button
         type="button"
         onClick={onClick}
-        aria-label={isListening ? 'Stop listening' : 'Tap liquid lens to speak'}
-        className="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center focus:outline-none group cursor-pointer"
+        aria-label={isListening ? 'Stop listening' : 'Tap eye orb to speak'}
+        className="relative w-64 h-48 sm:w-72 sm:h-52 flex items-center justify-center focus:outline-none group cursor-pointer"
       >
-        {/* Layer 1: Outer Undulating Water Membrane */}
-        <div
-          style={{
-            background: palette.outerLiquid,
-            border: `1px solid ${palette.rim}`,
-            boxShadow: `inset 0 2px 18px rgba(255, 255, 255, 0.28), inset 0 -10px 24px rgba(0, 0, 0, 0.45), 0 20px 50px rgba(0, 0, 0, 0.18)`
-          }}
-          className={`absolute w-44 h-44 sm:w-48 sm:h-48 backdrop-blur-md transition-all duration-500 ${
-            isActive ? 'water-membrane-active' : 'water-membrane-outer group-hover:scale-[1.03]'
+        {/* Outer Eye Oval Line */}
+        <svg
+          viewBox="0 0 280 180"
+          fill="none"
+          className={`w-full h-full overflow-visible transition-transform duration-500 ${
+            isActive ? 'scale-105' : 'eye-oval-breathe group-hover:scale-[1.02]'
           }`}
-        />
-
-        {/* Layer 2: Counter-Flowing Sub-Surface Water Wave */}
-        <div
-          style={{
-            background: palette.midLiquid,
-            border: `1px solid rgba(255, 255, 255, 0.16)`,
-            boxShadow: `inset 4px 6px 16px rgba(255, 255, 255, 0.25), inset -6px -8px 18px rgba(0, 0, 0, 0.55)`
-          }}
-          className={`absolute w-34 h-34 sm:w-36 sm:h-36 backdrop-blur-sm transition-all duration-500 ${
-            isActive ? 'water-membrane-active' : 'water-membrane-mid'
-          }`}
-        />
-
-        {/* Layer 3: Optical Iris Ring */}
-        <div
-          style={{
-            border: `1px solid ${palette.irisRing}`,
-            boxShadow: `0 0 24px ${palette.ambient}, inset 0 0 14px rgba(255, 255, 255, 0.22)`
-          }}
-          className="relative w-22 h-22 sm:w-24 sm:h-24 rounded-full flex items-center justify-center bg-stone-950/65 backdrop-blur-md iris-breathe"
         >
-          {/* Fine Concentric Aperture Hairline */}
-          <div
-            style={{ borderColor: palette.rim }}
-            className="absolute inset-2 rounded-full border border-dashed opacity-55"
+          <defs>
+            <radialGradient id="tmOrbCoreGrad" cx="42%" cy="38%" r="60%">
+              <stop
+                offset="0%"
+                stopColor={isSignal ? '#FFFBEB' : '#ECFDF5'}
+                stopOpacity="0.98"
+              />
+              <stop
+                offset="42%"
+                stopColor={isSignal ? '#F59E0B' : '#10B981'}
+                stopOpacity="0.82"
+              />
+              <stop
+                offset="78%"
+                stopColor={isSignal ? '#B45309' : '#047857'}
+                stopOpacity="0.32"
+              />
+              <stop
+                offset="100%"
+                stopColor={isSignal ? '#78350F' : '#064E3B'}
+                stopOpacity="0"
+              />
+            </radialGradient>
+
+            <linearGradient id="tmEyeLidStroke" x1="20" y1="90" x2="260" y2="90" gradientUnits="userSpaceOnUse">
+              <stop
+                offset="0%"
+                stopColor={isSignal ? '#D97706' : '#10B981'}
+                stopOpacity="0.25"
+              />
+              <stop
+                offset="50%"
+                stopColor={isSignal ? '#FBBF24' : '#34D399'}
+                stopOpacity="0.85"
+              />
+              <stop
+                offset="100%"
+                stopColor={isSignal ? '#D97706' : '#10B981'}
+                stopOpacity="0.25"
+              />
+            </linearGradient>
+          </defs>
+
+          {/* Soft Warm Glowing Orb Core in Center */}
+          <circle
+            cx="140"
+            cy="90"
+            r="46"
+            fill="url(#tmOrbCoreGrad)"
+            className="core-glow-pulse"
           />
 
-          {/* Layer 4: Luminous Pupil Core */}
-          <div
-            style={{
-              background: palette.irisGlow,
-              boxShadow: `0 0 22px ${palette.irisRing}, inset 0 2px 6px rgba(255, 255, 255, 0.75)`
-            }}
-            className={`relative w-12 h-12 sm:w-13 sm:h-13 rounded-full flex items-center justify-center transition-transform duration-300 ${
-              isListening || isSpeaking ? 'scale-110' : 'scale-100'
-            }`}
-          >
-            {/* Specular Water-Drop Glint */}
-            <div className="absolute top-2 left-2.5 w-3.5 h-2 rounded-full bg-white/75 blur-[1px] -rotate-25 pointer-events-none" />
-            <div className="absolute bottom-2.5 right-3 w-1.5 h-1.5 rounded-full bg-white/45 pointer-events-none" />
+          {/* Subtle Inner Iris Ring */}
+          <ellipse
+            cx="140"
+            cy="90"
+            rx="34"
+            ry="24"
+            stroke={isSignal ? 'rgba(251, 191, 36, 0.35)' : 'rgba(52, 211, 153, 0.35)'}
+            strokeWidth="1"
+          />
 
-            {isListening && (
-              <Mic className="w-4 h-4 text-stone-950 animate-pulse relative z-10" />
-            )}
-            {isSpeaking && (
-              <Volume2 className="w-4 h-4 text-stone-950 animate-pulse relative z-10" />
-            )}
-          </div>
-        </div>
+          {/* Eye-Like Oval Outline Surrounding the Glow */}
+          <ellipse
+            cx="140"
+            cy="90"
+            rx="108"
+            ry="54"
+            stroke="url(#tmEyeLidStroke)"
+            strokeWidth={isActive ? '2' : '1.5'}
+          />
+
+          {/* Subtle Second Outer Halo Oval */}
+          <ellipse
+            cx="140"
+            cy="90"
+            rx="118"
+            ry="61"
+            stroke={isSignal ? 'rgba(217, 119, 6, 0.16)' : 'rgba(16, 185, 129, 0.16)'}
+            strokeWidth="1"
+          />
+        </svg>
+
+        {/* Active Mic / Speaker Icon Centered Over Core When Needed */}
+        {isListening && (
+          <Mic className="w-5 h-5 text-stone-950 animate-pulse absolute z-10 pointer-events-none" />
+        )}
+        {isSpeaking && (
+          <Volume2 className="w-5 h-5 text-stone-950 animate-pulse absolute z-10 pointer-events-none" />
+        )}
       </button>
     </div>
   );
@@ -2068,7 +2056,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
           </button>
         </div>
 
-        {/* Right Column: Light/Dark Toggle + Controls */}
+        {/* Right Column: Light/Dark Toggle + Dossier/Archive */}
         <div className="flex items-center gap-2 justify-self-end">
           <button
             type="button"
@@ -2082,70 +2070,8 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
             <span>{isDarkMode ? '🌙 Dark' : '☀️ Light'}</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => {
-              setUpgradeReason('');
-              setIsUpgradeOpen(true);
-            }}
-            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all cursor-pointer ${
-              isDarkMode
-                ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-amber-200'
-                : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-800'
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 shrink-0" />
-            <span className="hidden sm:inline font-mono tabular-nums text-[11px]">
-              {activeTier === 'free'
-                ? `Preview · ${Math.max(0, activeTierRules.monthlyLimit - activeTierUsed)}/${activeTierRules.monthlyLimit}`
-                : `${activeTier.toUpperCase()} · ${activeTierUsed}/${activeTierRules.monthlyLimit}`}
-            </span>
-          </button>
-
-          {mode === 'signal' && !hasArtifact && (
-            <button
-              type="button"
-              onClick={() => {
-                setShowExternalImporter(true);
-                setDrawerTab('studio');
-                setDrawerOpen(true);
-              }}
-              className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all cursor-pointer ${
-                isDarkMode
-                  ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-emerald-200'
-                  : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-800'
-              }`}
-            >
-              <PenTool className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-300" />
-              <span>Studio</span>
-            </button>
-          )}
-
           {hasArtifact && (
             <>
-              <select
-                aria-label="Voice"
-                value={selectedVoice}
-                onChange={(e) => setSelectedVoice(e.target.value)}
-                className={`hidden md:block bg-transparent border rounded-full px-2.5 py-1 text-xs focus:outline-none ${
-                  isDarkMode
-                    ? 'border-white/[0.08] text-stone-300'
-                    : 'border-stone-900/[0.08] text-stone-700'
-                }`}
-              >
-                {VOICE_OPTIONS.map((v) => (
-                  <option
-                    key={v.id}
-                    value={v.id}
-                    className={
-                      isDarkMode ? 'bg-[#141416] text-stone-200' : 'bg-[#FAF9F6] text-stone-900'
-                    }
-                  >
-                    {v.label}
-                  </option>
-                ))}
-              </select>
-
               <button
                 type="button"
                 onClick={() => {
@@ -2204,60 +2130,139 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
         </div>
       </header>
 
-      {/* Main Workspace with Left Project Folders Rail */}
-      <div className="flex flex-1 w-full max-w-7xl mx-auto">
-        {/* Left Project Folders Rail */}
+      {/* Main Content Area: Left Sidebar + Centered Workspace */}
+      <div className="relative flex-1 w-full flex">
+        {/* Left Edge Rail: Projects & Plan/Voice Profile */}
         <aside
-          className={`hidden md:flex flex-col w-52 shrink-0 m-4 p-3.5 rounded-2xl border h-fit transition-colors ${
+          className={`hidden md:flex flex-col justify-between w-56 shrink-0 border-r p-4 transition-colors ${
             isDarkMode
-              ? 'bg-[#121215]/90 border-white/[0.08] text-stone-200'
-              : 'bg-[#F3F1EC]/90 border-stone-900/[0.08] text-stone-800'
+              ? 'bg-[#101013] border-white/[0.07] text-stone-200'
+              : 'bg-[#F3F1EC]/75 border-stone-900/[0.07] text-stone-800'
           }`}
         >
-          <div className="flex items-center justify-between mb-2.5 px-1">
-            <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-stone-500 font-semibold">
-              Projects
-            </span>
-            <button
-              type="button"
-              onClick={() => setProjectsOpen(!projectsOpen)}
-              className="text-[10px] font-mono text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 cursor-pointer"
-            >
-              {projectsOpen ? 'Hide' : 'Show'}
-            </button>
+          <div>
+            <div className="flex items-center justify-between mb-3 px-1">
+              <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-stone-500 font-semibold">
+                Projects
+              </span>
+              <button
+                type="button"
+                onClick={() => setProjectsOpen(!projectsOpen)}
+                className="text-[10px] font-mono text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 cursor-pointer"
+              >
+                {projectsOpen ? 'Hide' : 'Show'}
+              </button>
+            </div>
+
+            {projectsOpen && (
+              <div className="space-y-1">
+                {projectFolders.map((folder) => {
+                  const isSelected = activeProject === folder;
+                  return (
+                    <button
+                      key={folder}
+                      type="button"
+                      onClick={() => setActiveProject(folder)}
+                      className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs transition-all cursor-pointer text-left ${
+                        isSelected
+                          ? isDarkMode
+                            ? 'bg-gradient-to-r from-amber-500/20 via-amber-300/15 to-amber-500/20 text-amber-200 font-medium border border-amber-400/30'
+                            : 'bg-gradient-to-r from-amber-600/15 via-white to-amber-600/15 text-stone-900 font-semibold border border-amber-700/25 shadow-2xs'
+                          : isDarkMode
+                          ? 'text-stone-400 hover:bg-white/[0.04] hover:text-stone-200'
+                          : 'text-stone-600 hover:bg-white/75 hover:text-stone-900'
+                      }`}
+                    >
+                      <FolderOpen className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 shrink-0" />
+                      <span className="truncate">{folder}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          {projectsOpen && (
-            <div className="space-y-1">
-              {projectFolders.map((folder) => {
-                const isSelected = activeProject === folder;
-                return (
-                  <button
-                    key={folder}
-                    type="button"
-                    onClick={() => setActiveProject(folder)}
-                    className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs transition-all cursor-pointer text-left ${
-                      isSelected
-                        ? isDarkMode
-                          ? 'bg-gradient-to-r from-amber-500/20 via-amber-300/15 to-amber-500/20 text-amber-200 font-medium border border-amber-400/30'
-                          : 'bg-gradient-to-r from-amber-600/15 via-white to-amber-600/15 text-stone-900 font-semibold border border-amber-700/25 shadow-2xs'
-                        : isDarkMode
-                        ? 'text-stone-400 hover:bg-white/[0.04] hover:text-stone-200'
-                        : 'text-stone-600 hover:bg-white/70 hover:text-stone-900'
-                    }`}
-                  >
-                    <FolderOpen className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 shrink-0" />
-                    <span className="truncate">{folder}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          {/* Left-Aligned Plan & Studio Controls */}
+          <div
+            className={`pt-4 mt-6 border-t space-y-2.5 ${
+              isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.07]'
+            }`}
+          >
+            <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-stone-500 font-semibold block px-1">
+              Workspace &amp; Plan
+            </span>
+
+            <button
+              type="button"
+              onClick={() => {
+                setUpgradeReason('');
+                setIsUpgradeOpen(true);
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl border text-xs transition-all cursor-pointer ${
+                isDarkMode
+                  ? 'bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.08] text-amber-200'
+                  : 'bg-white/80 hover:bg-white border-stone-900/[0.08] text-stone-800'
+              }`}
+            >
+              <span className="inline-flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 shrink-0" />
+                <span>{activeTier === 'free' ? 'Preview' : activeTier.toUpperCase()}</span>
+              </span>
+              <span className="font-mono tabular-nums text-[10px] text-stone-500">
+                {activeTier === 'free'
+                  ? `${Math.max(0, activeTierRules.monthlyLimit - activeTierUsed)}/${activeTierRules.monthlyLimit}`
+                  : `${activeTierUsed}/${activeTierRules.monthlyLimit}`}
+              </span>
+            </button>
+
+            {mode === 'signal' && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowExternalImporter(true);
+                  setDrawerTab('studio');
+                  setDrawerOpen(true);
+                }}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl border text-xs transition-all cursor-pointer ${
+                  isDarkMode
+                    ? 'bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.08] text-emerald-200'
+                    : 'bg-white/80 hover:bg-white border-stone-900/[0.08] text-stone-800'
+                }`}
+              >
+                <PenTool className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-300 shrink-0" />
+                <span>Open Studio</span>
+              </button>
+            )}
+
+            {hasArtifact && (
+              <div className="px-1 pt-1">
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-stone-500 mb-1">
+                  Voice
+                </label>
+                <select
+                  aria-label="Voice"
+                  value={selectedVoice}
+                  onChange={(e) => setSelectedVoice(e.target.value)}
+                  className={`w-full border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none ${
+                    isDarkMode
+                      ? 'bg-[#141416] border-white/[0.08] text-stone-200'
+                      : 'bg-white border-stone-900/[0.08] text-stone-800'
+                  }`}
+                >
+                  {VOICE_OPTIONS.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
         </aside>
 
-        {/* Center Sanctuary & Bottom Dialogue Bar */}
+        {/* Centered Main Column */}
         <div className="flex-1 flex flex-col justify-between min-w-0">
-          <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-3xl mx-auto w-full py-2">
+          <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-3xl mx-auto w-full py-4">
             {!hasArtifact && status === 'idle' && (
               <p
                 className={`mb-4 text-xs sm:text-[13px] tracking-[-0.01em] max-w-xl leading-relaxed ${
@@ -2290,7 +2295,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                 {currentThinkingLabel}
               </span>
             ) : (
-              <div className="mt-4 max-h-48 sm:max-h-56 overflow-y-auto px-2 max-w-2xl">
+              <div className="mt-3 max-h-48 sm:max-h-56 overflow-y-auto px-2 max-w-2xl">
                 <p
                   className={`text-sm sm:text-[15px] tracking-[-0.01em] leading-relaxed ${
                     isDarkMode ? 'text-stone-200' : 'text-stone-800'
@@ -2329,8 +2334,8 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
             )}
           </main>
 
-          {/* Bottom Rectangular Dialogue Box with Metallic Shimmer & Embedded Dropdowns */}
-          <footer className="px-4 sm:px-8 pb-16 pt-2 max-w-4xl mx-auto w-full">
+          {/* Centered Bottom Rectangular Dialogue Box with Metallic Shimmer & Embedded Dropdowns */}
+          <footer className="px-4 sm:px-8 pb-16 pt-2 max-w-3xl mx-auto w-full">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -2384,7 +2389,6 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                 }`}
               >
                 <div className="flex flex-wrap items-center gap-2">
-                  {/* Intelligence Level Dropdown */}
                   <label className="inline-flex items-center gap-1.5 text-[11px] text-stone-500">
                     <span className="font-mono uppercase tracking-wider text-[10px]">
                       Intelligence:
@@ -2405,7 +2409,6 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                     </select>
                   </label>
 
-                  {/* Work Rate Dropdown */}
                   <label className="inline-flex items-center gap-1.5 text-[11px] text-stone-500">
                     <span className="font-mono uppercase tracking-wider text-[10px]">
                       Work Rate:
