@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
+import {
   Send,
   Volume2,
   VolumeX,
@@ -33,7 +33,10 @@ import {
   PlusCircle,
   RefreshCw,
   Scissors,
-  Mic
+  Mic,
+  Keyboard,
+  Activity,
+  ShieldCheck
 } from 'lucide-react';
 import FoundingMemberModal from './FoundingMemberModal';
 import {
@@ -49,38 +52,19 @@ import DailyBriefAndCalibration from './components/DailyBriefAndCalibration';
 import EntityAuditDossier from './components/EntityAuditDossier';
 
 // --- BESPOKE PRECISION TOUCHMARK LOGO ---
-function TouchmarkLogo({ className = 'w-7 h-7' }) {
+function TouchmarkLogo({ className = 'w-6 h-6' }) {
   return (
-    <svg viewBox="0 0 40 40" fill="none" className={className} aria-hidden="true">
-      <defs>
-        <radialGradient id="tmCoreGlow" cx="35%" cy="30%" r="70%">
-          <stop offset="0%" stopColor="#FEF3C7" />
-          <stop offset="55%" stopColor="#D97706" />
-          <stop offset="100%" stopColor="#78350F" />
-        </radialGradient>
-        <linearGradient id="tmRingGrad" x1="4" y1="4" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#D97706" stopOpacity="0.85" />
-          <stop offset="50%" stopColor="#B45309" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#92400E" stopOpacity="0.75" />
-        </linearGradient>
-      </defs>
-      <circle cx="20" cy="20" r="17.5" stroke="url(#tmRingGrad)" strokeWidth="1.2" />
-      <line x1="20" y1="1.5" x2="20" y2="5" stroke="#D97706" strokeOpacity="0.7" strokeWidth="1.2" strokeLinecap="round" />
-      <line x1="20" y1="35" x2="20" y2="38.5" stroke="#D97706" strokeOpacity="0.7" strokeWidth="1.2" strokeLinecap="round" />
-      <line x1="1.5" y1="20" x2="5" y2="20" stroke="#D97706" strokeOpacity="0.7" strokeWidth="1.2" strokeLinecap="round" />
-      <line x1="35" y1="20" x2="38.5" y2="20" stroke="#D97706" strokeOpacity="0.7" strokeWidth="1.2" strokeLinecap="round" />
+    <svg viewBox="0 0 32 32" fill="none" className={className} aria-hidden="true">
+      <circle cx="16" cy="16" r="13" stroke="rgba(217, 119, 6, 0.55)" strokeWidth="1.2" />
       <ellipse
-        cx="20"
-        cy="20"
-        rx="13.5"
-        ry="7.5"
-        transform="rotate(-32 20 20)"
-        stroke="#D97706"
-        strokeOpacity="0.55"
-        strokeWidth="1.15"
+        cx="16"
+        cy="16"
+        rx="10.5"
+        ry="6.5"
+        stroke="rgba(251, 191, 36, 0.45)"
+        strokeWidth="1"
       />
-      <circle cx="20" cy="20" r="8.2" stroke="#D97706" strokeOpacity="0.28" strokeWidth="1" strokeDasharray="2 2.5" />
-      <circle cx="20" cy="20" r="3.4" fill="url(#tmCoreGlow)" />
+      <circle cx="16" cy="16" r="3" fill="#FBBF24" />
     </svg>
   );
 }
@@ -90,16 +74,16 @@ const MODE_META = {
   signal: {
     name: 'Touchmark Signal',
     tagline:
-      'Uncover the hidden influence of power dynamics, audit personal and institutional track records, access unique, independent creator research, and get to the truth underneath the media and stories you see.',
+      'Public claim & evidence auditing—check primary records, denominator math, and independent research.',
     welcome:
-      'Precision intelligence engineered to pierce deception, decode institutional narrative control, and restore objective reality.'
+      'Welcome to Touchmark. Are you looking to make sense of a personal relationship with Pulse, or examine a public claim or story with Signal today?'
   },
   pulse: {
     name: 'Touchmark Pulse',
     tagline:
-      'Relational Intelligence, psychological clarity & strategic precision to navigate even the most challenging relational issues',
+      'Personal & relational discernment—separate observation from story, pattern from motive, and find your next calm step.',
     welcome:
-      'Speak or write through a personal dilemma, relational tension, or high-stakes conversation to uncover the way forward.'
+      'Welcome to Touchmark. Are you looking to make sense of a personal relationship with Pulse, or examine a public claim or story with Signal today?'
   }
 };
 
@@ -204,152 +188,92 @@ function createContemplationSoundscape() {
   return { startThinkingDrone, stopThinkingDrone };
 }
 
-// --- ORIGINAL GLOWING CORE + EYE OVAL OUTLINE ---
+// --- LUMINOUS EYE-OVAL CORE (SCREENSHOT STYLE) ---
 function MorphingSphereOrb({ status, mode, onClick }) {
   const isListening = status === 'listening';
   const isThinking = status === 'thinking';
   const isSpeaking = status === 'speaking';
   const isActive = isListening || isThinking || isSpeaking;
-
   const isSignal = mode === 'signal';
 
   return (
     <div className="relative flex flex-col items-center justify-center select-none">
       <style>{`
-        @keyframes eyeBreathe {
+        @keyframes orbGlowDrift {
           0%, 100% {
             transform: scale(1);
-            opacity: 0.9;
+            opacity: 0.92;
           }
           50% {
-            transform: scale(1.03);
+            transform: scale(1.04);
             opacity: 1;
           }
         }
-        @keyframes corePulseSoft {
-          0%, 100% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.07);
-          }
-        }
-        .eye-oval-breathe {
-          animation: eyeBreathe 5.5s ease-in-out infinite;
-        }
-        .core-glow-pulse {
-          animation: corePulseSoft 4.2s ease-in-out infinite;
+        .tm-orb-breathe {
+          animation: orbGlowDrift 5.2s ease-in-out infinite;
         }
       `}</style>
-
-      {/* Soft Ambient Aura */}
-      <div
-        style={{
-          background: isSignal
-            ? 'radial-gradient(circle, rgba(217,119,6,0.22) 0%, rgba(180,83,9,0.06) 55%, transparent 75%)'
-            : 'radial-gradient(circle, rgba(16,185,129,0.20) 0%, rgba(5,150,105,0.05) 55%, transparent 75%)'
-        }}
-        className="pointer-events-none absolute w-72 h-56 rounded-full blur-2xl -z-10"
-      />
 
       <button
         type="button"
         onClick={onClick}
-        aria-label={isListening ? 'Stop listening' : 'Tap eye orb to speak'}
-        className="relative w-64 h-48 sm:w-72 sm:h-52 flex items-center justify-center focus:outline-none group cursor-pointer"
+        aria-label={isListening ? 'Stop listening' : 'Tap orb to speak'}
+        className="relative w-56 h-40 sm:w-64 sm:h-44 flex items-center justify-center focus:outline-none group cursor-pointer"
       >
-        {/* Outer Eye Oval Line */}
         <svg
-          viewBox="0 0 280 180"
+          viewBox="0 0 260 170"
           fill="none"
           className={`w-full h-full overflow-visible transition-transform duration-500 ${
-            isActive ? 'scale-105' : 'eye-oval-breathe group-hover:scale-[1.02]'
+            isActive ? 'scale-105' : 'tm-orb-breathe group-hover:scale-[1.02]'
           }`}
         >
           <defs>
-            <radialGradient id="tmOrbCoreGrad" cx="42%" cy="38%" r="60%">
-              <stop
-                offset="0%"
-                stopColor={isSignal ? '#FFFBEB' : '#ECFDF5'}
-                stopOpacity="0.98"
-              />
-              <stop
-                offset="42%"
-                stopColor={isSignal ? '#F59E0B' : '#10B981'}
-                stopOpacity="0.82"
-              />
-              <stop
-                offset="78%"
-                stopColor={isSignal ? '#B45309' : '#047857'}
-                stopOpacity="0.32"
-              />
-              <stop
-                offset="100%"
-                stopColor={isSignal ? '#78350F' : '#064E3B'}
-                stopOpacity="0"
-              />
+            <radialGradient id="tmWarmCore" cx="46%" cy="42%" r="55%">
+              <stop offset="0%" stopColor={isSignal ? '#FEF9E7' : '#ECFDF5'} stopOpacity="0.95" />
+              <stop offset="32%" stopColor={isSignal ? '#D6B87C' : '#34D399'} stopOpacity="0.62" />
+              <stop offset="68%" stopColor={isSignal ? '#7A643B' : '#065F46'} stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#0E0E11" stopOpacity="0" />
             </radialGradient>
-
-            <linearGradient id="tmEyeLidStroke" x1="20" y1="90" x2="260" y2="90" gradientUnits="userSpaceOnUse">
-              <stop
-                offset="0%"
-                stopColor={isSignal ? '#D97706' : '#10B981'}
-                stopOpacity="0.25"
-              />
-              <stop
-                offset="50%"
-                stopColor={isSignal ? '#FBBF24' : '#34D399'}
-                stopOpacity="0.85"
-              />
-              <stop
-                offset="100%"
-                stopColor={isSignal ? '#D97706' : '#10B981'}
-                stopOpacity="0.25"
-              />
-            </linearGradient>
+            <radialGradient id="tmOuterHaze" cx="50%" cy="50%" r="55%">
+              <stop offset="0%" stopColor={isSignal ? '#C9A96E' : '#10B981'} stopOpacity="0.16" />
+              <stop offset="70%" stopColor={isSignal ? '#7A643B' : '#064E3B'} stopOpacity="0.05" />
+              <stop offset="100%" stopColor="#0E0E11" stopOpacity="0" />
+            </radialGradient>
           </defs>
 
-          {/* Soft Warm Glowing Orb Core in Center */}
-          <circle
-            cx="140"
-            cy="90"
-            r="46"
-            fill="url(#tmOrbCoreGrad)"
-            className="core-glow-pulse"
-          />
+          {/* Soft Ambient Glow Behind Oval */}
+          <ellipse cx="130" cy="85" rx="115" ry="70" fill="url(#tmOuterHaze)" />
 
-          {/* Subtle Inner Iris Ring */}
+          {/* Warm Luminous Core */}
+          <circle cx="130" cy="85" r="46" fill="url(#tmWarmCore)" />
+
+          {/* Concentric Eye-Like Oval Contours */}
           <ellipse
-            cx="140"
-            cy="90"
-            rx="34"
-            ry="24"
-            stroke={isSignal ? 'rgba(251, 191, 36, 0.35)' : 'rgba(52, 211, 153, 0.35)'}
+            cx="130"
+            cy="85"
+            rx="62"
+            ry="42"
+            stroke={isSignal ? 'rgba(214, 184, 124, 0.34)' : 'rgba(52, 211, 153, 0.34)'}
+            strokeWidth="1.2"
+          />
+          <ellipse
+            cx="130"
+            cy="85"
+            rx="59"
+            ry="44"
+            stroke={isSignal ? 'rgba(214, 184, 124, 0.18)' : 'rgba(52, 211, 153, 0.18)'}
             strokeWidth="1"
           />
-
-          {/* Eye-Like Oval Outline Surrounding the Glow */}
           <ellipse
-            cx="140"
-            cy="90"
-            rx="108"
-            ry="54"
-            stroke="url(#tmEyeLidStroke)"
-            strokeWidth={isActive ? '2' : '1.5'}
-          />
-
-          {/* Subtle Second Outer Halo Oval */}
-          <ellipse
-            cx="140"
-            cy="90"
-            rx="118"
-            ry="61"
-            stroke={isSignal ? 'rgba(217, 119, 6, 0.16)' : 'rgba(16, 185, 129, 0.16)'}
+            cx="130"
+            cy="85"
+            rx="65"
+            ry="39"
+            stroke={isSignal ? 'rgba(214, 184, 124, 0.14)' : 'rgba(52, 211, 153, 0.14)'}
             strokeWidth="1"
           />
         </svg>
 
-        {/* Active Mic / Speaker Icon Centered Over Core When Needed */}
         {isListening && (
           <Mic className="w-5 h-5 text-stone-950 animate-pulse absolute z-10 pointer-events-none" />
         )}
@@ -652,7 +576,8 @@ function gradeBadgeStyle(grade = '') {
 }
 
 export default function TouchmarkToolsApp() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [showComposer, setShowComposer] = useState(false);
 
   // Intelligence Level, Work Rate & Project Folder State
   const [intelligenceLevel, setIntelligenceLevel] = useState('High');
@@ -719,9 +644,9 @@ export default function TouchmarkToolsApp() {
   const recognitionRef = useRef(null);
   const audioRef = useRef(null);
   const soundscapeRef = useRef(null);
+  const inputRef = useRef(null);
 
   const switchWorkspaceMode = (nextMode) => {
-    if (nextMode === mode) return;
     stopSpeaking();
     setMode(nextMode);
     setHasArtifact(false);
@@ -987,7 +912,8 @@ export default function TouchmarkToolsApp() {
       return;
     }
     if (!recognitionRef.current) {
-      setErrorBanner('Voice input is unavailable in this browser—use the text bar below.');
+      setShowComposer(true);
+      setTimeout(() => inputRef.current?.focus(), 50);
       return;
     }
     setInputText('');
@@ -1987,355 +1913,296 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
     <div
       className={`min-h-screen flex flex-col justify-between transition-colors duration-200 ${
         isDarkMode
-          ? 'bg-[#0B0B0D] text-stone-100 selection:bg-amber-400/30'
+          ? 'bg-[#0E0E11] text-stone-100 selection:bg-amber-400/30'
           : 'bg-[#FAF9F6] text-stone-900 selection:bg-amber-500/20'
       }`}
     >
-      {/* Top Navigation Header */}
-      <header
-        className={`px-5 sm:px-8 h-16 grid grid-cols-3 items-center border-b backdrop-blur-xl transition-colors ${
-          isDarkMode
-            ? 'border-white/[0.07] bg-[#0B0B0D]/85 text-stone-100'
-            : 'border-stone-900/[0.07] bg-[#FAF9F6]/85 text-stone-900'
-        }`}
-      >
-        {/* Left Column: Logo & Title */}
-        <div className="flex items-center gap-2.5 justify-self-start">
-          <TouchmarkLogo className="w-8 h-8" />
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-[15px] font-medium tracking-[-0.01em]">Touchmark</span>
-            <span
-              className={`text-[10px] font-mono uppercase tracking-[0.16em] font-medium ${
-                mode === 'signal'
-                  ? 'text-amber-700 dark:text-amber-300'
-                  : 'text-emerald-700 dark:text-emerald-300'
+      {/* Top Bar Matching Screenshot Layout */}
+      <header className="relative h-14 px-5 sm:px-7 flex items-center justify-between z-30">
+        {/* Subtle Left Toggle for Projects / Archive */}
+        <div className="flex items-center gap-2">
+          {hasArtifact && savedDossiers.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setArchiveOpen(true)}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all cursor-pointer ${
+                isDarkMode
+                  ? 'bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.08] text-stone-300'
+                  : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-700'
               }`}
             >
-              {mode === 'signal' ? 'Signal' : 'Pulse'}
-            </span>
-          </div>
+              Archive ({savedDossiers.length})
+            </button>
+          )}
         </div>
 
-        {/* Center Column: Workspace Switcher */}
-        <div
-          className={`flex items-center p-1 rounded-full border justify-self-center ${
-            isDarkMode
-              ? 'bg-white/[0.03] border-white/[0.08]'
-              : 'bg-[#F3F1EC] border-stone-900/[0.07]'
-          }`}
-        >
-          <button
-            type="button"
-            onClick={() => switchWorkspaceMode('pulse')}
-            className={`px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer ${
-              mode === 'pulse'
-                ? isDarkMode
-                  ? 'bg-white/[0.1] text-emerald-200 font-medium shadow-xs'
-                  : 'bg-white text-emerald-950 font-medium shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
-                : isDarkMode
-                ? 'text-stone-400 hover:text-stone-200'
-                : 'text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            Pulse
-          </button>
-          <button
-            type="button"
-            onClick={() => switchWorkspaceMode('signal')}
-            className={`px-3.5 py-1 rounded-full text-xs transition-all cursor-pointer ${
-              mode === 'signal'
-                ? isDarkMode
-                  ? 'bg-white/[0.1] text-amber-200 font-medium shadow-xs'
-                  : 'bg-white text-amber-950 font-medium shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
-                : isDarkMode
-                ? 'text-stone-400 hover:text-stone-200'
-                : 'text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            Signal
-          </button>
+        {/* Centered Touchmark Brand Mark */}
+        <div className="flex items-center gap-2 select-none">
+          <TouchmarkLogo className="w-5 h-5" />
+          <span className="text-sm font-medium tracking-[-0.01em]">Touchmark</span>
         </div>
 
-        {/* Right Column: Light/Dark Toggle + Dossier/Archive */}
-        <div className="flex items-center gap-2 justify-self-end">
+        {/* Top-Right Controls */}
+        <div className="flex items-center gap-2">
+          {hasArtifact && (
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+              className={`px-3 py-1 rounded-full text-[11px] font-medium border transition-all cursor-pointer ${
+                isDarkMode
+                  ? 'bg-white/[0.06] hover:bg-white/[0.1] border-white/[0.1] text-stone-100'
+                  : 'bg-stone-900 text-stone-50 border-stone-900'
+              }`}
+            >
+              Dossier
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => {
+              if (voiceEnabled) {
+                stopSpeaking();
+                soundscapeRef.current?.stopThinkingDrone(false);
+              }
+              setVoiceEnabled(!voiceEnabled);
+            }}
+            aria-label="Toggle voice"
+            className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+              isDarkMode
+                ? 'text-stone-400 hover:text-stone-100 hover:bg-white/[0.05]'
+                : 'text-stone-600 hover:text-stone-900 hover:bg-stone-900/[0.05]'
+            }`}
+          >
+            {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowComposer((prev) => !prev)}
+            aria-label="Toggle composer"
+            className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+              isDarkMode
+                ? 'text-stone-400 hover:text-stone-100 hover:bg-white/[0.05]'
+                : 'text-stone-600 hover:text-stone-900 hover:bg-stone-900/[0.05]'
+            }`}
+          >
+            <Keyboard className="w-4 h-4" />
+          </button>
+
           <button
             type="button"
             onClick={() => setIsDarkMode(!isDarkMode)}
-            className={`px-3 py-1.5 rounded-full text-xs border transition-all flex items-center gap-1.5 cursor-pointer ${
+            aria-label="Toggle light or dark theme"
+            className={`px-2 py-1 rounded-full text-[11px] transition-colors cursor-pointer ${
               isDarkMode
-                ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-amber-200'
-                : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-800'
+                ? 'text-stone-400 hover:text-stone-100 hover:bg-white/[0.05]'
+                : 'text-stone-600 hover:text-stone-900 hover:bg-stone-900/[0.05]'
             }`}
           >
-            <span>{isDarkMode ? '🌙 Dark' : '☀️ Light'}</span>
+            {isDarkMode ? '☀️' : '🌙'}
           </button>
-
-          {hasArtifact && (
-            <>
-              <button
-                type="button"
-                onClick={() => {
-                  if (voiceEnabled) {
-                    stopSpeaking();
-                    soundscapeRef.current?.stopThinkingDrone(false);
-                  }
-                  setVoiceEnabled(!voiceEnabled);
-                }}
-                aria-label="Toggle voice and ambient sound"
-                className={`p-2 rounded-full border cursor-pointer transition-colors ${
-                  isDarkMode
-                    ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-stone-300'
-                    : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-700'
-                }`}
-              >
-                {voiceEnabled ? (
-                  <Volume2 className="w-4 h-4" />
-                ) : (
-                  <VolumeX className="w-4 h-4 text-stone-400" />
-                )}
-              </button>
-
-              {savedDossiers.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setArchiveOpen(true)}
-                  aria-label="Saved Dossiers"
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all cursor-pointer ${
-                    isDarkMode
-                      ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-stone-200'
-                      : 'bg-stone-900/[0.03] hover:bg-stone-900/[0.07] border-stone-900/[0.08] text-stone-800'
-                  }`}
-                >
-                  <FolderOpen className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
-                  <span className="hidden sm:inline font-mono tabular-nums text-[11px]">
-                    Archive ({savedDossiers.length})
-                  </span>
-                </button>
-              )}
-
-              <button
-                type="button"
-                onClick={() => setDrawerOpen(true)}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
-                  isDarkMode
-                    ? 'bg-stone-100 text-stone-900 hover:bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]'
-                    : 'bg-stone-900 text-stone-50 hover:bg-stone-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]'
-                }`}
-              >
-                <FileText className="w-3.5 h-3.5" />
-                <span>Dossier</span>
-              </button>
-            </>
-          )}
         </div>
       </header>
 
-      {/* Main Content Area: Left Sidebar + Centered Workspace */}
-      <div className="relative flex-1 w-full flex">
-        {/* Left Edge Rail: Projects & Plan/Voice Profile */}
-        <aside
-          className={`hidden md:flex flex-col justify-between w-56 shrink-0 border-r p-4 transition-colors ${
-            isDarkMode
-              ? 'bg-[#101013] border-white/[0.07] text-stone-200'
-              : 'bg-[#F3F1EC]/75 border-stone-900/[0.07] text-stone-800'
-          }`}
-        >
-          <div>
-            <div className="flex items-center justify-between mb-3 px-1">
-              <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-stone-500 font-semibold">
-                Projects
-              </span>
-              <button
-                type="button"
-                onClick={() => setProjectsOpen(!projectsOpen)}
-                className="text-[10px] font-mono text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 cursor-pointer"
-              >
-                {projectsOpen ? 'Hide' : 'Show'}
-              </button>
-            </div>
-
-            {projectsOpen && (
-              <div className="space-y-1">
-                {projectFolders.map((folder) => {
-                  const isSelected = activeProject === folder;
-                  return (
-                    <button
-                      key={folder}
-                      type="button"
-                      onClick={() => setActiveProject(folder)}
-                      className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs transition-all cursor-pointer text-left ${
-                        isSelected
-                          ? isDarkMode
-                            ? 'bg-gradient-to-r from-amber-500/20 via-amber-300/15 to-amber-500/20 text-amber-200 font-medium border border-amber-400/30'
-                            : 'bg-gradient-to-r from-amber-600/15 via-white to-amber-600/15 text-stone-900 font-semibold border border-amber-700/25 shadow-2xs'
-                          : isDarkMode
-                          ? 'text-stone-400 hover:bg-white/[0.04] hover:text-stone-200'
-                          : 'text-stone-600 hover:bg-white/75 hover:text-stone-900'
-                      }`}
-                    >
-                      <FolderOpen className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 shrink-0" />
-                      <span className="truncate">{folder}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Left-Aligned Plan & Studio Controls */}
-          <div
-            className={`pt-4 mt-6 border-t space-y-2.5 ${
-              isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.07]'
-            }`}
-          >
-            <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-stone-500 font-semibold block px-1">
-              Workspace &amp; Plan
+      {/* Left Edge Rail: Projects & Workspace Controls */}
+      <aside
+        className={`hidden lg:flex flex-col justify-between w-52 fixed top-16 bottom-6 left-4 z-20 rounded-2xl border p-3.5 transition-colors ${
+          isDarkMode
+            ? 'bg-[#121216]/85 border-white/[0.07] text-stone-200 backdrop-blur-md'
+            : 'bg-[#F3F1EC]/85 border-stone-900/[0.07] text-stone-800 backdrop-blur-md'
+        }`}
+      >
+        <div>
+          <div className="flex items-center justify-between mb-2.5 px-1">
+            <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-stone-500 font-semibold">
+              Projects
             </span>
-
             <button
               type="button"
-              onClick={() => {
-                setUpgradeReason('');
-                setIsUpgradeOpen(true);
-              }}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl border text-xs transition-all cursor-pointer ${
+              onClick={() => setProjectsOpen(!projectsOpen)}
+              className="text-[10px] font-mono text-stone-500 hover:text-stone-300 cursor-pointer"
+            >
+              {projectsOpen ? 'Hide' : 'Show'}
+            </button>
+          </div>
+
+          {projectsOpen && (
+            <div className="space-y-1">
+              {projectFolders.map((folder) => {
+                const isSelected = activeProject === folder;
+                return (
+                  <button
+                    key={folder}
+                    type="button"
+                    onClick={() => setActiveProject(folder)}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs transition-all cursor-pointer text-left ${
+                      isSelected
+                        ? isDarkMode
+                          ? 'bg-gradient-to-r from-amber-500/20 via-amber-300/10 to-amber-500/20 text-amber-200 font-medium border border-amber-400/25'
+                          : 'bg-white text-stone-900 font-semibold border border-amber-700/25'
+                        : isDarkMode
+                        ? 'text-stone-400 hover:bg-white/[0.04] hover:text-stone-200'
+                        : 'text-stone-600 hover:bg-white/70 hover:text-stone-900'
+                    }`}
+                  >
+                    <FolderOpen className="w-3.5 h-3.5 text-amber-500/80 shrink-0" />
+                    <span className="truncate">{folder}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div
+          className={`pt-3 border-t space-y-2 ${
+            isDarkMode ? 'border-white/[0.07]' : 'border-stone-900/[0.07]'
+          }`}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              setUpgradeReason('');
+              setIsUpgradeOpen(true);
+            }}
+            className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl border text-[11px] transition-all cursor-pointer ${
+              isDarkMode
+                ? 'bg-white/[0.03] hover:bg-white/[0.06] border-white/[0.08] text-amber-200'
+                : 'bg-white/80 hover:bg-white border-stone-900/[0.08] text-stone-800'
+            }`}
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span>{activeTier === 'free' ? 'Preview' : activeTier.toUpperCase()}</span>
+            </span>
+            <span className="font-mono tabular-nums text-[10px] text-stone-400">
+              {activeTier === 'free'
+                ? `${Math.max(0, activeTierRules.monthlyLimit - activeTierUsed)}/${activeTierRules.monthlyLimit}`
+                : `${activeTierUsed}/${activeTierRules.monthlyLimit}`}
+            </span>
+          </button>
+
+          {hasArtifact && (
+            <select
+              aria-label="Voice"
+              value={selectedVoice}
+              onChange={(e) => setSelectedVoice(e.target.value)}
+              className={`w-full border rounded-lg px-2 py-1.5 text-[11px] focus:outline-none ${
                 isDarkMode
-                  ? 'bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.08] text-amber-200'
-                  : 'bg-white/80 hover:bg-white border-stone-900/[0.08] text-stone-800'
+                  ? 'bg-[#151519] border-white/[0.08] text-stone-200'
+                  : 'bg-white border-stone-900/[0.08] text-stone-800'
               }`}
             >
-              <span className="inline-flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 shrink-0" />
-                <span>{activeTier === 'free' ? 'Preview' : activeTier.toUpperCase()}</span>
-              </span>
-              <span className="font-mono tabular-nums text-[10px] text-stone-500">
-                {activeTier === 'free'
-                  ? `${Math.max(0, activeTierRules.monthlyLimit - activeTierUsed)}/${activeTierRules.monthlyLimit}`
-                  : `${activeTierUsed}/${activeTierRules.monthlyLimit}`}
-              </span>
-            </button>
+              {VOICE_OPTIONS.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.label}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+      </aside>
 
-            {mode === 'signal' && (
+      {/* True Screen-Centered Sanctuary & Bottom Cards */}
+      <div className="flex-1 flex flex-col justify-between w-full px-4 sm:px-8 pt-2 pb-6">
+        <main className="flex-1 flex flex-col items-center justify-center text-center max-w-xl mx-auto w-full">
+          {errorBanner && (
+            <div className="mb-3 flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 text-xs text-red-400">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+              <span>{errorBanner}</span>
+            </div>
+          )}
+
+          {/* Centerpiece Eye-Oval Orb */}
+          <MorphingSphereOrb
+            status={status}
+            mode={mode}
+            onClick={toggleListening}
+          />
+
+          {/* Centered Prompt / Status Text */}
+          {status === 'listening' ? (
+            <span className="mt-2 text-xs font-mono tracking-wide text-amber-300 animate-pulse">
+              Listening…
+            </span>
+          ) : status === 'thinking' ? (
+            <span className="mt-2 text-xs font-mono tracking-wide text-amber-200/85">
+              {currentThinkingLabel}
+            </span>
+          ) : (
+            <p
+              className={`mt-2 text-xs sm:text-[13.5px] leading-relaxed max-w-md ${
+                isDarkMode ? 'text-stone-300' : 'text-stone-700'
+              }`}
+            >
+              {activeCaption}
+            </p>
+          )}
+
+          {/* Action Pills Matching Screenshot ("Tap orb or speak" & "Type instead") */}
+          {!hasArtifact && status === 'idle' && (
+            <div className="mt-4 flex items-center justify-center gap-2.5">
+              <button
+                type="button"
+                onClick={toggleListening}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] border transition-all cursor-pointer ${
+                  isDarkMode
+                    ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.1] text-stone-200'
+                    : 'bg-white hover:bg-stone-100 border-stone-900/[0.1] text-stone-800'
+                }`}
+              >
+                <Mic className="w-3 h-3 text-amber-400" />
+                <span>Tap orb or speak</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => {
-                  setShowExternalImporter(true);
-                  setDrawerTab('studio');
+                  setShowComposer(true);
+                  setTimeout(() => inputRef.current?.focus(), 50);
+                }}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] border transition-all cursor-pointer ${
+                  isDarkMode
+                    ? 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.1] text-stone-200'
+                    : 'bg-white hover:bg-stone-100 border-stone-900/[0.1] text-stone-800'
+                }`}
+              >
+                <Keyboard className="w-3 h-3 text-stone-400" />
+                <span>Type instead</span>
+              </button>
+            </div>
+          )}
+
+          {hasArtifact && status !== 'thinking' && (
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setDrawerTab('analysis');
                   setDrawerOpen(true);
                 }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl border text-xs transition-all cursor-pointer ${
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer ${
                   isDarkMode
-                    ? 'bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.08] text-emerald-200'
-                    : 'bg-white/80 hover:bg-white border-stone-900/[0.08] text-stone-800'
+                    ? 'bg-stone-100 text-stone-900 hover:bg-white'
+                    : 'bg-stone-900 text-stone-50 hover:bg-stone-800'
                 }`}
               >
-                <PenTool className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-300 shrink-0" />
-                <span>Open Studio</span>
+                <FileText className="w-3.5 h-3.5" />
+                <span>
+                  {entityAuditReport
+                    ? 'Open Track-Record Audit'
+                    : isHydratingDeep
+                    ? 'Open Dossier · Enriching…'
+                    : 'Open Dossier'}
+                </span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
               </button>
-            )}
+            </div>
+          )}
 
-            {hasArtifact && (
-              <div className="px-1 pt-1">
-                <label className="block text-[10px] font-mono uppercase tracking-wider text-stone-500 mb-1">
-                  Voice
-                </label>
-                <select
-                  aria-label="Voice"
-                  value={selectedVoice}
-                  onChange={(e) => setSelectedVoice(e.target.value)}
-                  className={`w-full border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none ${
-                    isDarkMode
-                      ? 'bg-[#141416] border-white/[0.08] text-stone-200'
-                      : 'bg-white border-stone-900/[0.08] text-stone-800'
-                  }`}
-                >
-                  {VOICE_OPTIONS.map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
-        </aside>
-
-        {/* Centered Main Column */}
-        <div className="flex-1 flex flex-col justify-between min-w-0">
-          <main className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-3xl mx-auto w-full py-4">
-            {!hasArtifact && status === 'idle' && (
-              <p
-                className={`mb-4 text-xs sm:text-[13px] tracking-[-0.01em] max-w-xl leading-relaxed ${
-                  isDarkMode ? 'text-stone-400' : 'text-stone-600'
-                }`}
-              >
-                {MODE_META[mode].tagline}
-              </p>
-            )}
-
-            {errorBanner && (
-              <div className="mb-4 flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 text-xs text-red-700 dark:text-red-200">
-                <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0" />
-                <span>{errorBanner}</span>
-              </div>
-            )}
-
-            <MorphingSphereOrb
-              status={status}
-              mode={mode}
-              onClick={toggleListening}
-            />
-
-            {status === 'listening' ? (
-              <span className="mt-3 text-xs font-mono tracking-wide text-amber-700 dark:text-amber-300 animate-pulse">
-                Listening…
-              </span>
-            ) : status === 'thinking' ? (
-              <span className="mt-3 text-xs font-mono tracking-wide text-amber-800 dark:text-amber-200/85 transition-all duration-500">
-                {currentThinkingLabel}
-              </span>
-            ) : (
-              <div className="mt-3 max-h-48 sm:max-h-56 overflow-y-auto px-2 max-w-2xl">
-                <p
-                  className={`text-sm sm:text-[15px] tracking-[-0.01em] leading-relaxed ${
-                    isDarkMode ? 'text-stone-200' : 'text-stone-800'
-                  }`}
-                >
-                  {activeCaption}
-                </p>
-              </div>
-            )}
-
-            {hasArtifact && status !== 'thinking' && (
-              <div className="mt-5 flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDrawerTab('analysis');
-                    setDrawerOpen(true);
-                  }}
-                  className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-medium tracking-[-0.01em] transition-all cursor-pointer ${
-                    isDarkMode
-                      ? 'bg-stone-100 text-stone-900 hover:bg-white shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.6)]'
-                      : 'bg-stone-900 text-stone-50 hover:bg-stone-800 shadow-[0_8px_24px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.15)]'
-                  }`}
-                >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>
-                    {entityAuditReport
-                      ? 'Open Track-Record Audit'
-                      : isHydratingDeep
-                      ? 'Open Dossier · Enriching Power & Sources…'
-                      : 'Open Dossier'}
-                  </span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
-          </main>
-
-          {/* Centered Bottom Rectangular Dialogue Box with Metallic Shimmer & Embedded Dropdowns */}
-          <footer className="px-4 sm:px-8 pb-16 pt-2 max-w-3xl mx-auto w-full">
+          {/* Rectangular Metallic-Shimmer Dialogue Box with Embedded Dropdowns */}
+          {(showComposer || hasArtifact || status !== 'idle') && (
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -2345,14 +2212,15 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                   project: activeProject
                 });
               }}
-              className={`mx-auto max-w-2xl rounded-2xl border p-3 transition-all focus-within:ring-2 focus-within:ring-amber-500/20 ${
+              className={`mt-5 w-full max-w-xl rounded-2xl border p-3 text-left transition-all focus-within:ring-2 focus-within:ring-amber-400/25 ${
                 isDarkMode
-                  ? 'bg-gradient-to-br from-[#1b1917] via-[#141417] to-[#1c1813] border-amber-300/20 shadow-[0_10px_35px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.12)]'
-                  : 'bg-gradient-to-br from-[#FAF8F3] via-white to-[#F2ECE1] border-stone-900/[0.12] shadow-[0_10px_30px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.9)]'
+                  ? 'bg-gradient-to-br from-[#231f19] via-[#151519] to-[#201c16] border-amber-300/25 shadow-[0_12px_36px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.14)]'
+                  : 'bg-gradient-to-br from-[#FAF8F3] via-white to-[#F2ECE1] border-stone-900/[0.14] shadow-[0_10px_28px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.9)]'
               }`}
             >
-              <div className="flex items-center gap-2 px-1.5 pb-2">
+              <div className="flex items-center gap-2 px-1 pb-2">
                 <input
+                  ref={inputRef}
                   type="text"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
@@ -2361,7 +2229,7 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                       ? `Unpack a tension in ${activeProject}…`
                       : `Audit any narrative, outlet, or institution in ${activeProject}…`
                   }
-                  className={`flex-1 bg-transparent text-sm focus:outline-none ${
+                  className={`flex-1 bg-transparent text-xs sm:text-sm focus:outline-none ${
                     isDarkMode
                       ? 'text-stone-100 placeholder:text-stone-500'
                       : 'text-stone-900 placeholder:text-stone-400'
@@ -2371,25 +2239,24 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                   type="submit"
                   disabled={status === 'thinking' || !inputText.trim()}
                   aria-label="Send"
-                  className={`px-3.5 py-2 rounded-xl text-xs font-medium inline-flex items-center gap-1.5 transition-all disabled:opacity-30 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-medium inline-flex items-center gap-1 transition-all disabled:opacity-30 cursor-pointer ${
                     isDarkMode
-                      ? 'bg-gradient-to-r from-amber-200 via-stone-100 to-amber-200 text-stone-900 hover:brightness-105 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]'
-                      : 'bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 text-stone-50 hover:opacity-95 shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]'
+                      ? 'bg-gradient-to-r from-amber-200 via-stone-100 to-amber-200 text-stone-900 hover:brightness-105'
+                      : 'bg-stone-900 text-stone-50 hover:bg-stone-800'
                   }`}
                 >
-                  <Send className="w-3.5 h-3.5" />
+                  <Send className="w-3 h-3" />
                   <span>Send</span>
                 </button>
               </div>
 
-              {/* Embedded Controls Row Inside Dialogue Box */}
               <div
                 className={`flex flex-wrap items-center justify-between gap-2 pt-2 border-t ${
                   isDarkMode ? 'border-white/[0.08]' : 'border-stone-900/[0.08]'
                 }`}
               >
                 <div className="flex flex-wrap items-center gap-2">
-                  <label className="inline-flex items-center gap-1.5 text-[11px] text-stone-500">
+                  <label className="inline-flex items-center gap-1.5 text-[11px] text-stone-400">
                     <span className="font-mono uppercase tracking-wider text-[10px]">
                       Intelligence:
                     </span>
@@ -2397,19 +2264,19 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                       aria-label="Intelligence Level"
                       value={intelligenceLevel}
                       onChange={(e) => setIntelligenceLevel(e.target.value)}
-                      className={`rounded-lg border px-2.5 py-1 text-xs font-medium focus:outline-none cursor-pointer ${
+                      className={`rounded-lg border px-2 py-0.5 text-xs font-medium focus:outline-none cursor-pointer ${
                         isDarkMode
-                          ? 'bg-gradient-to-r from-white/[0.06] via-amber-200/[0.06] to-white/[0.06] border-white/[0.12] text-stone-100'
-                          : 'bg-gradient-to-r from-stone-100 via-white to-stone-100 border-stone-900/[0.12] text-stone-900 shadow-2xs'
+                          ? 'bg-[#1c1b18] border-amber-300/20 text-stone-100'
+                          : 'bg-white border-stone-900/[0.12] text-stone-900'
                       }`}
                     >
-                      <option value="Low" className="bg-stone-900 text-stone-100">Low</option>
-                      <option value="Medium" className="bg-stone-900 text-stone-100">Medium</option>
-                      <option value="High" className="bg-stone-900 text-stone-100">High</option>
+                      <option value="Low">Low</option>
+                      <option value="Medium">Medium</option>
+                      <option value="High">High</option>
                     </select>
                   </label>
 
-                  <label className="inline-flex items-center gap-1.5 text-[11px] text-stone-500">
+                  <label className="inline-flex items-center gap-1.5 text-[11px] text-stone-400">
                     <span className="font-mono uppercase tracking-wider text-[10px]">
                       Work Rate:
                     </span>
@@ -2417,69 +2284,88 @@ NEW EVIDENCE / DEVELOPMENT TO INTEGRATE:
                       aria-label="Work Rate"
                       value={workRate}
                       onChange={(e) => setWorkRate(e.target.value)}
-                      className={`rounded-lg border px-2.5 py-1 text-xs font-medium focus:outline-none cursor-pointer ${
+                      className={`rounded-lg border px-2 py-0.5 text-xs font-medium focus:outline-none cursor-pointer ${
                         isDarkMode
-                          ? 'bg-gradient-to-r from-white/[0.06] via-amber-200/[0.06] to-white/[0.06] border-white/[0.12] text-stone-100'
-                          : 'bg-gradient-to-r from-stone-100 via-white to-stone-100 border-stone-900/[0.12] text-stone-900 shadow-2xs'
+                          ? 'bg-[#1c1b18] border-amber-300/20 text-stone-100'
+                          : 'bg-white border-stone-900/[0.12] text-stone-900'
                       }`}
                     >
-                      <option value="Low" className="bg-stone-900 text-stone-100">Low</option>
-                      <option value="Medium" className="bg-stone-900 text-stone-100">Medium</option>
-                      <option value="High" className="bg-stone-900 text-stone-100">High</option>
+                      <option value="Low">Low</option>
+                      <option value="Medium">Medium</option>
+                      <option value="High">High</option>
                     </select>
                   </label>
                 </div>
 
-                <span className="text-[10px] font-mono text-stone-500 px-1">
-                  Folder: <strong className="text-amber-700 dark:text-amber-300">{activeProject}</strong>
+                <span className="text-[10px] font-mono text-stone-400">
+                  {activeProject}
                 </span>
               </div>
             </form>
+          )}
+        </main>
 
-            {!hasArtifact && status === 'idle' && (
-              <div className="mx-auto max-w-2xl mt-4 space-y-2.5 text-center">
-                <span
-                  className={`block text-[11px] tracking-[-0.01em] ${
-                    isDarkMode ? 'text-stone-400' : 'text-stone-500'
-                  }`}
-                >
-                  {mode === 'signal'
-                    ? 'Live currents & entity audits — or ask your own above'
-                    : 'Starting tensions — or speak your own above'}
+        {/* Bottom Two Mode Cards Matching Screenshot */}
+        <footer className="max-w-3xl mx-auto w-full pt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => switchWorkspaceMode('pulse')}
+              className={`text-left p-3.5 rounded-xl border transition-all cursor-pointer ${
+                mode === 'pulse'
+                  ? isDarkMode
+                    ? 'bg-white/[0.045] border-emerald-400/35'
+                    : 'bg-white border-emerald-700/35 shadow-2xs'
+                  : isDarkMode
+                  ? 'bg-white/[0.02] hover:bg-white/[0.04] border-white/[0.07]'
+                  : 'bg-[#F3F1EC]/80 hover:bg-white border-stone-900/[0.08]'
+              }`}
+            >
+              <div className="flex items-center gap-1.5 text-xs font-medium text-stone-100 dark:text-stone-100">
+                <Activity className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className={isDarkMode ? 'text-stone-100' : 'text-stone-900'}>
+                  Touchmark Pulse
                 </span>
-                <div className="flex flex-wrap items-center justify-center gap-1.5">
-                  {(mode === 'signal' ? liveSignalPrompts : PULSE_STARTER_PROMPTS).map(
-                    (sample, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => handleSubmission(sample)}
-                        className={`px-3.5 py-1.5 rounded-full border text-[11px] transition-all truncate max-w-full cursor-pointer ${
-                          isDarkMode
-                            ? 'bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.07] text-stone-300 hover:text-stone-100'
-                            : 'bg-[#F3F1EC] hover:bg-[#EAE7E0] border-stone-900/[0.06] text-stone-700 hover:text-stone-900'
-                        }`}
-                      >
-                        {sample}
-                      </button>
-                    )
-                  )}
-                </div>
               </div>
-            )}
-          </footer>
-        </div>
-      </div>
+              <p
+                className={`mt-1 text-[11px] leading-snug ${
+                  isDarkMode ? 'text-stone-400' : 'text-stone-600'
+                }`}
+              >
+                Personal &amp; relational discernment—separate observation from story, pattern from motive, and find your next calm step.
+              </p>
+            </button>
 
-      {/* Bottom Fixed Daily Brief Drawer */}
-      {mode === 'signal' && status === 'idle' && (
-        <DailyBriefAndCalibration
-          isDarkMode={isDarkMode}
-          onLaunchPrompt={(selectedPrompt) => {
-            handleSubmission(selectedPrompt);
-          }}
-        />
-      )}
+            <button
+              type="button"
+              onClick={() => switchWorkspaceMode('signal')}
+              className={`text-left p-3.5 rounded-xl border transition-all cursor-pointer ${
+                mode === 'signal'
+                  ? isDarkMode
+                    ? 'bg-white/[0.045] border-amber-400/35'
+                    : 'bg-white border-amber-700/35 shadow-2xs'
+                  : isDarkMode
+                  ? 'bg-white/[0.02] hover:bg-white/[0.04] border-white/[0.07]'
+                  : 'bg-[#F3F1EC]/80 hover:bg-white border-stone-900/[0.08]'
+              }`}
+            >
+              <div className="flex items-center gap-1.5 text-xs font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span className={isDarkMode ? 'text-stone-100' : 'text-stone-900'}>
+                  Touchmark Signal
+                </span>
+              </div>
+              <p
+                className={`mt-1 text-[11px] leading-snug ${
+                  isDarkMode ? 'text-stone-400' : 'text-stone-600'
+                }`}
+              >
+                Public claim &amp; evidence auditing—check primary records, denominator math, and independent research.
+              </p>
+            </button>
+          </div>
+        </footer>
+      </div>
 
       {/* Saved Dossiers Archive Modal */}
       {archiveOpen && (
